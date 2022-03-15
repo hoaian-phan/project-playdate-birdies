@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+
+{% block title %} Log In {% endblock %}
+
+{% block head %} {% endblock %}
+
+{% block body %}
+
+<h2>Log In</h2>
+
+<form action="/login" method="POST">
+    <div>
+        <label for="email">Email address</label> <br>
+        <input type="email" name="email" placeholder="email@example.com" id="email" required>
+    </div>
+
+    <div>
+        <label for="password">Password</label><br>
+        <input type="password" name="password" placeholder="Password" id="password" required>
+    </div>
+
+    <div>
+        <input type="checkbox" name="remember_me" value="yes" id="remember">
+        <label for="remember">Remember me</label>
+    </div>
+
+    <div>
+        <button type="submit" id="signin"> Sign in </button>
+    </div>
+
+</form>
+
+
+
+
+
+{% endblock %}

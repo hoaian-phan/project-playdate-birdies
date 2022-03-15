@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+
+{% block title %} Create an account {% endblock%}
+
+{% block head %} {% endblock %}
+
+{% block body %}
+<h2> Create your account </h2>
+<form action="/signup" method="POST">
+    <div>
+        <label for="email">Email address</label> <br>
+        <input type="email" name="email" placeholder="email@example.com" id="email" required>
+    </div>
+
+    <div>
+        <label for="password">Password</label><br>
+        <input type="password" name="password" placeholder="Password" id="password" required>
+    </div>
+
+    <div>
+        <label for="confirm_password">Confirm Password</label><br>
+        <input type="password" name="confirm_password" placeholder="Password" id="confirm_password" required>
+    </div>
+
+    <div>
+        <label for="first">First name</label> <br>
+        <input type="text" name="first" placeholder="Jane" id="first">
+    </div>
+
+    <div>
+        <label for="last">Last name</label><br>
+        <input type="text" name="last" placeholder="Doe" id="last">
+    </div>
+
+    <div>
+        <input type="submit">
+    </div>
+
+
+
+
+</form>
+{% endblock %}
