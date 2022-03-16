@@ -5,5 +5,86 @@
 {% block head %} {% endblock %}
 
 {% block body %}
+<div class="nav_bar">
+    
+    <form action="/signup">
+        <input type="submit" value="Sign up">
+    </form>
+    
+    
+    <form action="/login">
+        <input type="submit" value="Log in">
+    </form>
+    
+
+    <form action="/host">
+        <input type="submit" value="Hosting">
+    </form>
+    
+</div>
+
 <h1> Welcome to Playdate Birdies - Where Kids Play, Grow and Make Friends</h1>
+
+<div class="search">
+    <h2>Search for a Playdate</h2>
+
+    <form action="/search">
+        <div>
+            <label for="city_zipcode">City or Zipcode</label>
+            <input type="text" name="city_zipcode" placeholder="e.g. 94542 or Hayward" id="city_zipcode">
+        </div>
+    
+        <div>
+            <label for="event_date">Date</label>
+            <input type="date" name="event_date" value="2022-03-17" id="event_date">
+        </div>
+
+        <div>
+            <label for="age">Age group</label>
+            <select name="age_group" id="age">
+                <option value="">--Select an age group--</option>
+                {% for age in age_groups %}
+                <option value="{{age}}">{{age}}</option> 
+                {% endfor %}
+            </select>
+        </div>
+
+        <div>
+            <input type="submit">
+        </div>
+    </form>
+</div>
+
+<div class="host">
+    <h2>Host a Playdate</h2>
+    <form action="/host">
+        <input type="submit" value="Try Hosting">
+    </form>
+</div>
+
+
+<div class="newly_added">
+    <h2>Newly Added Playdates</h2>
+    
+    <ul>
+        <li>Playdate 3</li>
+        <li>Playdate 2</li>
+        <li>Playdate 1</li>
+
+    </ul>
+
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
 {% endblock %}

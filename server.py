@@ -4,17 +4,74 @@ from flask import (Flask, render_template, request, redirect, flash, session)
 from model import connect_to_db, db
 import crud
 from jinja2 import StrictUndefined
+# from datetime import time
 
 app = Flask(__name__)
 app.secret_key = "giahoa"
 app.jinja_env.undefined = StrictUndefined
+
+US_STATES = {
+  "AL": "Alabama",
+  "AK": "Alaska",
+  "AZ": "Arizona",
+  "AR": "Arkansas",
+  "CA": "California",
+  "CO": "Colorado",
+  "CT": "Connecticut",
+  "DE": "Delaware",
+  "FL": "Florida",
+  "GA": "Georgia",
+  "HI": "Hawaii",
+  "ID": "Idaho",
+  "IL": "Illinois",
+  "IN": "Indiana",
+  "IA": "Iowa",
+  "KS": "Kansas",
+  "KY": "Kentucky",
+  "LA": "Louisiana",
+  "ME": "Maine",
+  "MD": "Maryland",
+  "MA": "Massachusetts",
+  "MI": "Michigan",
+  "MN": "Minnesota",
+  "MS": "Mississippi",
+  "MO": "Missouri",
+  "MT": "Montana",
+  "NE": "Nebraska",
+  "NV": "Nevada",
+  "NH": "New Hampshire",
+  "NJ": "New Jersey",
+  "NM": "New Mexico",
+  "NY": "New York",
+  "NC": "North Carolina",
+  "ND": "North Dakota",
+  "OH": "Ohio",
+  "OK": "Oklahoma",
+  "OR": "Oregon",
+  "PA": "Pennsylvania",
+  "RI": "Rhode Island",
+  "SC": "South Carolina",
+  "SD": "South Dakota",
+  "TN": "Tennessee",
+  "TX": "Texas",
+  "UT": "Utah",
+  "VT": "Vermont",
+  "VA": "Virginia",
+  "WA": "Washington",
+  "WV": "West Virginia",
+  "WI": "Wisconsin",
+  "WY": "Wyoming"
+}
+
+AGE_GROUP = ["infants", "toddlers", "preschoolers", "kindergarteners",
+            "elementary", "middleschool", "highschool", "any age"]
 
 # 1. Homepage route
 @app.route("/")
 def homepage():
     """ Display homepage """
 
-    return render_template("homepage.html")
+    return render_template("homepage.html", age_groups = AGE_GROUP)
 
 # 2a. Sign up page with GET to render template with the sign up form
 @app.route("/signup")
@@ -50,7 +107,7 @@ def create_user():
         db.session.add(new_user)
         db.session.commit()
         # Flash message and add user_id to session 
-        flash("Successfully created an account.")
+        flash(f"Hi {new_user.fname}, welcome to Playdate Birdies community.")
         session["user_id"] = new_user.user_id 
         # return user to their previous page (hosting or register or homepage) - add later
         return redirect("/")
@@ -59,12 +116,15 @@ def create_user():
         return redirect("/signup")
 
 
-
 # 3. Login with GET to render template login with the login form
 @app.route("/login")
 def login_get():
     """ Render the login page with the form in it"""
 
+    if "user_id" in [session]:
+        flash("You are already logged in.")
+        return redirect ("/")
+    
     return render_template("login.html")
 
 # 4. Login route
@@ -83,7 +143,7 @@ def login():
     # If this user exists in database, check if password matches; if yes, log in
     if user:
         if password == user.password:
-            flash("Log in successfully.")
+            flash(f"Hi {user.fname}, welcome back.")
             session["user_id"] = user.user_id
             # return user to their previous page (hosting or register or homepage) - add later
             return redirect("/")
@@ -95,12 +155,66 @@ def login():
     return redirect("/login")
 
 
+# 4a. Hosting papge
+@app.route("/host")
+def host():
+    """ Display host form"""
+
+    if "user_id" not in session:
+        flash("Please log in to host a playdate.")
+        return redirect("/login")
+
+    return render_template("hosting.html", states=US_STATES, age_groups=AGE_GROUP)
 
 
-# 4. Search results
+# 4b. Hosting
+@app.route("/host", methods=["POST"])
+def hosting():
+    """ Host a playdate"""
+
+    host_id = session["user_id"]
+    title = request.form.get("title")
+    description = request.form.get("description")
+    location = request.form.get("location")
+    address = request.form.get("address")
+    city = request.form.get("city")
+    state = request.form.get("state")
+    zipcode = request.form.get("zipcode")
+    date = request.form.get("date")
+    start = request.form.get("start")
+    end = request.form.get("end")
+    age_group = request.form.get("age_group")
+
+    new_location = crud.create_new_location(location, address, city, zipcode, state)
+    db.session.add(new_location)
+    db.session.commit()
+
+    new_event = crud.host_a_playdate(host_id, title, description, new_location.location_id,
+                                    date, start, end, age_group)
+    db.session.add(new_event)
+    db.session.commit()
+
+    flash(f"{new_event.host.fname}, your playdate {new_event.title} is scheduled on {new_event.date} from {new_event.start_time} to {new_event.end_time} at {new_event.location.name}.")
+    flash("Congratulations! You will be an awesome host!")
+    
+    return redirect("/")
 
 
-# 5. Hosting
+    
+
+
+
+
+
+
+
+
+
+
+# 5. Search results
+
+
+
 
 
 

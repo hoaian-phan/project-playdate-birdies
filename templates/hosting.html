@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+
+{% block title %} Host a Playdate {% endblock %}
+
+{% block head %} {% endblock %}
+
+{% block body %}
+
+<h2>Host a Playdate</h2>
+
+<form action="/host" method="POST">
+    <div>
+        <label for="title">Title</label>
+        <input type="text" name="title" placeholder="e.g. Easter Egg Hunt" id="title" required>
+    </div>
+    
+    <div>
+        <label for="description">Description</label>
+        <input type="textarea" name="description" placeholder="e.g. Kids can dress up as bunnies and go egg hunting" id="description">
+    </div>
+
+    <div>
+        <label for="location">Location</label>
+        <input type="text" name="location" placeholder="e.g. Greenwood Park" id="location" required>
+    </div>
+        
+    <div>
+        <label for="address">Street address</label>
+        <input type="text" name="address" placeholder="e.g. 24016 Eden Ave" id="address" required>
+    </div>
+    
+    <div>
+        <label for="city">City</label>
+        <input type="text" name="city" placeholder="e.g. Hayward" id="city" required>
+    </div>
+
+    <div>
+        <label for="state">State</label>
+        <select name="state" id="state" required> State
+            <option value="">--Select one--</option>
+            {% for code, state in states.items() %}
+            <option value="{{code}}">{{state}}, {{code}}</option> 
+            {% endfor %}
+        </select>
+    </div>
+
+    <div>
+        <label for="zipcode">Zipcode</label>
+        <input type="text" name="zipcode" placeholder="e.g. 94541" id="zipcode" required>
+    </div>
+
+    <div>
+        <label for="date">date</label>
+        <input type="date" name="date" value="2022-03-17" id="date" required>
+    </div>
+
+    <div>
+        <label for="start">Start time:</label>
+        <input type="time" id="start" required name="start">
+    </div>
+
+    <div>
+        <label for="end">End time:</label>
+        <input type="time" id="end" required name="end">
+    </div>
+
+    <div>
+        <label for="age">Age group</label>
+        <select name="age_group" id="age">
+            <option value="">--Select an age group--</option>
+            {% for age in age_groups %}
+            <option value="{{age}}">{{age}}</option> 
+            {% endfor %}
+        </select>
+    </div>
+
+    <div>
+        <input type="submit">
+    </div>
+
+</form>
+
+{% endblock %}

@@ -35,9 +35,10 @@ class Event(db.Model):
     host_id = db.Column(db.Integer, db.ForeignKey("users.user_id"), nullable=False)
     title = db.Column(db.String, nullable=False)
     description = db.Column(db.Text)
-    start_time = db.Column(db.DateTime, nullable=False)
-    end_time = db.Column(db.DateTime, nullable=False)
     location_id = db.Column(db.Integer, db.ForeignKey("locations.location_id"), nullable=False)
+    date = db.Column(db.Date, nullable=False)
+    start_time = db.Column(db.Time, nullable=False)
+    end_time = db.Column(db.Time, nullable=False)
     age_group = db.Column(db.String) # drop down 
 
     host = db.relationship("User", back_populates="events") 
@@ -158,6 +159,17 @@ def connect_to_db(flask_app, db_uri="postgresql:///playdates", echo=True):
 
     print("Connected to the db!")
 
+
+# Create example data for testing
+def example_data():
+    """ Create example data for the test database"""
+
+    user_1 = User(fname="Dung", lname="Nguyen", email="hd@hb.com", password="12345")
+    user_2 = User(fname="Nu", lname="Phan", email="nu@hb.com", password="12345")
+
+    db.session.add(user_1)
+    db.session.add(user_2)
+    db.session.commit()
 
 if __name__ == "__main__":
     from server import app
