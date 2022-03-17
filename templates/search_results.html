@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% block title %} Search Results {% endblock %}
+
+{% block head %} {% endblock %}
+
+{% block body %}
+
+<h2>Search Results</h2>
+
+<p>There are {{events|length}} results for your search.</p>
+
+<ul>
+    {% for event in events %}
+        <li> 
+            {{ event.title }} <button id="{{ event.event_id }}">Details</button>
+        </li>
+    {% endfor %}
+</ul>
+
+
+
+
+<script src="static/js/playdate.js"></script>
+{% endblock %}

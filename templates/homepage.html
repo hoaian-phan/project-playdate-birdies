@@ -7,19 +7,33 @@
 {% block body %}
 <div class="nav_bar">
     
-    <form action="/signup">
-        <input type="submit" value="Sign up">
-    </form>
-    
-    
-    <form action="/login">
-        <input type="submit" value="Log in">
-    </form>
+    {% if 'user_id' in session %}
+    <p>Hi {{ session['user_id'] }}</p>
+        <form action="/logout">
+            <input type="submit" value="Log out">
+        </form>
+
+
+        <form action="/host">
+            <input type="submit" value="Hosting">
+        </form>
+
+    {% else %}
+        <form action="/signup">
+            <input type="submit" value="Sign up">
+        </form>
+        
+        
+        <form action="/login">
+            <input type="submit" value="Log in">
+        </form>
     
 
-    <form action="/host">
-        <input type="submit" value="Hosting">
-    </form>
+        <form action="/host">
+            <input type="submit" value="Hosting" disabled>
+        </form>
+    
+    {% endif %}
     
 </div>
 
@@ -36,7 +50,7 @@
     
         <div>
             <label for="event_date">Date</label>
-            <input type="date" name="event_date" value="2022-03-17" id="event_date">
+            <input type="date" name="date" value="2022-03-17" id="event_date">
         </div>
 
         <div>

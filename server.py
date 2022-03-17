@@ -4,7 +4,7 @@ from flask import (Flask, render_template, request, redirect, flash, session)
 from model import connect_to_db, db
 import crud
 from jinja2 import StrictUndefined
-# from datetime import time
+from datetime import datetime 
 
 app = Flask(__name__)
 app.secret_key = "giahoa"
@@ -116,7 +116,7 @@ def create_user():
         return redirect("/signup")
 
 
-# 3. Login with GET to render template login with the login form
+# 3a. Login with GET to render template login with the login form
 @app.route("/login")
 def login_get():
     """ Render the login page with the form in it"""
@@ -127,7 +127,7 @@ def login_get():
     
     return render_template("login.html")
 
-# 4. Login route
+# 3b. Login route with POST 
 @app.route("/login", methods = ["POST"])
 def login():
     """ User login """
@@ -154,8 +154,18 @@ def login():
     
     return redirect("/login")
 
+# 4. Log out
+@app.route("/logout")
+def logout():
+    """ Log out """
 
-# 4a. Hosting papge
+    if "user_id" in session:
+        del session["user_id"]
+    
+    return redirect("/")
+
+
+# 4a. Rendering the Hosting papge with GET
 @app.route("/host")
 def host():
     """ Display host form"""
@@ -167,12 +177,14 @@ def host():
     return render_template("hosting.html", states=US_STATES, age_groups=AGE_GROUP)
 
 
-# 4b. Hosting
+# 4b. Hosting page with POST to create an event
 @app.route("/host", methods=["POST"])
 def hosting():
     """ Host a playdate"""
 
+    # Get host_id from session
     host_id = session["user_id"]
+    # Get input from the form
     title = request.form.get("title")
     description = request.form.get("description")
     location = request.form.get("location")
@@ -184,12 +196,17 @@ def hosting():
     start = request.form.get("start")
     end = request.form.get("end")
     age_group = request.form.get("age_group")
+    
+    # Query this input location to check it is already in database
+    input_location = crud.get_location_by_name_and_address(name=location, address=address)
+    # If not, create a new location object and add to database
+    if not input_location:
+        input_location = crud.create_new_location(location, address, city, zipcode, state)
+        db.session.add(input_location)
+        db.session.commit()
 
-    new_location = crud.create_new_location(location, address, city, zipcode, state)
-    db.session.add(new_location)
-    db.session.commit()
-
-    new_event = crud.host_a_playdate(host_id, title, description, new_location.location_id,
+    # Create a new event object and add to database
+    new_event = crud.host_a_playdate(host_id, title, description, input_location.location_id,
                                     date, start, end, age_group)
     db.session.add(new_event)
     db.session.commit()
@@ -198,6 +215,27 @@ def hosting():
     flash("Congratulations! You will be an awesome host!")
     
     return redirect("/")
+
+
+# 5. Search for a playdate
+@app.route("/search")
+def search():
+    """ Search for a playdate """
+
+    # Get user input from the search form
+    city_zipcode = request.args.get("city_zipcode")
+    date = request.args.get("date")
+    age_group = request.args.get("age_group")
+
+    # Process date string input
+    if date:
+        date = datetime.strptime(date, '%Y-%m-%d').date()
+
+    # Get a list of search results
+    
+    events = crud.get_events_by_inputs(city_zipcode=city_zipcode, date=date, age_group=age_group)
+
+    return render_template("search_results.html", events=events)
 
 
     
