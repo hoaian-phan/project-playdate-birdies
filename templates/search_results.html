@@ -2,7 +2,9 @@
 
 {% block title %} Search Results {% endblock %}
 
-{% block head %} {% endblock %}
+{% block head %} 
+    <link rel="stylesheet" href="/static/css/maps.css"/>
+{% endblock %}
 
 {% block body %}
 
@@ -18,18 +20,20 @@
     {% endfor %}
 </ul>
 
-<div><b id="display-details"> </b></div>
-<div><b id="title"> </b> </div>
-<div id="description"> </div>
-<div id="age"> </div>
-<div id="host"> </div>
-<div id="location"> </div>
-<div id="address"> </div>
-<div id="date-time"> </div>
+
+<div id="display-details"> </div>
+
+<div id="map"></div>
+  
 
 
+<!-- Script for DOM and event handling -->
 <script src="static/js/playdate.js"></script>
 
-
+<!-- Google Map APIs -->
+<script
+  async
+  src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAD0oTJmmfCcudTYnSthIF1Z9QW3H5GC5s&callback=initMap">
+</script>
 
 {% endblock %}

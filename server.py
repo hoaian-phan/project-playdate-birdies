@@ -217,7 +217,7 @@ def hosting():
     return redirect("/")
 
 
-# 5a. Search for a playdate
+# 5. Search for a playdate
 @app.route("/search")
 def search():
     """ Search for a playdate """
@@ -237,7 +237,7 @@ def search():
     return render_template("search_results.html", events=events)
 
 
-# 5b. Display event details
+# 6. Display event details
 @app.route("/events")
 def show_details():
     """ Show event details """
@@ -265,6 +265,10 @@ def show_details():
     }
 
     return jsonify(event)
+
+
+
+
 
 
 
