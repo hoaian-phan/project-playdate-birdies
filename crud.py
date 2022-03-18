@@ -69,3 +69,10 @@ def get_events_by_inputs(city_zipcode, date, age_group):
 
     return events.all()
 
+# Event: Get event by event id
+def get_event_by_id(event_id):
+    """ Return an event object by its id"""
+
+    event = Event.query.get(event_id)
+
+    return event

@@ -1,6 +1,6 @@
 """ Server for playdate birdies apps """
 
-from flask import (Flask, render_template, request, redirect, flash, session)
+from flask import (Flask, render_template, request, redirect, flash, session, jsonify)
 from model import connect_to_db, db
 import crud
 from jinja2 import StrictUndefined
@@ -217,7 +217,7 @@ def hosting():
     return redirect("/")
 
 
-# 5. Search for a playdate
+# 5a. Search for a playdate
 @app.route("/search")
 def search():
     """ Search for a playdate """
@@ -232,13 +232,39 @@ def search():
         date = datetime.strptime(date, '%Y-%m-%d').date()
 
     # Get a list of search results
-    
     events = crud.get_events_by_inputs(city_zipcode=city_zipcode, date=date, age_group=age_group)
 
     return render_template("search_results.html", events=events)
 
 
-    
+# 5b. Display event details
+@app.route("/events")
+def show_details():
+    """ Show event details """
+
+    # Get the event_id from fetch call
+    event_id = request.args.get("event_id")
+
+    # Get the event by event_id
+    event = crud.get_event_by_id(event_id)
+
+    # Remake event dictionary for jsonify
+    event = {
+        "host": event.host.fname + " " + event.host.lname,
+        "title": event.title,
+        "description": event.description,
+        "date": str(event.date),
+        "start_time": str(event.start_time),
+        "end_time": str(event.end_time),
+        "age_group": event.age_group,
+        "location": event.location.name,
+        "address": event.location.address,
+        "city": event.location.city,
+        "zipcode": event.location.zipcode,
+        "state": event.location.state
+    }
+
+    return jsonify(event)
 
 
 

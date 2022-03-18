@@ -13,13 +13,19 @@
 <ul>
     {% for event in events %}
         <li> 
-            {{ event.title }} <button id="{{ event.event_id }}">Details</button>
+            {{ event.title }} <button class="event-details" id="{{ event.event_id }}">Details</button>
         </li>
     {% endfor %}
 </ul>
 
+<div><b id="display-details"> </b></div>
+<div><b id="title"> </b> </div>
+<div id="description"> </div>
+<div id="age"> </div>
+<div id="host"> </div>
+<div id="location"> </div>
+<div id="address"> </div>
+<div id="date-time"> </div>
 
 
-
-<script src="static/js/playdate.js"></script>
 {% endblock %}
