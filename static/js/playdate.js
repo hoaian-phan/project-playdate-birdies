@@ -23,6 +23,7 @@ for (const button of buttons) {
                 At ${responseJson.location}<br>
                 Address: ${responseJson.address}, ${responseJson.city}, ${responseJson.state} ${responseJson.zipcode}<br>
                 On ${responseJson.date} from ${responseJson.start_time} to ${responseJson.end_time}<br>
+                <button class="register" id=${button.id}>Register</button>
                 `  
             })
     })
@@ -81,22 +82,38 @@ function initMap() {
                         address: eventLocation.address
                     });
 
+                    // Zoom in on the geolocated location
+                        basicMap.setCenter(userLocation);
+                        basicMap.setZoom(11);
+
                     // Create marker info
                     const locationInfo = `
                         <h1>${marker.title}</h1>
                         <p>
                             Located at: ${marker.address}
                         </p>
+                        Title: ${responseJson.title}</b><br>
+                        ${responseJson.description}<br>
+                        For ${responseJson.age_group}<br>
+                        Hosted by ${responseJson.host}<br>
+                        On ${responseJson.date} from ${responseJson.start_time} to ${responseJson.end_time}<br>
                         `;
 
-                    // add event click to marker
-                    marker.addListener('click', () => {
+                    // callback function show location detail on map
+                    const showInfo = () => {
                         markerInfo.close();
                         markerInfo.setContent(locationInfo);
                         markerInfo.open(basicMap, marker);
-                    });
+                    };
+
+                    // add event click to marker
+                    marker.addListener('click', showInfo);
+
+                    // add event click to detail button
+                    document.getElementById(`${button.id}`).addEventListener("click", showInfo);
                     
                 });
             })
     }
 }
+
