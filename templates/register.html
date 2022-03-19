@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+
+{% block title %} Register for a Playdate {% endblock %}
+
+{% block body %}
+
+<h2>Register</h2>
+
+<form action="/register" method="POST">
+    <div>
+        <label for="fname">First name</label><br>
+        <input type="text" name="fname" placeholder="Jane" id="fname">
+
+    </div>
+
+    <div>
+        <label for="lname">Last name</label><br>
+        <input type="text" name="lname" placeholder="Doe" id="lname">
+        
+    </div>
+
+    <div>
+        <label for="people">Tell us about your family</label><br>
+        <input type="textarea" name="people" placeholder="There are four of us in my family: 
+                Halley, my older daughter, Paul, my younger son, my husband Dave and me." id="people">       
+    </div>
+
+    <div>
+        <label for="message">Message to host</label><br>
+        <input type="textarea" name="message" placeholder="Message to host" id="message">  
+    </div>
+        
+        <input type="submit">
+</form>
+
+  
+
+
+<!-- Script for DOM and event handling -->
+<script src="static/js/playdate.js"></script>
+
+
+{% endblock %}

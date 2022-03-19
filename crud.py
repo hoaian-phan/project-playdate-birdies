@@ -37,14 +37,6 @@ def create_new_location(name, address, city, zipcode, state):
 
     return location
 
-# # Location: Get a list of location by city or zipcode
-# def get_locations_by_city_or_zipcode(city=None, zipcode=None):
-#     """ Return a list of location object by input city or zipcode"""
-
-#     locations = Location.query.filter(db.or_(Location.city==city, Location.zipcode==zipcode)).all()
-
-#     return locations
-
 # Event: Create a new event
 def host_a_playdate(host_id, title, description, location_id, date, start, end, age_group):
     """ Create and return an event object"""
@@ -76,3 +68,11 @@ def get_event_by_id(event_id):
     event = Event.query.get(event_id)
 
     return event
+
+# Registration: Create a new registration
+def create_new_registration(event_id, user_id):
+    """ Create and return a new registration """
+
+    registration = Registration(event_id=event_id, user_id=user_id)
+
+    return registration

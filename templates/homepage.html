@@ -8,7 +8,7 @@
 <div class="nav_bar">
     
     {% if 'user_id' in session %}
-    <p>Hi {{ session['user_id'] }}</p>
+    
         <form action="/logout">
             <input type="submit" value="Log out">
         </form>

@@ -250,6 +250,7 @@ def show_details():
 
     # Remake event dictionary for jsonify
     event = {
+        "event_id": event.event_id,
         "host": event.host.fname + " " + event.host.lname,
         "title": event.title,
         "description": event.description,
@@ -266,25 +267,33 @@ def show_details():
 
     return jsonify(event)
 
+# 7a. Route to render register form
+@app.route("/register")
+def show_register_page():
+    """ Display registration form """
+    if "user_id" not in session:
+        flash("Please log in to register.")
+        return redirect("/login")
 
+    return render_template("register.html")
 
+# 7b. Register for a playdate
+@app.route("/register", methods=["POST"])
+def register():
+    """ Register for a playdate """
 
+    event_id = request.form.get("event_id")
 
+    user_id = session["user_id"]
 
+    registration = crud.create_new_registration(event_id, user_id)
+    db.session.add(registration)
+    db.session.commit()
 
+    flash(f"You successfully registered for {registration.event.title} at {registration.event.location.name}",
+    f" on {registration.event.date} at {registration.event.start_time}.")
 
-
-
-
-
-
-
-# 5. Search results
-
-
-
-
-
+    return redirect("/")
 
 if __name__ == "__main__":
     # DebugToolbarExtension(app)

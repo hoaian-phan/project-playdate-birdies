@@ -13,21 +13,26 @@ for (const button of buttons) {
         fetch(url)
             .then(response => response.json())
             .then(responseJson => { // display details
-                document.querySelector("#display-details").innerHTML = 
-                `
-                <b>Playdate details<br>
-                Title: ${responseJson.title}</b><br>
-                ${responseJson.description}<br>
-                For ${responseJson.age_group}<br>
-                Hosted by ${responseJson.host}<br>
-                At ${responseJson.location}<br>
-                Address: ${responseJson.address}, ${responseJson.city}, ${responseJson.state} ${responseJson.zipcode}<br>
-                On ${responseJson.date} from ${responseJson.start_time} to ${responseJson.end_time}<br>
-                <button class="register" id=${button.id}>Register</button>
-                `  
+                if (button.innerText === "Show details") {
+                    button.innerText = "Hide details";
+                    document.getElementById(`display-detail${button.id}`).innerHTML = 
+                    `
+                    <b>Playdate details<br>
+                    Title: ${responseJson.title}</b><br>
+                    ${responseJson.description}<br>
+                    For ${responseJson.age_group}<br>
+                    Hosted by ${responseJson.host}<br>
+                    At ${responseJson.location}<br>
+                    Address: ${responseJson.address}, ${responseJson.city}, ${responseJson.state} ${responseJson.zipcode}<br>
+                    On ${responseJson.date} from ${responseJson.start_time} to ${responseJson.end_time}<br>
+                    `
+                } else {
+                    button.innerText = "Show details";
+                    document.getElementById(`display-detail${button.id}`).innerHTML = "";
+                }
             })
-    })
-};
+    });
+}
 
 // Display a map and mark locations on the map
 function initMap() {
@@ -92,28 +97,32 @@ function initMap() {
                         <p>
                             Located at: ${marker.address}
                         </p>
-                        Title: ${responseJson.title}</b><br>
-                        ${responseJson.description}<br>
-                        For ${responseJson.age_group}<br>
-                        Hosted by ${responseJson.host}<br>
+                        ${responseJson.title}</b><br>
                         On ${responseJson.date} from ${responseJson.start_time} to ${responseJson.end_time}<br>
                         `;
 
                     // callback function show location detail on map
                     const showInfo = () => {
-                        markerInfo.close();
-                        markerInfo.setContent(locationInfo);
-                        markerInfo.open(basicMap, marker);
+                        if (button.innerText === "Show details") {
+                            markerInfo.close();
+                            markerInfo.setContent(locationInfo);
+                            markerInfo.open(basicMap, marker);
+                        } else {
+                            markerInfo.close();
+                        }
                     };
 
                     // add event click to marker
                     marker.addListener('click', showInfo);
 
                     // add event click to detail button
-                    document.getElementById(`${button.id}`).addEventListener("click", showInfo);
+                    button.addEventListener("click", showInfo);
                     
                 });
             })
     }
 }
+
+// // Register feature
+// const register = document.querySelector(".register");
 

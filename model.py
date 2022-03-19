@@ -62,8 +62,7 @@ class Registration(db.Model):
     regist_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     event_id = db.Column(db.Integer, db.ForeignKey("events.event_id"), nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey("users.user_id"), nullable=False)
-    acceptance_status = db.Column(db.Boolean, default=True, nullable=False) # need confirmation: default?
-
+    
     event = db.relationship("Event", back_populates="registrations")
     user = db.relationship("User", back_populates="registrations")
 
