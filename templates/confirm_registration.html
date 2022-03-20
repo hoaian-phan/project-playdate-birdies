@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+{% block title %} Successfully registered for a playdate {% endblock %}
+
+{% block body %}
+
+<p>Congratulations, you successfully registered for {{registration.event.title}} at {{registration.event.location.name}},
+on {{registration.event.date}} at {{registration.event.start_time}}.</p>
+
+
+
+
+  
+
+
+<!-- Script for DOM and event handling -->
+<script src="static/js/playdate.js"></script>
+
+
+{% endblock %}

@@ -25,14 +25,19 @@ for (const button of buttons) {
                     At ${responseJson.location}<br>
                     Address: ${responseJson.address}, ${responseJson.city}, ${responseJson.state} ${responseJson.zipcode}<br>
                     On ${responseJson.date} from ${responseJson.start_time} to ${responseJson.end_time}<br>
+                    <form action="/register" method="POST">
+                        <input type="hidden" name="event_id" value="${button.id}">
+                        <input type=submit value="Register">
+                    </form>
                     `
-                } else {
+                } else { // Hide event details
                     button.innerText = "Show details";
                     document.getElementById(`display-detail${button.id}`).innerHTML = "";
                 }
             })
     });
 }
+
 
 // Display a map and mark locations on the map
 function initMap() {
@@ -123,6 +128,5 @@ function initMap() {
     }
 }
 
-// // Register feature
-// const register = document.querySelector(".register");
+
 

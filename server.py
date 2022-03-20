@@ -234,7 +234,11 @@ def search():
     # Get a list of search results
     events = crud.get_events_by_inputs(city_zipcode=city_zipcode, date=date, age_group=age_group)
 
-    return render_template("search_results.html", events=events)
+    # Get user by user id:
+    user_id = session["user_id"]
+    user = crud.get_user_by_id(user_id)
+
+    return render_template("search_results.html", events=events, user=user)
 
 
 # 6. Display event details
@@ -267,33 +271,29 @@ def show_details():
 
     return jsonify(event)
 
-# 7a. Route to render register form
-@app.route("/register")
-def show_register_page():
-    """ Display registration form """
-    if "user_id" not in session:
-        flash("Please log in to register.")
-        return redirect("/login")
 
-    return render_template("register.html")
-
-# 7b. Register for a playdate
+# 7a. Register for a playdate
 @app.route("/register", methods=["POST"])
 def register():
     """ Register for a playdate """
-
+    # Get event_id from the form
     event_id = request.form.get("event_id")
-
+    # Get user_id from session
     user_id = session["user_id"]
 
-    registration = crud.create_new_registration(event_id, user_id)
-    db.session.add(registration)
-    db.session.commit()
+    # Get the registration by this user_id and event_id
+    registration = crud.get_registration(event_id, user_id)
+    # Check if this user has already registered for this event
+    if registration:
+        flash("You have already registered for this playdate.")
+        # will return to user profile to see list of future events
+        return redirect("/")
+    else:
+        registration = crud.create_new_registration(event_id, user_id)
+        db.session.add(registration)
+        db.session.commit()
 
-    flash(f"You successfully registered for {registration.event.title} at {registration.event.location.name}",
-    f" on {registration.event.date} at {registration.event.start_time}.")
-
-    return redirect("/")
+    return render_template("confirm_registration.html", registration=registration)
 
 if __name__ == "__main__":
     # DebugToolbarExtension(app)

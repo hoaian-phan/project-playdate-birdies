@@ -21,6 +21,14 @@ def get_user_by_email(email):
 
     return user
 
+# User: Get user by user_id
+def get_user_by_id(user_id):
+    """ Return user object by id """
+
+    user = User.query.get(user_id)
+
+    return user
+
 # Location: Get location by name and adress
 def get_location_by_name_and_address(name, address):
     """ Return location object of the input name and address"""
@@ -68,6 +76,14 @@ def get_event_by_id(event_id):
     event = Event.query.get(event_id)
 
     return event
+
+# Registration: Get registration by event id and user id
+def get_registration(event_id, user_id):
+    """ Return registration object by event id and user id"""
+
+    registration = Registration.query.filter_by(event_id=event_id, user_id=user_id).first()
+
+    return registration
 
 # Registration: Create a new registration
 def create_new_registration(event_id, user_id):

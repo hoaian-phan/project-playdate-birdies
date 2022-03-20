@@ -10,7 +10,11 @@
 
 <h2>Search Results</h2>
 
-<p>There are {{events|length}} results for your search.</p>
+{% if events|length == 0 or events|length == 1 %}
+    <p>{{ user.fname}}, there is {{events|length}} result for your search.</p>
+{% else %}
+    <p>{{ user.fname}}, there are {{events|length}} results for your search.</p>
+{% endif %}
 
 <ul>
     {% for event in events %}
@@ -21,8 +25,6 @@
     {% endfor %}
 </ul>
 
-
-<div id="display-details"> </div>
 
 <main>
     <section class="map">
