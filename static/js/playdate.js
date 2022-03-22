@@ -72,8 +72,48 @@ function initMap() {
                 let locationCoordinates;
                 if (responseJson.lat && responseJson.lng) {
                     locationCoordinates = {"lat": responseJson.lat, "lng": responseJson.lng};
-                } else {
+                    // Create event location 
+                    eventLocation = {
+                        name: locationName,
+                        coords: locationCoordinates,
+                        address: locationAddress
+                    };
+                    // Create a marker
+                    const marker = new google.maps.Marker({
+                        position: eventLocation.coords,
+                        title: eventLocation.name,
+                        map: basicMap,
+                        address: eventLocation.address
+                    });
+                    // Zoom in on the geolocated location
+                        basicMap.setCenter(locationCoordinates);
+                        basicMap.setZoom(11);
+                    // Create marker info
+                    const locationInfo = `
+                        <h1>${marker.title}</h1>
+                        <p>
+                            Located at: ${marker.address}
+                        </p>
+                        ${responseJson.title}</b><br>
+                        On ${responseJson.date} from ${responseJson.start_time} to ${responseJson.end_time}<br>
+                        `;
+                    // callback function show location detail on map
+                    const showInfo = () => {
+                        if (button.innerText === "Show details") {
+                            markerInfo.close();
+                            markerInfo.setContent(locationInfo);
+                            markerInfo.open(basicMap, marker);
+                        } else {
+                            markerInfo.close();
+                        }
+                    };
+                    // add event click to marker
+                    marker.addListener('click', showInfo);
+                    // add event click to detail button
+                    button.addEventListener("click", showInfo);
+                } else { // if coordinates are not in database
                     // Geocode the address to coordinates
+                    console.log("Geocoding");
                     const geocoder = new google.maps.Geocoder();
                     geocoder.geocode({ address: locationAddress }, (results, status) => {
                         if (status === 'OK') {

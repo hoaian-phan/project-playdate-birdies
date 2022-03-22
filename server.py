@@ -66,6 +66,12 @@ US_STATES = {
 AGE_GROUP = ["infants", "toddlers", "preschoolers", "kindergarteners",
             "elementary", "middleschool", "highschool", "any age"]
 
+ACTIVITIES = ["Draw with chalk", "Go on a scavenger hunt", "Kick a ball", "Blow bubbles",
+            "Play tag", "Tug of war", "Fly a kite", "Squirt water guns", "Basket ball", 
+            "Play with sand", "Have a race", "Make paper airplanes", "Water balloon t-ball",
+            "Hula hoop", "Painting", "Collect leaves", "Jumping rope", "Bag jumping", 
+            "Bike/scooter riding"]
+
 # 1. Homepage route
 @app.route("/")
 def homepage():
@@ -109,6 +115,9 @@ def create_user():
         # Flash message and add user_id to session 
         flash(f"Hi {new_user.fname}, welcome to Playdate Birdies community.")
         session["user_id"] = new_user.user_id 
+        if "event_id" in session:
+                event = crud.get_event_by_id(session["event_id"])
+                return render_template("confirm.html", event=event)
         # return user to their previous page (hosting or register or homepage) - add later
         return redirect("/")
     else: # if user exists, flash message and restart sign up form
@@ -121,7 +130,7 @@ def create_user():
 def login_get():
     """ Render the login page with the form in it"""
 
-    if "user_id" in [session]:
+    if "user_id" in session:
         flash("You are already logged in.")
         return redirect ("/")
     
@@ -178,7 +187,7 @@ def host():
         flash("Please log in to host a playdate.")
         return redirect("/login")
 
-    return render_template("hosting.html", states=US_STATES, age_groups=AGE_GROUP)
+    return render_template("hosting.html", states=US_STATES, age_groups=AGE_GROUP, activities=ACTIVITIES)
 
 
 # 4b. Hosting page with POST to create an event
@@ -200,7 +209,7 @@ def hosting():
     start = request.form.get("start")
     end = request.form.get("end")
     age_group = request.form.get("age_group")
-    print("location name = ", name)
+    
     
     # Query this input location to check it is already in database
     input_location = crud.get_location_by_name_and_address(name=name, address=address)
@@ -270,7 +279,7 @@ def show_details():
         "zipcode": event.location.zipcode,
         "state": event.location.state,
         "lat": event.location.lat,
-        "long": event.location.lng
+        "lng": event.location.lng
     }
 
     return jsonify(event)
