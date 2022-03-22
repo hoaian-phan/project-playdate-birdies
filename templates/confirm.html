@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block title %} Confirm to register {% endblock %}
+
+{% block body %}
+
+<p>Would you like to continue registering for {{event.title}} at {{event.location.name}},
+on {{event.date}} at {{event.start_time}}.</p>
+
+<form action="/confirm">
+
+    <label for="yes">Yes</label>
+    <input type="radio" name="confirm" value="yes" id="yes"><br>
+
+    <label for="no">No</label>
+    <input type="radio" name="confirm" value="no" id="no"><br>
+
+    <input type="submit">
+</form>
+
+
+
+{% endblock %}

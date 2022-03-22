@@ -59,6 +59,7 @@ function initMap() {
     for (const button of buttons) {
         let locationAddress, locationName, eventLocation;
         const url = `/events?event_id=${button.id}`;
+        
         // fetch with sending data by get request
         fetch(url)
             .then(response => response.json())
@@ -67,63 +68,80 @@ function initMap() {
                                        + responseJson.zipcode;
                 locationName = responseJson.location;
                 
-                // Geocode the address to coordinates
-                const geocoder = new google.maps.Geocoder();
-                let userLocation;
-                geocoder.geocode({ address: locationAddress }, (results, status) => {
-                    if (status === 'OK') {
-                        // Get the coordinates of the user's location
-                        userLocation = results[0].geometry.location;
-                    } else {
-                        alert(`Geocode was unsuccessful for the following reason: ${status}`);
-                    }
-                    // Create event location with name and coordinates for markers
-                    eventLocation = {
-                        name: locationName,
-                        coords: userLocation,
-                        address: locationAddress
-                    };
-
-                    // Create a marker
-                    const marker = new google.maps.Marker({
-                        position: eventLocation.coords,
-                        title: eventLocation.name,
-                        map: basicMap,
-                        address: eventLocation.address
-                    });
-
-                    // Zoom in on the geolocated location
-                        basicMap.setCenter(userLocation);
-                        basicMap.setZoom(11);
-
-                    // Create marker info
-                    const locationInfo = `
-                        <h1>${marker.title}</h1>
-                        <p>
-                            Located at: ${marker.address}
-                        </p>
-                        ${responseJson.title}</b><br>
-                        On ${responseJson.date} from ${responseJson.start_time} to ${responseJson.end_time}<br>
-                        `;
-
-                    // callback function show location detail on map
-                    const showInfo = () => {
-                        if (button.innerText === "Show details") {
-                            markerInfo.close();
-                            markerInfo.setContent(locationInfo);
-                            markerInfo.open(basicMap, marker);
+                // Check if coordinates of the location are in the database
+                let locationCoordinates;
+                if (responseJson.lat && responseJson.lng) {
+                    locationCoordinates = {"lat": responseJson.lat, "lng": responseJson.lng};
+                } else {
+                    // Geocode the address to coordinates
+                    const geocoder = new google.maps.Geocoder();
+                    geocoder.geocode({ address: locationAddress }, (results, status) => {
+                        if (status === 'OK') {
+                            // Get the coordinates of the user's location
+                            locationCoordinates = {
+                                lat: results[0].geometry.location.lat(),
+                                lng: results[0].geometry.location.lng()
+                            }
+                            // sending AJAX to update the coordinates in the database 
+                            const coordinates = {
+                                lat: results[0].geometry.location.lat(),
+                                lng: results[0].geometry.location.lng(),
+                                location_id: responseJson.location_id,
+                            };
+                            fetch("/update_coordinates", {
+                                method: 'POST',
+                                body: JSON.stringify(coordinates),
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                },
+                            })
+                                .then(reply => reply.json())
+                                .then(replyJson => {const status = replyJson.status;})
                         } else {
-                            markerInfo.close();
+                            alert(`Geocode was unsuccessful for the following reason: ${status}`);
                         }
-                    };
-
-                    // add event click to marker
-                    marker.addListener('click', showInfo);
-
-                    // add event click to detail button
-                    button.addEventListener("click", showInfo);
-                    
-                });
+                        // Create event location with name and coordinates for markers
+                        eventLocation = {
+                            name: locationName,
+                            coords: locationCoordinates,
+                            address: locationAddress
+                        };
+                        // Create a marker
+                        const marker = new google.maps.Marker({
+                            position: eventLocation.coords,
+                            title: eventLocation.name,
+                            map: basicMap,
+                            address: eventLocation.address
+                        });
+                        // Zoom in on the geolocated location
+                            basicMap.setCenter(locationCoordinates);
+                            basicMap.setZoom(11);
+                        // Create marker info
+                        const locationInfo = `
+                            <h1>${marker.title}</h1>
+                            <p>
+                                Located at: ${marker.address}
+                            </p>
+                            ${responseJson.title}</b><br>
+                            On ${responseJson.date} from ${responseJson.start_time} to ${responseJson.end_time}<br>
+                            `;
+                        // callback function show location detail on map
+                        const showInfo = () => {
+                            if (button.innerText === "Show details") {
+                                markerInfo.close();
+                                markerInfo.setContent(locationInfo);
+                                markerInfo.open(basicMap, marker);
+                            } else {
+                                markerInfo.close();
+                            }
+                        };
+                        // add event click to marker
+                        marker.addListener('click', showInfo);
+                        // add event click to detail button
+                        button.addEventListener("click", showInfo);
+                    });
+                }    
+                
             })
     }
 }

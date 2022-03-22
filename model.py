@@ -84,6 +84,8 @@ class Location(db.Model):
     city = db.Column(db.String, nullable=False)
     zipcode = db.Column(db.String(5), nullable=False)
     state = db.Column(db.String(2), nullable=False)
+    lat = db.Column(db.Float)
+    lng = db.Column(db.Float)
     photo = db.Column(db.String) # url
 
     events = db.relationship("Event", back_populates="location")
@@ -165,10 +167,18 @@ def example_data():
 
     user_1 = User(fname="Dung", lname="Nguyen", email="hd@hb.com", password="12345")
     user_2 = User(fname="Nu", lname="Phan", email="nu@hb.com", password="12345")
-
     db.session.add(user_1)
     db.session.add(user_2)
     db.session.commit()
+
+    # location_1 = Location( name="Greenwood Park", address="24016 Eden Ave", city="Hayward", zipcode= "94541", state="CA")
+    # db.session.add(location_1)
+    # db.session.commit()
+
+    # event_1 = Event(host_id= user_1.user_id, title = "playdate of", description = 'Have fun and make friends', location_id = "01",
+    #                 date = "2022-03-27", start_time = '11:00:00', end_time = '15:00:00', age_group = "any age")
+    # db.session.add(event_1)
+    # db.session.commit()
 
 if __name__ == "__main__":
     from server import app

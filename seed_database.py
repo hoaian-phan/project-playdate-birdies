@@ -18,7 +18,7 @@ model.db.create_all()
 AGE_GROUP = ["infants", "toddlers", "preschoolers", "kindergarteners",
             "elementary", "middleschool", "highschool", "any age"]
 
-DATES = ['2022-03-20', '2022-03-19', '2022-03-27', '2022-03-26']
+DATES = ['2022-04-02', '2022-04-03', '2022-04-09', '2022-04-10']
 
 date_objs = []
 for date in DATES:

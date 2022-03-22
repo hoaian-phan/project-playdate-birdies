@@ -45,6 +45,14 @@ def create_new_location(name, address, city, zipcode, state):
 
     return location
 
+# Location: Get a location object by id
+def get_location_by_id(location_id):
+    """ Return a location object by its id """
+
+    location = Location.query.get(location_id)
+
+    return location
+
 # Event: Create a new event
 def host_a_playdate(host_id, title, description, location_id, date, start, end, age_group):
     """ Create and return an event object"""
@@ -58,6 +66,8 @@ def host_a_playdate(host_id, title, description, location_id, date, start, end, 
 # Event: Return a list of event objects by inputs
 def get_events_by_inputs(city_zipcode, date, age_group):
     """ Return an event object by input parameters"""
+    page_size = 10
+    page = 1
 
     events = db.session.query(Event).join(Location)
     if date:
@@ -66,6 +76,10 @@ def get_events_by_inputs(city_zipcode, date, age_group):
         events = events.filter(Event.age_group==age_group)
     if city_zipcode:
         events = events.filter((Location.zipcode==city_zipcode) | (Location.city==city_zipcode))
+    # if page_size:
+    #     events = events.limit(page_size)
+    # if page:
+    #     events = events.offset((page - 1) * itemsPerPage + 1)
 
     return events.all()
 

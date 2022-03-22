@@ -145,6 +145,9 @@ def login():
         if password == user.password:
             flash(f"Hi {user.fname}, welcome back.")
             session["user_id"] = user.user_id
+            if "event_id" in session:
+                event = crud.get_event_by_id(session["event_id"])
+                return render_template("confirm.html", event=event)
             # return user to their previous page (hosting or register or homepage) - add later
             return redirect("/")
         else: # if not, flash message
@@ -161,6 +164,7 @@ def logout():
 
     if "user_id" in session:
         del session["user_id"]
+        flash("You were logged out.")
     
     return redirect("/")
 
@@ -187,7 +191,7 @@ def hosting():
     # Get input from the form
     title = request.form.get("title")
     description = request.form.get("description")
-    location = request.form.get("location")
+    name = request.form.get("location")
     address = request.form.get("address")
     city = request.form.get("city")
     state = request.form.get("state")
@@ -198,10 +202,10 @@ def hosting():
     age_group = request.form.get("age_group")
     
     # Query this input location to check it is already in database
-    input_location = crud.get_location_by_name_and_address(name=location, address=address)
+    input_location = crud.get_location_by_name_and_address(name=name, address=address)
     # If not, create a new location object and add to database
     if not input_location:
-        input_location = crud.create_new_location(location, address, city, zipcode, state)
+        input_location = crud.create_new_location(name, address, city, zipcode, state)
         db.session.add(input_location)
         db.session.commit()
 
@@ -234,11 +238,7 @@ def search():
     # Get a list of search results
     events = crud.get_events_by_inputs(city_zipcode=city_zipcode, date=date, age_group=age_group)
 
-    # Get user by user id:
-    user_id = session["user_id"]
-    user = crud.get_user_by_id(user_id)
-
-    return render_template("search_results.html", events=events, user=user)
+    return render_template("search_results.html", events=events)
 
 
 # 6. Display event details
@@ -262,22 +262,54 @@ def show_details():
         "start_time": str(event.start_time),
         "end_time": str(event.end_time),
         "age_group": event.age_group,
+        "location_id": event.location.location_id,
         "location": event.location.name,
         "address": event.location.address,
         "city": event.location.city,
         "zipcode": event.location.zipcode,
-        "state": event.location.state
+        "state": event.location.state,
+        "lat": event.location.lat,
+        "long": event.location.lng
     }
 
     return jsonify(event)
 
+# 6b. Update coordinates of location to database
+@app.route("/update_coordinates", methods = ["POST"])
+def update_coordinates():
+    """ Update the location coordinates in the database """
+    # Get info from the fetch call
+    lat = request.json.get("lat")
+    lng = request.json.get("lng")
+    location_id = request.json.get("location_id")
+
+    # Get the location object
+    location = crud.get_location_by_id(location_id)
+    # Update the coordinates
+    location.lat = lat
+    location.lng = lng
+    db.session.commit()
+
+    return {"status": "ok"}
+
 
 # 7a. Register for a playdate
-@app.route("/register", methods=["POST"])
+@app.route("/register", methods=["GET", "POST"])
 def register():
     """ Register for a playdate """
-    # Get event_id from the form
-    event_id = request.form.get("event_id")
+    #  If POST method
+    if request.method == "POST":
+        # Get event_id from the form
+        event_id = request.form.get("event_id")
+
+        # If user is not logged in, return to login page
+        if "user_id" not in session:
+            flash("Please log in to register")
+            session["event_id"] = event_id
+            return redirect("/login")
+    else: # If GET method
+        event_id = session["event_id"]
+
     # Get user_id from session
     user_id = session["user_id"]
 
@@ -294,6 +326,18 @@ def register():
         db.session.commit()
 
     return render_template("confirm_registration.html", registration=registration)
+
+# 7c. Confirm registration after user log in
+@app.route("/confirm")
+def confirm():
+    """ After user logs in, ask for confirmation before registering for the event """
+
+    answer = request.args.get("confirm")
+    if answer == "yes":
+        return redirect("/register")
+    else:
+        return redirect("/")
+
 
 if __name__ == "__main__":
     # DebugToolbarExtension(app)
