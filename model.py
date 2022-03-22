@@ -171,14 +171,14 @@ def example_data():
     db.session.add(user_2)
     db.session.commit()
 
-    # location_1 = Location( name="Greenwood Park", address="24016 Eden Ave", city="Hayward", zipcode= "94541", state="CA")
-    # db.session.add(location_1)
-    # db.session.commit()
+    location_1 = Location( name="Greenwood Park", address="24016 Eden Ave", city="Hayward", zipcode= "94541", state="CA")
+    db.session.add(location_1)
+    db.session.commit()
 
-    # event_1 = Event(host_id= user_1.user_id, title = "playdate of", description = 'Have fun and make friends', location_id = "01",
-    #                 date = "2022-03-27", start_time = '11:00:00', end_time = '15:00:00', age_group = "any age")
-    # db.session.add(event_1)
-    # db.session.commit()
+    event_1 = Event(host_id= user_1.user_id, title = "playdate of", description = 'Have fun and make friends', location_id = "01",
+                    date = "2022-03-27", start_time = '11:00:00', end_time = '15:00:00', age_group = "any age")
+    db.session.add(event_1)
+    db.session.commit()
 
 if __name__ == "__main__":
     from server import app

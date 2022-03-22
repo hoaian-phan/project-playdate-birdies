@@ -200,6 +200,7 @@ def hosting():
     start = request.form.get("start")
     end = request.form.get("end")
     age_group = request.form.get("age_group")
+    print("location name = ", name)
     
     # Query this input location to check it is already in database
     input_location = crud.get_location_by_name_and_address(name=name, address=address)
