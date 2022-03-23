@@ -9,7 +9,7 @@
 </h2>
 
 <div id="future_host_events">
-    <h3>Events you are hosting: </h3>
+    <h3>Playdates you are hosting: </h3>
     {% if future_host|length > 0 %}
         <ul>
         {% for event in future_host | sort(attribute="date", reverse=true) %}
@@ -24,11 +24,11 @@
     {% endif %}
 </div>
 
-<div id="pass_host_events">
-    <h3>Events you hosted: </h3>
-    {% if pass_host|length > 0 %}
+<div id="past_host_events">
+    <h3>Playdates you hosted: </h3>
+    {% if past_host|length > 0 %}
         <ul>
-        {% for event in pass_host | sort(attribute="date", reverse=true) %}
+        {% for event in past_host | sort(attribute="date", reverse=true) %}
             <li>
                 {{ event.title }} on {{event.date}} at {{event.location.name}}
             </li>
@@ -56,11 +56,11 @@
     {% endif %}
 </div>
 
-<div id="pass_guess_events">
+<div id="past_guess_events">
     <h3>Playdates you attended: </h3>
-    {% if pass_guess|length > 0 %}
+    {% if past_guess|length > 0 %}
         <ul>
-            {% for registration in pass_guess | sort(attribute="event.date", reverse=true) %}
+            {% for registration in past_guess | sort(attribute="event.date", reverse=true) %}
             <li>
                 {{ registration.event.title }} on {{ registration.event.date }} at {{ registration.event.location.name}}
             </li>

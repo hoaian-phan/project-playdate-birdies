@@ -24,12 +24,15 @@ for (const button of buttons) {
                     Hosted by ${responseJson.host}<br>
                     At ${responseJson.location}<br>
                     Address: ${responseJson.address}, ${responseJson.city}, ${responseJson.state} ${responseJson.zipcode}<br>
-                    On ${responseJson.date} from ${responseJson.start_time} to ${responseJson.end_time}<br>
-                    <form action="/register" method="POST">
-                        <input type="hidden" name="event_id" value="${button.id}">
-                        <input type=submit value="Register">
-                    </form>
-                    `
+                    On ${responseJson.date} from ${responseJson.start_time} to ${responseJson.end_time}<br>`
+                    if (button.value === "upcoming_event") {
+                        document.getElementById(`display-detail${button.id}`).insertAdjacentHTML("beforeend", 
+                        `<form action="/register" method="POST">
+                            <input type="hidden" name="event_id" value="${button.id}">
+                            <input type=submit value="Register">
+                        </form>
+                        `)
+                    }
                 } else { // Hide event details
                     button.innerText = "Show details";
                     document.getElementById(`display-detail${button.id}`).innerHTML = "";
@@ -202,3 +205,6 @@ otherCheckbox.addEventListener('change', () => {
         otherText.style.visibility = 'hidden';
     }
 });
+
+
+

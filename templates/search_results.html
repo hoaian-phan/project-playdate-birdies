@@ -16,15 +16,29 @@
     <p>There are {{events|length}} results for your search.</p>
 {% endif %}
 
+<h3> Upcoming events </h3>
 <ul>
-    {% for event in events %}
+    {% for event in events | sort(attribute="date", reverse=true) %}
+        {% if event.date.today() < event.date %}
         <li> 
-            {{ event.title }} <button class="event-details" id="{{ event.event_id }}">Show details</button>
+            {{ event.title }} <button class="event-details" id="{{ event.event_id }}" value="upcoming_event">Show details</button>
             <p id="display-detail{{event.event_id}}"></p>
         </li>
+        {% endif %}
     {% endfor %}
 </ul>
 
+<h3> Past events </h3>
+<ul>
+    {% for event in events | sort(attribute="date", reverse=true) %}
+        {% if event.date.today() > event.date %}
+        <li> 
+            {{ event.title }} <button class="event-details" id="{{ event.event_id }}" value="past_event">Show details</button>
+            <p id="display-detail{{event.event_id}}"></p>
+        </li>
+        {% endif %}
+    {% endfor %}
+</ul>
 
 <main>
     <section class="map">

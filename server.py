@@ -4,7 +4,7 @@ from flask import (Flask, render_template, request, redirect, flash, session, js
 from model import connect_to_db, db
 import crud
 from jinja2 import StrictUndefined
-from datetime import datetime
+from datetime import datetime, date
 
 app = Flask(__name__)
 app.secret_key = "giahoa"
@@ -188,24 +188,24 @@ def show_profile():
     # Get user object by user_id
     user = crud.get_user_by_id(session["user_id"])
     # Iterate through each event this user is the host, and make a pass and future events
-    pass_host_events = []
+    past_host_events = []
     future_host_events = []
     for event in user.events:
         if crud.is_future(event):
             future_host_events.append(event)
         else:
-            pass_host_events.append(event)
+            past_host_events.append(event)
     # Iterate through each event this user is the participant, and make a pass and future events
-    pass_guess_events = []
+    past_guess_events = []
     future_guess_events = []
     for registration in user.registrations:
         if crud.is_future(registration.event):
             future_guess_events.append(registration)
         else:
-            pass_guess_events.append(registration)
+            past_guess_events.append(registration)
     
-    return render_template("user_profile.html", user=user, pass_host=pass_host_events, future_host=future_host_events,
-                                                pass_guess= pass_guess_events, future_guess=future_guess_events)
+    return render_template("user_profile.html", user=user, past_host=past_host_events, future_host=future_host_events,
+                                                past_guess= past_guess_events, future_guess=future_guess_events)
     
     
 # 4a. Rendering the Hosting papge with GET
@@ -216,8 +216,10 @@ def host():
     if "user_id" not in session:
         flash("Please log in to host a playdate.")
         return redirect("/login")
+    today = date.today()
+    print(today)
 
-    return render_template("hosting.html", states=US_STATES, age_groups=AGE_GROUP, activities=ACTIVITIES)
+    return render_template("hosting.html", today=today, states=US_STATES, age_groups=AGE_GROUP, activities=ACTIVITIES)
 
 
 # 4b. Hosting page with POST to create an event
