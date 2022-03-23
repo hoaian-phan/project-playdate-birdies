@@ -4,7 +4,7 @@ from flask import (Flask, render_template, request, redirect, flash, session, js
 from model import connect_to_db, db
 import crud
 from jinja2 import StrictUndefined
-from datetime import datetime 
+from datetime import datetime
 
 app = Flask(__name__)
 app.secret_key = "giahoa"
@@ -115,9 +115,10 @@ def create_user():
         # Flash message and add user_id to session 
         flash(f"Hi {new_user.fname}, welcome to Playdate Birdies community.")
         session["user_id"] = new_user.user_id 
+        session["user_fname"] = new_user.fname
         if "event_id" in session:
-                event = crud.get_event_by_id(session["event_id"])
-                return render_template("confirm.html", event=event)
+            event = crud.get_event_by_id(session["event_id"])
+            return render_template("confirm.html", event=event)
         # return user to their previous page (hosting or register or homepage) - add later
         return redirect("/")
     else: # if user exists, flash message and restart sign up form
@@ -154,6 +155,7 @@ def login():
         if password == user.password:
             flash(f"Hi {user.fname}, welcome back.")
             session["user_id"] = user.user_id
+            session["user_fname"] = user.fname
             if "event_id" in session:
                 event = crud.get_event_by_id(session["event_id"])
                 return render_template("confirm.html", event=event)
@@ -181,13 +183,31 @@ def logout():
 @app.route("/profile")
 def show_profile():
     """ Show user profile """
-    if "user_id" in session:
-        user = crud.get_user_by_id(session["user_id"])
-        return render_template("user_profile.html", user=user)
+    if "user_id" not in session:
+        return redirect("/")
+    # Get user object by user_id
+    user = crud.get_user_by_id(session["user_id"])
+    # Iterate through each event this user is the host, and make a pass and future events
+    pass_host_events = []
+    future_host_events = []
+    for event in user.events:
+        if crud.is_future(event):
+            future_host_events.append(event)
+        else:
+            pass_host_events.append(event)
+    # Iterate through each event this user is the participant, and make a pass and future events
+    pass_guess_events = []
+    future_guess_events = []
+    for registration in user.registrations:
+        if crud.is_future(registration.event):
+            future_guess_events.append(registration)
+        else:
+            pass_guess_events.append(registration)
     
-    return redirect("/")
-
-
+    return render_template("user_profile.html", user=user, pass_host=pass_host_events, future_host=future_host_events,
+                                                pass_guess= pass_guess_events, future_guess=future_guess_events)
+    
+    
 # 4a. Rendering the Hosting papge with GET
 @app.route("/host")
 def host():
@@ -241,6 +261,8 @@ def hosting():
     # check to see if "other" is in the list of standard_activities
     if "other" in standard_activities:
         activities = standard_activities[:-1] + other_activities
+    else:
+        activities = standard_activities[:] + other_activities
     # Create activity and add to database
     for one_activity in activities:
         activity = crud.get_activity_by_name(one_activity)
@@ -255,11 +277,8 @@ def hosting():
 
     flash(f"{new_event.host.fname}, your playdate {new_event.title} is scheduled on {new_event.date} from {new_event.start_time} to {new_event.end_time} at {new_event.location.name}.")
     flash("Congratulations! You will be an awesome host!")
-
-    # Get user object by id
-    user = crud.get_user_by_id(session["user_id"])
     
-    return render_template("user_profile.html", event=new_event, user=user)
+    return redirect("/profile")
 
 
 # 5. Search for a playdate

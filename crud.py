@@ -2,6 +2,7 @@
 
 from model import (db, connect_to_db, User, Event, Registration, Location,
                    Activity, Equipment, ActivityAssociation) # UserAssociation
+from datetime import date
 
 
 
@@ -85,6 +86,16 @@ def get_event_by_id(event_id):
     event = Event.query.get(event_id)
 
     return event
+
+# Categorize pass and future events:
+def is_future(event):
+    """ Return true if the input event date is in the future """
+    # Get today's date
+    today = date.today()
+    # Compare event date to today
+    if event.date > today:
+        return True
+    return False
 
 # Registration: Get registration by event id and user id
 def get_registration(event_id, user_id):

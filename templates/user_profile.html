@@ -8,9 +8,69 @@
     {{user.fname}} {{user.lname}} 
 </h2>
 
+<div id="future_host_events">
+    <h3>Events you are hosting: </h3>
+    {% if future_host|length > 0 %}
+        <ul>
+        {% for event in future_host | sort(attribute="date", reverse=true) %}
+            <li>
+                {{ event.title }} on {{event.date}} at {{event.location.name}}
+            </li>
+        {% endfor %}
+        </ul>
+    {% else %}
+        <p>You are not hosting any playdates. 
+            Would you like to  <a href="/host">be the host</a>?</p>
+    {% endif %}
+</div>
 
+<div id="pass_host_events">
+    <h3>Events you hosted: </h3>
+    {% if pass_host|length > 0 %}
+        <ul>
+        {% for event in pass_host | sort(attribute="date", reverse=true) %}
+            <li>
+                {{ event.title }} on {{event.date}} at {{event.location.name}}
+            </li>
+        {% endfor %}
+        </ul>
+    {% else %}
+        <p>You have not hosted any playdates.</p>
+    {% endif %}
+</div>
 
-  
+<div id="future_guess_events">
+    <h3>Playdates you are attending: </h3>
+    {% if future_guess|length > 0 %}
+        <ul>
+        {% for registration in future_guess | sort(attribute="event.date", reverse=true) %}
+            <li>
+                {{ registration.event.title }} on {{ registration.event.date }} at {{ registration.event.location.name}}
+            </li>
+        {% endfor %}
+        </ul>
+    {% else %}
+        <p>You have not registered for any playdates.
+        Would you like to <a href="/"> search for a playdate </a> ?
+        </p>
+    {% endif %}
+</div>
+
+<div id="pass_guess_events">
+    <h3>Playdates you attended: </h3>
+    {% if pass_guess|length > 0 %}
+        <ul>
+            {% for registration in pass_guess | sort(attribute="event.date", reverse=true) %}
+            <li>
+                {{ registration.event.title }} on {{ registration.event.date }} at {{ registration.event.location.name}}
+            </li>
+        {% endfor %}
+        </ul>
+    {% else %}
+        <p>You have not attended any playdates.</p>
+    {% endif %}
+</div>
+
 
 
 <!-- Script for DOM and event handling -->
