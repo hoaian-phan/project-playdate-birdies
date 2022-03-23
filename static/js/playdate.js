@@ -178,7 +178,7 @@ function initMap() {
                         // add event click to marker
                         marker.addListener('click', showInfo);
                         // add event click to detail button
-                        button.addEventListener("click", showInfo);
+                        button.addEventListener('click', showInfo);
                     });
                 }    
                 
@@ -187,4 +187,18 @@ function initMap() {
 }
 
 
+// Adding other activities in text box in hosting form (hosting.html)
+// Select the element with id "otherValue" and set to hidden
+const otherText = document.getElementById('otherActivity');
+otherText.style.visibility = 'hidden';
 
+// Select the element with id "other" and add event handler
+const otherCheckbox = document.getElementById('other');
+otherCheckbox.addEventListener('change', () => {
+    if(otherCheckbox.checked) {
+        otherText.style.visibility = 'visible';
+        otherText.value = '';
+    } else {
+        otherText.style.visibility = 'hidden';
+    }
+});

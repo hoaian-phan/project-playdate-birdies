@@ -73,11 +73,26 @@
             {% endfor %}
         </select>
     </div>
+
+    <div>
+        Main activities
+        {% for activity in activities %}
+            <input type="checkbox" name="activity" value="{{activity}}" id="{{activity}}">
+            <label for="{{activity}}">{{activity}}</label>
+        {% endfor %}
+    </div>
+    <div>
+        <label for="other">Other activities</label>
+        <input type="checkbox" id="other" name="activity" value="other">
+        <input type="text" id="otherActivity" name="otherActivity">
+      </div>
+
     <div>
         <input type="submit">
     </div>
     
 
-</form>
+</form><!-- Script for DOM and event handling -->
+<script src="static/js/playdate.js"></script>
 
 {% endblock %}

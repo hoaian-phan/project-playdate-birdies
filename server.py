@@ -172,8 +172,18 @@ def logout():
     """ Log out """
 
     if "user_id" in session:
-        del session["user_id"]
+        session.clear()
         flash("You were logged out.")
+    
+    return redirect("/")
+
+# 5. User profile
+@app.route("/profile")
+def show_profile():
+    """ Show user profile """
+    if "user_id" in session:
+        user = crud.get_user_by_id(session["user_id"])
+        return render_template("user_profile.html", user=user)
     
     return redirect("/")
 
@@ -209,7 +219,8 @@ def hosting():
     start = request.form.get("start")
     end = request.form.get("end")
     age_group = request.form.get("age_group")
-    
+    standard_activities = request.form.getlist("activity")
+    other_activity = request.form.get("otherActivity")
     
     # Query this input location to check it is already in database
     input_location = crud.get_location_by_name_and_address(name=name, address=address)
@@ -225,10 +236,30 @@ def hosting():
     db.session.add(new_event)
     db.session.commit()
 
+    # Process activity inputs
+    other_activities = other_activity.split(", ")
+    # check to see if "other" is in the list of standard_activities
+    if "other" in standard_activities:
+        activities = standard_activities[:-1] + other_activities
+    # Create activity and add to database
+    for one_activity in activities:
+        activity = crud.get_activity_by_name(one_activity)
+        if not activity:
+            activity = crud.create_an_activity(one_activity)
+            db.session.add(activity)
+            db.session.commit()
+        # Create association between activity and event
+        activity_event = crud.create_activity_event_asso(activity.activity_id, new_event.event_id)
+        db.session.add(activity_event)
+        db.session.commit()
+
     flash(f"{new_event.host.fname}, your playdate {new_event.title} is scheduled on {new_event.date} from {new_event.start_time} to {new_event.end_time} at {new_event.location.name}.")
     flash("Congratulations! You will be an awesome host!")
+
+    # Get user object by id
+    user = crud.get_user_by_id(session["user_id"])
     
-    return redirect("/")
+    return render_template("user_profile.html", event=new_event, user=user)
 
 
 # 5. Search for a playdate
@@ -346,7 +377,9 @@ def confirm():
     if answer == "yes":
         return redirect("/register")
     else:
-        return redirect("/")
+        if "event_id" in session:
+            del session["event_id"]
+            return redirect("/")
 
 
 if __name__ == "__main__":

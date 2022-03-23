@@ -101,3 +101,28 @@ def create_new_registration(event_id, user_id):
     registration = Registration(event_id=event_id, user_id=user_id)
 
     return registration
+
+# Activity: Get an activity object by its name
+def get_activity_by_name(activity_name):
+    """ Return an activity object by its name """
+
+    activity = Activity.query.filter_by(name=activity_name).first()
+
+    return activity
+
+# Activity: Create an activity
+def create_an_activity(activity):
+    """ Create and return an activity object """
+
+    activity = Activity(name=activity)
+
+    return activity
+
+# Activity association: Create an activity associated with an event
+def create_activity_event_asso(activity_id, event_id):
+    """ Create and return an activity-event association object """
+
+    activity_event = ActivityAssociation(activity_id=activity_id, event_id=event_id)
+
+    return activity_event
+
