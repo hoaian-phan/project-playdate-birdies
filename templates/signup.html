@@ -4,6 +4,24 @@
 
 {% block head %} {% endblock %}
 
+{% block navbar %}
+<div class="nav_bar">
+    
+    <form action="/">
+        <input type="submit" value="Home">
+    </form>
+    <form action="/login">
+        <input type="submit" value="Log in">
+    </form>
+    <form action="/host">
+        <input type="submit" value="Hosting" disabled>
+    </form>
+    <form action="/profile">
+        <input type="submit" value="Profile" disabled>
+    </form>
+</div>
+{% endblock %}
+
 {% block body %}
 <h2> Create your account </h2>
 <form action="/signup" method="POST">

@@ -194,7 +194,6 @@ function initMap() {
 // Select the element with id "otherValue" and set to hidden
 const otherText = document.getElementById('otherActivity');
 otherText.style.visibility = 'hidden';
-
 // Select the element with id "other" and add event handler
 const otherCheckbox = document.getElementById('other');
 otherCheckbox.addEventListener('change', () => {
@@ -205,6 +204,4 @@ otherCheckbox.addEventListener('change', () => {
         otherText.style.visibility = 'hidden';
     }
 });
-
-
 

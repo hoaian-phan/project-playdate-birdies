@@ -4,43 +4,36 @@
 
 {% block head %} {% endblock %}
 
-{% block body %}
+{% block navbar %}
 <div class="nav_bar">
     
     {% if 'user_id' in session %}
-    
-        <form action="/logout">
-            <input type="submit" value="Log out">
+        <form action="/host">
+            <input type="submit" value="Hosting">
         </form>
-
         <form action="/profile">
             <input type="submit" value="Profile">
         </form>
-
-
-        <form action="/host">
-            <input type="submit" value="Hosting">
+        <form action="/logout">
+            <input type="submit" value="Log out">
         </form>
 
     {% else %}
         <form action="/signup">
             <input type="submit" value="Sign up">
         </form>
-        
-        
         <form action="/login">
             <input type="submit" value="Log in">
         </form>
-    
-
         <form action="/host">
             <input type="submit" value="Hosting" disabled>
         </form>
     
     {% endif %}
-    
 </div>
+{% endblock %}
 
+{% block body %}
 <h1> Welcome to Playdate Birdies - Where Kids Play, Grow and Make Friends</h1>
 
 <div class="search">

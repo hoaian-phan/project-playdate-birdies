@@ -2,6 +2,23 @@
 
 {% block title %} Confirm to register {% endblock %}
 
+{% block navbar %}
+<div class="nav_bar">
+    <form action="/">
+        <input type="submit" value="Home">
+    </form>
+    <form action="/host">
+        <input type="submit" value="Hosting">
+    </form>
+    <form action="/profile">
+        <input type="submit" value="Profile">
+    </form>
+    <form action="/logout">
+        <input type="submit" value="Log out">
+    </form>
+</div>
+{% endblock %}
+
 {% block body %}
 
 <p>Would you like to continue registering for {{event.title}} at {{event.location.name}},
