@@ -47,7 +47,7 @@
     
         <div>
             <label for="event_date">Date</label>
-            <input type="date" name="date" value="2022-04-17" id="event_date">
+            <input type="date" name="date" value="{{today}}" id="event_date">
         </div>
 
         <div>
@@ -61,10 +61,16 @@
         </div>
 
         <div>
+            <label for="activity">Activity</label>
+            <input type="text" name="activity" placeholder="singing" id="activity">
+        </div>
+
+        <div>
             <input type="submit">
         </div>
     </form>
 </div>
+
 
 <div class="host">
     <h2>Host a Playdate</h2>

@@ -65,17 +65,29 @@ def host_a_playdate(host_id, title, description, location_id, date, start, end, 
 
 
 # Event: Return a list of event objects by inputs
-def get_events_by_inputs(city_zipcode, date, age_group):
+def get_events_by_inputs(city_zipcode, date, age_group, activity):
     """ Return an event object by input parameters"""
 
+    # events = Event.query.join(ActivityAssociation).join(Activity).filter((ActivityAssociation.c.event_id == Event.event_id) & (ActivityAssociation.c.activity_id == Activity.activity_id)).all()
+
     events = db.session.query(Event).join(Location)
+    # events = db.session.query(Event).join(Activity).filter(Activity.name.like(f"%{activity}%"))
+
     if date:
         events = events.filter(Event.date==date)
     if age_group and age_group != 'any age':
         events = events.filter(Event.age_group==age_group)
     if city_zipcode:
         events = events.filter((Location.zipcode==city_zipcode) | (Location.city==city_zipcode))
+    if activity:
+        events = events.join(ActivityAssociation).join(Activity).filter(Activity.name.like(f"%{activity}%"))
     
+    return events.all()
+
+def get_events_by_activity(activity):
+    """ Get event object by activity"""
+
+    events = db.session.query(Event).join(ActivityAssociation).join(Activity).filter(Activity.name.like(f"%{activity}%"))
 
     return events.all()
 

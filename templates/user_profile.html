@@ -28,7 +28,8 @@
         <ul>
         {% for event in future_host | sort(attribute="date", reverse=true) %}
             <li>
-                {{ event.title }} on {{event.date}} at {{event.location.name}}
+                {{ event.title }} on {{event.date}} at {{event.location.name}} 
+                <button class="details" id="{{ event.event_id }}" value="upcoming">Show details</button>
             </li>
         {% endfor %}
         </ul>
@@ -85,7 +86,9 @@
     {% endif %}
 </div>
 
-
+<div>
+    <p id="display"></p>
+</div>  
 
 <!-- Script for DOM and event handling -->
 <script src="static/js/playdate.js"></script>

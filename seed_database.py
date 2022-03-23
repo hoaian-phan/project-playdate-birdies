@@ -2,7 +2,7 @@
 
 import os
 import json
-from random import choice
+from random import choice, sample
 from datetime import datetime
 
 import crud
@@ -19,6 +19,11 @@ AGE_GROUP = ["infants", "toddlers", "preschoolers", "kindergarteners",
             "elementary", "middleschool", "highschool", "any age"]
 
 DATES = ['2022-03-17', '2022-04-02', '2022-04-03', '2022-04-09', '2022-04-10']
+ACTIVITIES = ["Draw with chalk", "Go on a scavenger hunt", "Kick a ball", "Blow bubbles",
+            "Play tag", "Tug of war", "Fly a kite", "Squirt water guns", "Basket ball", 
+            "Play with sand", "Have a race", "Make paper airplanes", "Water balloon t-ball",
+            "Hula hoop", "Painting", "Collect leaves", "Jumping rope", "Bag jumping", 
+            "Bike/scooter riding"]
 
 date_objs = []
 for date in DATES:
@@ -41,6 +46,12 @@ for park in park_data:
 
 model.db.session.add_all(locations_in_db)
 model.db.session.commit()
+
+# Create activities
+for j in range(len(ACTIVITIES)):
+    activity = crud.create_an_activity(ACTIVITIES[j])
+    model.db.session.add(activity)
+    model.db.session.commit()
 
 # Create 10 users
 FIRST_NAME = ["Emma", "Amelia", "Ava", "Olivia", "Luna", "Mia", "Sophia", "Charlotte", "Isabella", "Ella"]
@@ -70,6 +81,12 @@ for n in range(10):
 
         event = crud.host_a_playdate(host_id, title, description, location_id, date, start_time, end_time, age_group)
         model.db.session.add(event)
+        model.db.session.commit()
 
-model.db.session.commit()
+        for k in range(3):
+            activity_event = crud.create_activity_event_asso(choice(range(1, 19)), event.event_id)
+            model.db.session.add(activity_event)
+            model.db.session.commit()
+
+
 

@@ -77,7 +77,7 @@ ACTIVITIES = ["Draw with chalk", "Go on a scavenger hunt", "Kick a ball", "Blow 
 def homepage():
     """ Display homepage """
 
-    return render_template("homepage.html", age_groups = AGE_GROUP)
+    return render_template("homepage.html", age_groups = AGE_GROUP, today = date.today())
 
 # 2a. Sign up page with GET to render template with the sign up form
 @app.route("/signup")
@@ -216,10 +216,8 @@ def host():
     if "user_id" not in session:
         flash("Please log in to host a playdate.")
         return redirect("/login")
-    today = date.today()
-    print(today)
-
-    return render_template("hosting.html", today=today, states=US_STATES, age_groups=AGE_GROUP, activities=ACTIVITIES)
+    
+    return render_template("hosting.html", today = date.today(), states=US_STATES, age_groups=AGE_GROUP, activities=ACTIVITIES)
 
 
 # 4b. Hosting page with POST to create an event
@@ -292,16 +290,24 @@ def search():
     city_zipcode = request.args.get("city_zipcode")
     date = request.args.get("date")
     age_group = request.args.get("age_group")
+    activity = request.args.get("activity")
 
     # Process date string input
     if date:
         date = datetime.strptime(date, '%Y-%m-%d').date()
 
     # Get a list of search results
-    events = crud.get_events_by_inputs(city_zipcode=city_zipcode, date=date, age_group=age_group)
+    events = crud.get_events_by_inputs(city_zipcode=city_zipcode, date=date, age_group=age_group, activity=activity)
 
     return render_template("search_results.html", events=events)
 
+# # Search by activity
+# @app.route("/search_activity")
+# def serach_by_activity():
+#     """ Search by activity"""
+#     activity = request.args.get("activity")
+#     events = crud.get_events_by_activity(activity=activity)
+#     return render_template("register.html", events=events)
 
 # 6. Display event details
 @app.route("/events")
@@ -313,6 +319,10 @@ def show_details():
 
     # Get the event by event_id
     event = crud.get_event_by_id(event_id)
+    print(event.activities)
+    print(type(event.activities))
+
+    
 
     # Remake event dictionary for jsonify
     event = {
@@ -331,7 +341,9 @@ def show_details():
         "zipcode": event.location.zipcode,
         "state": event.location.state,
         "lat": event.location.lat,
-        "lng": event.location.lng
+        "lng": event.location.lng,
+        "activity_list": [activity.name for activity in event.activities]
+        #event.activities[0].name, event.activities[1].name, event.activities[2].name]
     }
 
     return jsonify(event)

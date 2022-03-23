@@ -17,14 +17,15 @@ for (const button of buttons) {
                     button.innerText = "Hide details";
                     document.getElementById(`display-detail${button.id}`).innerHTML = 
                     `
-                    <b>Playdate details<br>
-                    Title: ${responseJson.title}</b><br>
                     ${responseJson.description}<br>
-                    For ${responseJson.age_group}<br>
+                    For ${responseJson.age_group}.
                     Hosted by ${responseJson.host}<br>
                     At ${responseJson.location}<br>
                     Address: ${responseJson.address}, ${responseJson.city}, ${responseJson.state} ${responseJson.zipcode}<br>
-                    On ${responseJson.date} from ${responseJson.start_time} to ${responseJson.end_time}<br>`
+                    On ${responseJson.date} from ${responseJson.start_time} to ${responseJson.end_time}<br>
+                    Activities: ${responseJson.activity_list} 
+                    `
+                    // how to add comma to the activity list (above)
                     if (button.value === "upcoming_event") {
                         document.getElementById(`display-detail${button.id}`).insertAdjacentHTML("beforeend", 
                         `<form action="/register" method="POST">
@@ -204,4 +205,5 @@ otherCheckbox.addEventListener('change', () => {
         otherText.style.visibility = 'hidden';
     }
 });
+
 
