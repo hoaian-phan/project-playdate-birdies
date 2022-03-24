@@ -358,10 +358,10 @@ def show_details():
         "state": event.location.state,
         "lat": event.location.lat,
         "lng": event.location.lng,
-        "activity_list": [activity.name for activity in event.activities]
-        #event.activities[0].name, event.activities[1].name, event.activities[2].name]
+        "activity_list": [activity.name for activity in event.activities],
+        "attendants": [(registration.user.fname + " " + registration.user.lname) for registration in event.registrations]
     }
-
+    print(event["attendants"])
     return jsonify(event)
 
 # 6b. Update coordinates of location to database

@@ -23,8 +23,9 @@ for (const button of buttons) {
                     At ${responseJson.location}<br>
                     Address: ${responseJson.address}, ${responseJson.city}, ${responseJson.state} ${responseJson.zipcode}<br>
                     On ${responseJson.date} from ${responseJson.start_time} to ${responseJson.end_time}<br>
-                    Activities: ${responseJson.activity_list} 
-                    ` // how to add comma to the activity list (above)
+                    Activities: ${responseJson.activity_list}<br>
+                    Who's coming: Family of ${responseJson.attendants}
+                    ` // how to add comma to the activity and attendants list (above)
                     // if upcoming events, show Register form
                     if (button.value === "upcoming_event") {
                         document.getElementById(`display-detail${button.id}`).insertAdjacentHTML("beforeend", 
@@ -217,6 +218,21 @@ function initMap() {
     }
 }
 
+// If host chooses to add activities in their hosting form
+// Select the element with id "add_activities" and set to hidden
+const suggestedActivities = document.getElementById('suggested_activities');
+suggestedActivities.style.visibility = 'hidden';
+// Select the element with id "other" and add event handler
+const addActivities = document.getElementById('add_activities');
+addActivities.addEventListener('change', () => {
+    if(addActivities.checked) {
+        suggestedActivities.style.visibility = 'visible';
+        suggestedActivities.value = '';
+    } else {
+        suggestedActivities.style.visibility = 'hidden';
+    }
+});
+
 
 // Adding other activities in text box in hosting form (hosting.html)
 // Select the element with id "otherValue" and set to hidden
@@ -234,3 +250,17 @@ otherCheckbox.addEventListener('change', () => {
 });
 
 
+// Adding list of equipment in hosting form (hosting.html) if host chooses to
+// Select the element with id "equipment" and set to hidden
+const equipment = document.getElementById('equipment');
+equipment.style.visibility = 'hidden';
+// Select the element with id "other" and add event handler
+const addEquipment = document.getElementById('add_equipment');
+addEquipment.addEventListener('change', () => {
+    if(addEquipment.checked) {
+        equipment.style.visibility = 'visible';
+        equipment.value = '';
+    } else {
+        equipment.style.visibility = 'hidden';
+    }
+});
