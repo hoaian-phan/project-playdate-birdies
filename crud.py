@@ -68,10 +68,7 @@ def host_a_playdate(host_id, title, description, location_id, date, start, end, 
 def get_events_by_inputs(city_zipcode, date, age_group, activity):
     """ Return an event object by input parameters"""
 
-    # events = Event.query.join(ActivityAssociation).join(Activity).filter((ActivityAssociation.c.event_id == Event.event_id) & (ActivityAssociation.c.activity_id == Activity.activity_id)).all()
-
     events = db.session.query(Event).join(Location)
-    # events = db.session.query(Event).join(Activity).filter(Activity.name.like(f"%{activity}%"))
 
     if date:
         events = events.filter(Event.date==date)
@@ -80,16 +77,12 @@ def get_events_by_inputs(city_zipcode, date, age_group, activity):
     if city_zipcode:
         events = events.filter((Location.zipcode==city_zipcode) | (Location.city==city_zipcode))
     if activity:
-        events = events.join(ActivityAssociation).join(Activity).filter(Activity.name.like(f"%{activity}%"))
+        events = events.join(ActivityAssociation).join(Activity)
+        # for activity in activities:
+        events = events.filter((Activity.name.like(f"%{activity}%")))
     
     return events.all()
 
-def get_events_by_activity(activity):
-    """ Get event object by activity"""
-
-    events = db.session.query(Event).join(ActivityAssociation).join(Activity).filter(Activity.name.like(f"%{activity}%"))
-
-    return events.all()
 
 # Event: Get event by event id
 def get_event_by_id(event_id):
@@ -125,6 +118,13 @@ def create_new_registration(event_id, user_id):
 
     return registration
 
+# Registration: Delete all registrations
+def delete_registrations(event_id):
+    """ Delete registrations associated with this input event_id """
+
+    Registration.query.filter(Registration.event_id==event_id).delete()
+    
+
 # Activity: Get an activity object by its name
 def get_activity_by_name(activity_name):
     """ Return an activity object by its name """
@@ -149,3 +149,8 @@ def create_activity_event_asso(activity_id, event_id):
 
     return activity_event
 
+# Activity association: Delete an activity association object with an event_id
+def delete_activity_event_asso(event_id):
+    """ Delete an activity association object associated with input event_id"""
+
+    ActivityAssociation.query.filter(ActivityAssociation.event_id==event_id).delete()

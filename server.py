@@ -280,6 +280,33 @@ def hosting():
     
     return redirect("/profile")
 
+# Cancel an event
+@app.route("/cancel_event", methods=["POST"])
+def cancel_event():
+    """ Cancel an event you created """
+    # Get event_id from the form
+    event_id = request.form.get("event_id")
+    # Get event object from event_id
+    event = crud.get_event_by_id(event_id)
+    # Check if this is the host of the event
+    if event.host.user_id == session["user_id"]:
+        # Delete all registrations for this event
+        crud.delete_registrations(event_id)
+        # Delete all activity association for this event
+        crud.delete_activity_event_asso(event_id)
+        db.session.commit()
+        #Delete this event
+        db.session.delete(event)
+        db.session.commit()
+        flash("You successfully deleted your playdate.")
+    else:
+        flash("Only the host can cancel a playdate.")
+
+    return redirect("/profile")
+
+
+
+
 
 # 5. Search for a playdate
 @app.route("/search")
@@ -301,13 +328,6 @@ def search():
 
     return render_template("search_results.html", events=events)
 
-# # Search by activity
-# @app.route("/search_activity")
-# def serach_by_activity():
-#     """ Search by activity"""
-#     activity = request.args.get("activity")
-#     events = crud.get_events_by_activity(activity=activity)
-#     return render_template("register.html", events=events)
 
 # 6. Display event details
 @app.route("/events")
@@ -319,10 +339,6 @@ def show_details():
 
     # Get the event by event_id
     event = crud.get_event_by_id(event_id)
-    print(event.activities)
-    print(type(event.activities))
-
-    
 
     # Remake event dictionary for jsonify
     event = {
@@ -413,6 +429,23 @@ def confirm():
         if "event_id" in session:
             del session["event_id"]
             return redirect("/")
+
+# Cancel an event registration
+@app.route("/cancel_registration", methods=["POST"])
+def cancel_registration():
+    """ Cancel an event registration """
+    # Get event_id from the form
+    event_id = request.form.get("event_id")
+    # If this registration exists, delete it
+    registration = crud.get_registration(event_id, session["user_id"])
+    if registration:
+        db.session.delete(registration)
+        db.session.commit()
+        flash("You successfully deleted your registration.")
+    else:
+        flash("You did not register for this playdate.")
+
+    return redirect("/profile")
 
 
 if __name__ == "__main__":

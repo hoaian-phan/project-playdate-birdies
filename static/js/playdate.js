@@ -24,16 +24,41 @@ for (const button of buttons) {
                     Address: ${responseJson.address}, ${responseJson.city}, ${responseJson.state} ${responseJson.zipcode}<br>
                     On ${responseJson.date} from ${responseJson.start_time} to ${responseJson.end_time}<br>
                     Activities: ${responseJson.activity_list} 
-                    `
-                    // how to add comma to the activity list (above)
+                    ` // how to add comma to the activity list (above)
+                    // if upcoming events, show Register form
                     if (button.value === "upcoming_event") {
                         document.getElementById(`display-detail${button.id}`).insertAdjacentHTML("beforeend", 
-                        `<form action="/register" method="POST">
+                        `<form action="/register" method="POST" onsubmit="return confirm('Do you want to register for this playdate?');">
                             <input type="hidden" name="event_id" value="${button.id}">
                             <input type=submit value="Register">
                         </form>
                         `)
                     }
+                    // if host event, show Cancel form
+                    if (button.value === "host_event") {
+                        document.getElementById(`display-detail${button.id}`).insertAdjacentHTML("beforeend", 
+                        `
+                        <div id="cancel_host">
+                            <form action="/cancel_event" method="POST" onsubmit="return confirm('Do you really want to cancel this playdate?');">
+                                <input type="hidden" name="event_id" value="${button.id}">
+                                <input type=submit value="Cancel playdate">
+                            </form>
+                        </div>
+                        `)
+                    }
+                    // if attending event, show Cancel registration form
+                    if (button.value === "attending_event") {
+                        document.getElementById(`display-detail${button.id}`).insertAdjacentHTML("beforeend", 
+                        `
+                        <div id="cancel_registration">
+                            <form action="/cancel_registration" method="POST" onsubmit="return confirm('Do you really want to cancel this registration?');">
+                                <input type="hidden" name="event_id" value="${button.id}">
+                                <input type=submit value="Cancel registration">
+                            </form>
+                        </div>
+                        `)
+                    }
+                    
                 } else { // Hide event details
                     button.innerText = "Show details";
                     document.getElementById(`display-detail${button.id}`).innerHTML = "";
@@ -41,6 +66,8 @@ for (const button of buttons) {
             })
     });
 }
+
+
 
 
 // Display a map and mark locations on the map
