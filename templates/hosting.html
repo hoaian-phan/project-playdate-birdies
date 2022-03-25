@@ -22,7 +22,7 @@
 
 <h2>Host a Playdate</h2>
 
-<form action="/host" method="POST">
+<form action="/host" method="POST" id="form1">
     <div>
         <label for="title">Title</label>
         <input type="text" name="title" placeholder="e.g. Easter Egg Hunt" id="title" required>
@@ -89,6 +89,7 @@
     </div>
 
     <div>
+        <label for="add_activities"></label>
         Do you want to add some activities to your playdate? 
         <input type="checkbox" id="add_activities" name="add_activities" value="add_activities"><br>
         <div id="suggested_activities">
@@ -105,23 +106,14 @@
     </div>
 
     <div>
-        Do you want to add a list of equipment and ask participants to contribute? 
-        <input type="checkbox" id="add_equipment" name="add_equipment" value="add_equipment"><br>
-        <div id="equipment">
-            How many equipment do you need?
-            <input type="text" id="how_many" name="how_many">
-            <div>
-
-                <label for="item_1">Item</label>
-                <input type="text" id="item_1" name="item_1">
-                <label for="quantity_1">Quantity</label>
-                <input type="text" id="quantity_1" name="quantity_1">
-            </div>
-        </div>
-    </div> 
+        Do you want to add a list of equipment and ask participants to contribute
+            <button type="button" id="add" name="add">Add</button>
+            <ul id="item_quantity" name="item_quantity"> </ul>
+    </div>
+    
 
     <div>
-        <input type="submit">
+        <button type="submit" form="form1" value="Submit">Submit</button>
     </div>
     
 

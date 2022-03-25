@@ -241,7 +241,7 @@ def hosting():
     age_group = request.form.get("age_group")
     standard_activities = request.form.getlist("activity")
     other_activity = request.form.get("otherActivity")
-    
+
     # Query this input location to check it is already in database
     input_location = crud.get_location_by_name_and_address(name=name, address=address)
     # If not, create a new location object and add to database
@@ -274,6 +274,18 @@ def hosting():
         activity_event = crud.create_activity_event_asso(activity.activity_id, new_event.event_id)
         db.session.add(activity_event)
         db.session.commit()
+    
+    # Get equipment inputs from the form and add to database
+    i = 1
+    while request.form.get(f"item_{i}"):
+        item_name = request.form.get(f"item_{i}")
+        quantity = request.form.get(f"quantity_{i}")
+
+        equipment = crud.create_an_equipment(new_event.event_id, item_name, quantity)
+        db.session.add(equipment)
+        db.session.commit()
+
+        i += 1
 
     flash(f"{new_event.host.fname}, your playdate {new_event.title} is scheduled on {new_event.date} from {new_event.start_time} to {new_event.end_time} at {new_event.location.name}.")
     flash("Congratulations! You will be an awesome host!")
@@ -295,6 +307,9 @@ def cancel_event():
         # Delete all activity association for this event
         crud.delete_activity_event_asso(event_id)
         db.session.commit()
+        #Delete equipments associated with this event
+        crud.delete_equipments(event_id)
+        db.session.commit()
         #Delete this event
         db.session.delete(event)
         db.session.commit()
@@ -303,9 +318,6 @@ def cancel_event():
         flash("Only the host can cancel a playdate.")
 
     return redirect("/profile")
-
-
-
 
 
 # 5. Search for a playdate
@@ -340,6 +352,12 @@ def show_details():
     # Get the event by event_id
     event = crud.get_event_by_id(event_id)
 
+    # Make the equipment dictionary
+    # equipments = []
+    # for equipment in event.equipments:
+    #     equipment_dict[equipment.name] = equipment.quantity
+    #     equipments.append(equipment_dict)
+
     # Remake event dictionary for jsonify
     event = {
         "event_id": event.event_id,
@@ -359,9 +377,10 @@ def show_details():
         "lat": event.location.lat,
         "lng": event.location.lng,
         "activity_list": [activity.name for activity in event.activities],
-        "attendants": [(registration.user.fname + " " + registration.user.lname) for registration in event.registrations]
+        "attendants": [(registration.user.fname + " " + registration.user.lname) for registration in event.registrations],
+        "equipments": [(equipment.name + ": " + str(equipment.quantity)) for equipment in event.equipments],
     }
-    print(event["attendants"])
+ 
     return jsonify(event)
 
 # 6b. Update coordinates of location to database
@@ -410,10 +429,10 @@ def register():
         flash("You have already registered for this playdate.")
         # will return to user profile to see list of future events
         return redirect("/")
-    else:
-        registration = crud.create_new_registration(event_id, user_id)
-        db.session.add(registration)
-        db.session.commit()
+    
+    registration = crud.create_new_registration(event_id, user_id)
+    db.session.add(registration)
+    db.session.commit()
 
     return render_template("confirm_registration.html", registration=registration)
 

@@ -154,3 +154,17 @@ def delete_activity_event_asso(event_id):
     """ Delete an activity association object associated with input event_id"""
 
     ActivityAssociation.query.filter(ActivityAssociation.event_id==event_id).delete()
+
+# Equipment: Create an equipment object
+def create_an_equipment(event_id, name, quantity):
+    """ Create and return an equipment object """
+
+    equipment = Equipment(event_id=event_id, name=name, quantity=quantity)
+
+    return equipment
+
+# Equipment: Create all equipment objects associated with an event
+def delete_equipments(event_id):
+    """ Delete all equipments associated with an event """
+
+    Equipment.query.filter(Equipment.event_id == event_id).delete()
