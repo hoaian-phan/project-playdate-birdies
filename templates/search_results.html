@@ -44,43 +44,46 @@
 
 {% block body %}
 
-<h2>Search Results</h2>
+<div id="show_details">
+    <h2>Search Results</h2>
 
-{% if events|length == 0 or events|length == 1 %}
-    <p>There is {{events|length}} result for your search.</p>
-{% else %}
-    <p>There are {{events|length}} results for your search.</p>
-{% endif %}
+    {% if events|length == 0 or events|length == 1 %}
+        <p>There is {{events|length}} result for your search.</p>
+    {% else %}
+        <p>There are {{events|length}} results for your search.</p>
+    {% endif %}
 
-<h3> Upcoming events </h3>
-<ul>
-    {% for event in events | sort(attribute="date", reverse=true) %}
-        {% if event.date.today() < event.date %}
-        <li> 
-            {{ event.title }} <button class="event-details" id="{{ event.event_id }}" value="upcoming_event">Show details</button>
-            <p id="display-detail{{event.event_id}}"></p>
-        </li>
-        {% endif %}
-    {% endfor %}
-</ul>
+    <h3> Upcoming events </h3>
+    <ul>
+        {% for event in events | sort(attribute="date", reverse=true) %}
+            {% if event.date.today() < event.date %}
+            <li> 
+                {{ event.title }} <button class="event-details" id="{{ event.event_id }}" value="upcoming_event">Show details</button>
+                <p id="display-detail{{event.event_id}}"></p>
+            </li>
+            {% endif %}
+        {% endfor %}
+    </ul>
 
-<h3> Past events </h3>
-<ul>
-    {% for event in events | sort(attribute="date", reverse=true) %}
-        {% if event.date.today() > event.date %}
-        <li> 
-            {{ event.title }} <button class="event-details" id="{{ event.event_id }}" value="past_event">Show details</button>
-            <p id="display-detail{{event.event_id}}"></p>
-        </li>
-        {% endif %}
-    {% endfor %}
-</ul>
+    <h3> Past events </h3>
+    <ul>
+        {% for event in events | sort(attribute="date", reverse=true) %}
+            {% if event.date.today() > event.date %}
+            <li> 
+                {{ event.title }} <button class="event-details" id="{{ event.event_id }}" value="past_event">Show details</button>
+                <p id="display-detail{{event.event_id}}"></p>
+            </li>
+            {% endif %}
+        {% endfor %}
+    </ul>
+</div>
 
-<main>
+<div id="show_map">
     <section class="map">
         <div id="map"></div>
     </section>
-</main>
+</div>
+
   
 
 
@@ -92,5 +95,7 @@
     async
     src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAD0oTJmmfCcudTYnSthIF1Z9QW3H5GC5s&callback=initMap">
 </script>
+
+
 
 {% endblock %}

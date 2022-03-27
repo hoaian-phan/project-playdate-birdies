@@ -25,12 +25,12 @@ for (const button of buttons) {
                     On ${responseJson.date} from ${responseJson.start_time} to ${responseJson.end_time}<br>
                     Activities: ${responseJson.activity_list.join(", ")}<br>
                     Who's coming: Family of ${responseJson.attendants.join(", ")}<br>
-                    Equipments: ${responseJson.equipments.join(", ")}
+                    Equipment: ${responseJson.equipments.join(", ")}
                     `
                     // if upcoming events, show Register form
                     if (button.value === "upcoming_event") {
                         document.getElementById(`display-detail${button.id}`).insertAdjacentHTML("beforeend", 
-                        `<form action="/register" method="POST" onsubmit="return confirm('Do you want to register for this playdate?');">
+                        `<form action="/attend" 
                             <input type="hidden" name="event_id" value="${button.id}">
                             <input type=submit value="Register">
                         </form>
@@ -68,6 +68,66 @@ for (const button of buttons) {
             })
     });
 }
+
+
+// If host chooses to add activities in their hosting form
+// Select the element with id "add_activities" and set display to none
+const suggestedActivities = document.getElementById('suggested_activities');
+suggestedActivities.style.display = 'none';
+// Select the element with id "other" and add event handler
+const addActivities = document.getElementById('add_activities');
+addActivities.addEventListener('change', () => {
+    if(addActivities.checked) {
+        suggestedActivities.style.display = 'block';
+        suggestedActivities.value = '';
+    } else {
+        suggestedActivities.style.display = 'none';
+    }
+});
+
+
+// Adding other activities in text box in hosting form (hosting.html)
+// Select the element with id "otherValue" and set display to none
+const otherText = document.getElementById('otherActivity');
+otherText.style.visibility = 'hidden';
+// Select the element with id "other" and add event handler
+const otherCheckbox = document.getElementById('other');
+otherCheckbox.addEventListener('change', () => {
+    if(otherCheckbox.checked) {
+        otherText.style.visibility = 'visible';
+        otherText.value = '';
+    } else {
+        otherText.style.visibility = 'hidden';
+    }
+});
+
+
+// Adding list of items and quantity in hosting form (hosting.html) if host chooses to
+// Select the element with id "add" and add event handler to insert element
+const add_btn = document.getElementById('add');
+let i = 0; // to set unique id for each item
+add_btn.addEventListener("click", () => {
+    i += 1; 
+    document.getElementById('item_quantity').insertAdjacentHTML("beforeend",
+        `
+        <li id="item_quantity_${i}">
+            <label for="item_${i}">Item</label>
+            <input type="text" id="item_${i}" name="item">
+            <label for="quantity_${i}">Quantity</label>
+            <input type="text" id="quantity_${i}" name="quantity">
+            <button type="button" id="delete_${i}" name="delete">Delete</button>
+            <br>
+        </li>
+        `)
+    // Select the element with id "delete" and add event handler to delete element
+    const delete_btn = document.getElementById(`delete_${i}`);
+    delete_btn.addEventListener("click", () => {
+        delete_btn.parentElement.remove();
+    });
+});
+// Count how many equipments ( how many child element of <ul>)
+const numEquipment = document.querySelector("#item_quantity").childElementCount;
+document.querySelector("#item_quantity").value = numEquipment;
 
 
 
@@ -116,7 +176,8 @@ function initMap() {
                         position: eventLocation.coords,
                         title: eventLocation.name,
                         map: basicMap,
-                        address: eventLocation.address
+                        address: eventLocation.address,
+                        icon: "https://img.icons8.com/external-nawicon-flat-nawicon/40/000000/external-park-location-nawicon-flat-nawicon.png",
                     });
                     // Zoom in on the geolocated location
                         basicMap.setCenter(locationCoordinates);
@@ -146,11 +207,10 @@ function initMap() {
                     button.addEventListener("click", showInfo);
                 } else { // if coordinates are not in database
                     // Geocode the address to coordinates
-                    console.log("Geocoding");
                     const geocoder = new google.maps.Geocoder();
                     geocoder.geocode({ address: locationAddress }, (results, status) => {
                         if (status === 'OK') {
-                            // Get the coordinates of the user's location
+                            // Get the coordinates of the event location
                             locationCoordinates = {
                                 lat: results[0].geometry.location.lat(),
                                 lng: results[0].geometry.location.lng()
@@ -159,7 +219,8 @@ function initMap() {
                             const coordinates = {
                                 lat: results[0].geometry.location.lat(),
                                 lng: results[0].geometry.location.lng(),
-                                location_id: responseJson.location_id,
+                                name: responseJson.location,
+                                address: responseJson.address
                             };
                             fetch("/update_coordinates", {
                                 method: 'POST',
@@ -184,8 +245,10 @@ function initMap() {
                             position: eventLocation.coords,
                             title: eventLocation.name,
                             map: basicMap,
-                            address: eventLocation.address
+                            address: eventLocation.address,
+                            icon: "https://img.icons8.com/external-nawicon-flat-nawicon/40/000000/external-park-location-nawicon-flat-nawicon.png",
                         });
+                        console.log(marker.icon);
                         // Zoom in on the geolocated location
                             basicMap.setCenter(locationCoordinates);
                             basicMap.setZoom(11);
@@ -217,72 +280,40 @@ function initMap() {
                 
             })
     }
-}
 
-// If host chooses to add activities in their hosting form
-// Select the element with id "add_activities" and set display to none
-const suggestedActivities = document.getElementById('suggested_activities');
-suggestedActivities.style.display = 'none';
-// Select the element with id "other" and add event handler
-const addActivities = document.getElementById('add_activities');
-addActivities.addEventListener('change', () => {
-    if(addActivities.checked) {
-        suggestedActivities.style.display = 'block';
-        suggestedActivities.value = '';
-    } else {
-        suggestedActivities.style.display = 'none';
+    // Get user's current location by using geolocation.getCurrentPosition()
+    const success = (position) => {
+        const userCoordinates = {
+            lat: position.coords.latitude,
+            lng: position.coords.longitude,
+        };
+        // Create a marker for user's current location
+        const userMarker = new google.maps.Marker({
+            position: userCoordinates,
+            title: "Your current location",
+            map: basicMap,
+            icon: "https://img.icons8.com/ultraviolet/40/000000/marker.png"
+        });
+        // Create user's marker info
+        const userMarkerInfo = new google.maps.InfoWindow({
+            content : `<h3>${userMarker.title}</h3>`,
+        });
+        // add event click to user location marker to open info window
+        userMarker.addListener('click', () => {
+            userMarkerInfo.open(basicMap, userMarker);
+        });
     }
-});
-
-
-// Adding other activities in text box in hosting form (hosting.html)
-// Select the element with id "otherValue" and set display to none
-const otherText = document.getElementById('otherActivity');
-otherText.style.visibility = 'hidden';
-// Select the element with id "other" and add event handler
-const otherCheckbox = document.getElementById('other');
-otherCheckbox.addEventListener('change', () => {
-    if(otherCheckbox.checked) {
-        otherText.style.visibility = 'visible';
-        otherText.value = '';
-    } else {
-        otherText.style.visibility = 'hidden';
-    }
-});
-
-
-// Adding list of items and quantity in hosting form (hosting.html) if host chooses to
-// Select the element with id "add" and add event handler to insert element
-const add_btn = document.getElementById('add');
-let i = 0; // to set unique id for each item
-add_btn.addEventListener("click", () => {
-    i += 1; 
-    document.getElementById('item_quantity').insertAdjacentHTML("beforeend",
-        `
-        <li id="item_quantity_${i}">
-            <label for="item_${i}">Item</label>
-            <input type="text" id="item_${i}" name="item_${i}">
-            <label for="quantity_${i}">Quantity</label>
-            <input type="text" id="quantity_${i}" name="quantity_${i}">
-            <button type="button" id="delete_${i}" name="delete">Delete</button>
-            <br>
-        </li>
-        `)
-    // Select the element with id "delete" and add event handler to delete element
-    const delete_btn = document.getElementById(`delete_${i}`);
-    delete_btn.addEventListener("click", () => {
-        delete_btn.parentElement.remove();
-    });
-});
-// Count how many equipments ( how many child element of <ul>)
-const numEquipment = document.querySelector("#item_quantity").childElementCount;
-document.querySelector("#item_quantity").value = numEquipment;
-
-
-
-
-
-
-
-
       
+    const error = (err) => {
+        console.warn(`ERROR(${err.code}): ${err.message}`);
+    }
+      
+    if (navigator.geolocation) {
+          navigator.geolocation.getCurrentPosition(success, error); 
+    }
+
+
+    
+    
+    
+}

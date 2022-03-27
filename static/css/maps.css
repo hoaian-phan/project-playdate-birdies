@@ -7,8 +7,17 @@ header {
   grid-area: head;
 }
 
-main {
+#show_map {
   grid-area: map;
+}
+
+#show_details {
+  float: left;
+  width: 75%;
+  height: 100%;
+  position: absolute;
+  left: 0;
+  top: 10%;
 }
 
 nav {
@@ -51,8 +60,11 @@ nav button:hover {
 
 .map,
 #map {
-  width: 100%;
+  width: 70%;
   height: 100%;
+  float: right;
+  position: absolute;
+  right: 0;
 }
 
 html, body {

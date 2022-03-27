@@ -158,7 +158,7 @@ def login():
             session["user_fname"] = user.fname
             if "event_id" in session:
                 event = crud.get_event_by_id(session["event_id"])
-                return render_template("confirm.html", event=event)
+                return render_template("register.html", event=event)
             # return user to their previous page (hosting or register or homepage) - add later
             return redirect("/")
         else: # if not, flash message
@@ -241,6 +241,9 @@ def hosting():
     age_group = request.form.get("age_group")
     standard_activities = request.form.getlist("activity")
     other_activity = request.form.get("otherActivity")
+    equipment_names = request.form.getlist("item")
+    equipment_quantities = request.form.getlist("quantity")
+
 
     # Query this input location to check it is already in database
     input_location = crud.get_location_by_name_and_address(name=name, address=address)
@@ -275,22 +278,36 @@ def hosting():
         db.session.add(activity_event)
         db.session.commit()
     
-    # Get equipment inputs from the form and add to database
-    i = 1
-    while request.form.get(f"item_{i}"):
-        item_name = request.form.get(f"item_{i}")
-        quantity = request.form.get(f"quantity_{i}")
-
-        equipment = crud.create_an_equipment(new_event.event_id, item_name, quantity)
+    # Add equipment and its quantity to database
+    for i, equipment in enumerate(equipment_names):
+        equipment = crud.create_an_equipment(new_event.event_id, equipment, equipment_quantities[i])
         db.session.add(equipment)
         db.session.commit()
-
-        i += 1
 
     flash(f"{new_event.host.fname}, your playdate {new_event.title} is scheduled on {new_event.date} from {new_event.start_time} to {new_event.end_time} at {new_event.location.name}.")
     flash("Congratulations! You will be an awesome host!")
     
     return redirect("/profile")
+
+
+# 6b. Update coordinates of location to database
+@app.route("/update_coordinates", methods = ["POST"])
+def update_coordinates():
+    """ Update the location coordinates in the database """
+    # Get info from the fetch call
+    lat = request.json.get("lat")
+    lng = request.json.get("lng")
+    name = request.json.get("name")
+    address = request.json.get("address")
+
+    # Get the location object
+    location = crud.get_location_by_name_and_address(name, address)
+    # Update the coordinates
+    location.lat = lat
+    location.lng = lng
+    db.session.commit()
+
+    return {"status": "ok"}
 
 # Cancel an event
 @app.route("/cancel_event", methods=["POST"])
@@ -352,12 +369,6 @@ def show_details():
     # Get the event by event_id
     event = crud.get_event_by_id(event_id)
 
-    # Make the equipment dictionary
-    # equipments = []
-    # for equipment in event.equipments:
-    #     equipment_dict[equipment.name] = equipment.quantity
-    #     equipments.append(equipment_dict)
-
     # Remake event dictionary for jsonify
     event = {
         "event_id": event.event_id,
@@ -383,58 +394,68 @@ def show_details():
  
     return jsonify(event)
 
-# 6b. Update coordinates of location to database
-@app.route("/update_coordinates", methods = ["POST"])
-def update_coordinates():
-    """ Update the location coordinates in the database """
-    # Get info from the fetch call
-    lat = request.json.get("lat")
-    lng = request.json.get("lng")
-    location_id = request.json.get("location_id")
-
-    # Get the location object
-    location = crud.get_location_by_id(location_id)
-    # Update the coordinates
-    location.lat = lat
-    location.lng = lng
-    db.session.commit()
-
-    return {"status": "ok"}
 
 
-# 7a. Register for a playdate
-@app.route("/register", methods=["GET", "POST"])
-def register():
-    """ Register for a playdate """
-    #  If POST method
-    if request.method == "POST":
-        # Get event_id from the form
-        event_id = request.form.get("event_id")
 
-        # If user is not logged in, return to login page
-        if "user_id" not in session:
-            flash("Please log in to register")
-            session["event_id"] = event_id
-            return redirect("/login")
-    else: # If GET method
-        event_id = session["event_id"]
+# 7a. Render the register page
+@app.route("/attend")
+def render_register():
+    """ Render register page """
+    
+    # Get event_id from the form
+    event_id = request.form.get("event_id")
+    session["event_id"] = event_id
 
-    # Get user_id from session
-    user_id = session["user_id"]
+    # If user is not logged in, return to login page
+    if "user_id" not in session:
+        flash("Please log in to register")
+        return redirect("/login")
+
+    # Get event object by event_id
+    event = crud.get_event_by_id(event_id)
+
+    return render_template("register.html", event=event)
+
+# 7a Register for a playdate using AJAX request from REACT form
+@app.route("/register_name", methods = ["POST"])
+def register_name():
+    """ Register user for an event with name and number of people """
+    # Get inputs from the AJAX request. Right now doesn't need them yet
+    name = request.get_json().get("name")
+    people = request.get_json().get("people")
 
     # Get the registration by this user_id and event_id
-    registration = crud.get_registration(event_id, user_id)
+    registration = crud.get_registration(session["event_id"], session["user_id"])
     # Check if this user has already registered for this event
     if registration:
         flash("You have already registered for this playdate.")
         # will return to user profile to see list of future events
-        return redirect("/")
+        return redirect("/user_profile")
     
-    registration = crud.create_new_registration(event_id, user_id)
+    registration = crud.create_new_registration(session["event_id"], session["user_id"])
     db.session.add(registration)
     db.session.commit()
+    # Create registration string
+    new_registration = {
+        "name": name,
+        "people": people
+    }
+    
+    return jsonify({"success": True, "registration": new_registration})
 
-    return render_template("confirm_registration.html", registration=registration)
+
+# Update registration with equipment to bring:
+@app.route("/register_equipment", methods = ["POST"])
+def update_equipment():
+    """ Updating equipment list needed for the event """
+    # Get equipment input from AJAX request
+    item = request.get_json().get("item")
+    quantity = request.get_json().get("quantity")
+    # Get event object
+    event = crud.get_event_by_id(session["event_id"])
+    # Update equipment list
+
+
 
 # 7c. Confirm registration after user log in
 @app.route("/confirm")

@@ -2,42 +2,57 @@
 
 {% block title %} Register for a Playdate {% endblock %}
 
+{% block head %} <!-- Script for using React framework -->
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<script src="https://unpkg.com/react@16/umd/react.development.js"></script>
+<script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js"></script>
+{% endblock %}
+
+{% block navbar %}
+<div class="nav_bar">
+    
+    {% if 'user_id' in session %}
+        <form action="/">
+            <input type="submit" value="Home">
+        </form>
+        <form action="/host">
+            <input type="submit" value="Hosting">
+        </form>
+        <form action="/profile">
+            <input type="submit" value="Profile">
+        </form>
+        <form action="/logout">
+            <input type="submit" value="Log out">
+        </form>
+
+    {% else %}
+        <form action="/">
+            <input type="submit" value="Home">
+        </form>
+        <form action="/signup">
+            <input type="submit" value="Sign up">
+        </form>
+        <form action="/login">
+            <input type="submit" value="Log in">
+        </form>
+        <form action="/host">
+            <input type="submit" value="Hosting" disabled>
+        </form>
+    
+    {% endif %}
+    
+</div>
+{% endblock %}
+
 {% block body %}
 
-<h2>Register</h2>
+<div id="root">
+    <div id="register_name"></div>
+    <div id="equipment"></div>
 
-<form action="/register" method="POST">
-    <div>
-        <label for="fname">First name</label><br>
-        <input type="text" name="fname" placeholder="Jane" id="fname">
+</div>
 
-    </div>
-
-    <div>
-        <label for="lname">Last name</label><br>
-        <input type="text" name="lname" placeholder="Doe" id="lname">
-        
-    </div>
-
-    <div>
-        <label for="people">Tell us about your family</label><br>
-        <input type="textarea" name="people" placeholder="There are four of us in my family: 
-                Halley, my older daughter, Paul, my younger son, my husband Dave and me." id="people">       
-    </div>
-
-    <div>
-        <label for="message">Message to host</label><br>
-        <input type="textarea" name="message" placeholder="Message to host" id="message">  
-    </div>
-        
-        <input type="submit">
-</form>
-
-  
-
-
-<!-- Script for DOM and event handling -->
-<script src="static/js/playdate.js"></script>
-
+<!-- Script for using React framework -->
+<script src="/static/js/register_react.jsx" type="text/jsx"></script>
 
 {% endblock %}
