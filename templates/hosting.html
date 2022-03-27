@@ -116,6 +116,7 @@
         <button type="submit" form="host_form" value="Submit">Submit</button>
     </div>
     
+    <div id="map" style="display: None"></div>
 
 </form><!-- Script for DOM and event handling -->
 <script src="static/js/playdate.js"></script>
@@ -125,7 +126,7 @@
 <!-- Google Map APIs -->
 <script
     async
-    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAD0oTJmmfCcudTYnSthIF1Z9QW3H5GC5s&callback=otherMap">
+    src="https://maps.googleapis.com/maps/api/js?&libraries=places&key=AIzaSyAD0oTJmmfCcudTYnSthIF1Z9QW3H5GC5s&callback=otherMap">
 </script>
 
 {% endblock %}

@@ -291,12 +291,13 @@ def hosting():
 
 
 # 6b. Update coordinates of location to database
-@app.route("/update_coordinates", methods = ["POST"])
-def update_coordinates():
+@app.route("/update_location_details", methods = ["POST"])
+def update_location_details():
     """ Update the location coordinates in the database """
     # Get info from the fetch call
     lat = request.json.get("lat")
     lng = request.json.get("lng")
+    photo = request.json.get("photo")
     name = request.json.get("name")
     address = request.json.get("address")
 
@@ -305,6 +306,7 @@ def update_coordinates():
     # Update the coordinates
     location.lat = lat
     location.lng = lng
+    location.photo = photo
     db.session.commit()
 
     return {"status": "ok"}
