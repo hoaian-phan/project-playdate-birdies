@@ -34,7 +34,7 @@ function otherMap() {
                     location: coords,
                     radius: '50',
                     query: 'locationAddress'
-                  };
+                };
                 const photoRequest = new google.maps.places.PlacesService(basicMap);
                 console.log(photoRequest);
                 let photoUrl;
