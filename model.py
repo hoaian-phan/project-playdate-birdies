@@ -82,7 +82,7 @@ class Location(db.Model):
     name = db.Column(db.String, nullable=False)
     address = db.Column(db.String, nullable=False)
     city = db.Column(db.String, nullable=False)
-    zipcode = db.Column(db.String(5), nullable=False)
+    zipcode = db.Column(db.String, nullable=False)
     state = db.Column(db.String(2), nullable=False)
     lat = db.Column(db.Float)
     lng = db.Column(db.Float)

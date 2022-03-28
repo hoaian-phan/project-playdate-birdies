@@ -16,10 +16,11 @@ function otherMap() {
     // 1. Use Autocomplete Address Form to populate location's full address
     let addressField = document.getElementById("address");
     let postalField = document.getElementById("zipcode");
+    
     // Create the autocomplete object, restricting the search predictions to addresses in the US 
     const autocomplete = new google.maps.places.Autocomplete(addressField, {
         componentRestrictions: { country: "us" },
-        fields: ["address_components", "geometry", "photo"],
+        fields: ["address_components", "geometry", "formatted_address"],
         types: ["address"],
     });
     addressField.focus();
@@ -63,13 +64,75 @@ function otherMap() {
         }
         addressField.value = address;
         postalField.value = postcode;
-    });
+    })
+        // // 2. Get the coordinates of the location
+        // coordinates = {
+        //     lat: place.geometry.location.lat(),
+        //     lng: place.geometry.location.lng()
+        // };
+        // console.log(`lat: ${coordinates.lat}, lng: ${coordinates.lng}`);
+        // // 3. Get photo of the location by TextSearch
+        // const request = {
+        //     location: coordinates,
+        //     radius: '50',
+        //     query: place.formatted_address,
+        // };
+        // const photoRequest = new google.maps.places.PlacesService(basicMap);
+        // console.log(photoRequest);
+        // let photoUrl;
+        // photoRequest.textSearch(request, (results, status) => {
+        //     console.log("trying to get photo");
+        //     if (status === 'OK') {
+        //         // Save place photo object in an array
+        //         const photos = results[0].photos;
+        //         if (!photos) {
+        //             return;
+        //         }                
+        //         // Get url of the first photo
+        //         photoUrl = photos[0].getUrl({maxWidth: 500, maxHeight: 500});
+        //         console.log(`inside if, photo link: ${photoUrl}`);
+        //     } else {
+        //         alert(`TextSearch was unsuccessful for the following reason: ${status}`);
+        //     }
+        //     console.log(`outside if, photo link: ${photoUrl}`);
+        // });
+        
+
+        // // When the host submits the form, send AJAX request to update coordinates and photo of the event location
+        // document.getElementById("host_form").addEventListener("submit", () => {
+        //     // evt.preventDefault();
+        //     console.log("Form submitted")
+        //     const locationDetails = {
+        //         lat: coordinates.lat,
+        //         lng: coordinates.lng,
+        //         photo: photoUrl,
+        //         name: document.getElementById("location").value,
+        //         address: address,
+        //     };
+        //     alert(`locationDetails ${locationDetails}`);
+        //     fetch("/update_location_details", {
+        //         method: 'POST',
+        //         body: JSON.stringify(locationDetails),
+        //         headers: {
+        //             'Content-Type': 'application/json',
+        //         },
+        //     })
+        //         .then(reply => reply.json())
+        //         .then(replyJson => {
+        //             const status = replyJson.status;
+        //             console.log(status);
+        //         })
+        //     });
+        // });
+    
+
+    
 
 
     // Geocode the location when host submits the hosting form
     // Select the form and add event handler
     document.getElementById("host_form").addEventListener("submit", () => {
-        // evt.preventDefault();
+        
         // Get the full address of the event
         const locationAddress = document.getElementById("address").value + ", " +
                                 document.getElementById("city").value + ", " +
@@ -86,20 +149,23 @@ function otherMap() {
                     lng: results[0].geometry.location.lng()
                 };
                 console.log(`coordinates ${coords.lat}, ${coords.lng}`);
+                // const park = new google.maps.LatLng(37.4464501, -121.8964089);
                 // Get photo of the location by TextSearch
                 const request = {
                     location: coords,
-                    radius: '50',
-                    query: 'locationAddress'
+                    radius: '500',
+                    query: locationAddress
                 };
                 const photoRequest = new google.maps.places.PlacesService(basicMap);
                 console.log(photoRequest);
                 let photoUrl;
                 photoRequest.textSearch(request, (results, status) => {
                     console.log("trying to get photo");
+                    console.log(results);
                     if (status === 'OK') {
                         // Save place photo object in an array
                         const photos = results[0].photos;
+                        console.log(photos);
                         if (!photos) {
                             return;
                         }                
@@ -136,10 +202,7 @@ function otherMap() {
                 alert(`Geocode was unsuccessful for the following reason: ${status}`);
             }
             
-        })
+        });
         
-        
-        
-            
-    })  
+    });  
 }
