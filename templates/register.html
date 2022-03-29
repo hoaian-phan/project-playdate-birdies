@@ -46,25 +46,33 @@
 
 {% block body %}
 
-<div id="root">
-
-</div>
-
 <div id="event_details">
     <p>Title: {{ event.title }}</p>
     <p>Description: {{ event.description }}</p>
-    <img src={{ event.location.photo }} alt="parkPhoto" />
+    {% if event.location.photo %}
+        <img src={{ event.location.photo }} alt="parkPhoto" />
+    {% endif %}
     <p>Location: {{ event.location.name }}</p>
     <p>Address: {{ event.location.address }}, {{ event.location.city }}, 
         {{ event.location.state }} {{ event.location.zipcode }} </p>
     <p>On {{ event.date }} from {{ event.start_time }} to {{ event.end_time }}</p>
     <p>Activities: 
         {% for activity in event.activities %}
-            {{ activity.name }}.  
+            {% if loop.last %}
+                {{ activity.name }}.
+            {% else %}
+                {{ activity.name }},
+            {% endif %}
         {% endfor %}
     </p>
 
 </div>
+
+<div id="root">
+
+</div>
+
+
 
 <!-- Script for using React framework -->
 <script src="/static/js/register_react.jsx" type="text/jsx"></script>

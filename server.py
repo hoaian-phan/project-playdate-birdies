@@ -451,9 +451,7 @@ def register_name():
     registration = crud.get_registration(session["event_id"], session["user_id"])
     # Check if this user has already registered for this event
     if registration:
-        flash("You have already registered for this playdate.")
-        # will return to user profile 
-        return redirect("/user_profile")
+        return jsonify({"success": False})
     # If not register, create a new registration and add to database
     registration = crud.create_new_registration(session["event_id"], session["user_id"], num_people)
     db.session.add(registration)
@@ -472,31 +470,18 @@ def register_name():
     return jsonify({"success": True, "registration": new_registration})
 
 
-# # Update registration with equipment to bring:
-# @app.route("/register_equipment", methods = ["POST"])
-# def update_equipment():
-#     """ Updating equipment list needed for the event """
-#     # Get equipment input from AJAX request
-#     item = request.get_json().get("item")
-#     quantity = request.get_json().get("quantity")
-#     # Get event object
-#     event = crud.get_event_by_id(session["event_id"])
-#     # Update equipment list
+# # 7c. Confirm registration after user log in
+# @app.route("/confirm")
+# def confirm():
+#     """ After user logs in, ask for confirmation before registering for the event """
 
-
-
-# 7c. Confirm registration after user log in
-@app.route("/confirm")
-def confirm():
-    """ After user logs in, ask for confirmation before registering for the event """
-
-    answer = request.args.get("confirm")
-    if answer == "yes":
-        return redirect("/register")
-    else:
-        if "event_id" in session:
-            del session["event_id"]
-            return redirect("/")
+#     answer = request.args.get("confirm")
+#     if answer == "yes":
+#         return redirect("/register")
+#     else:
+#         if "event_id" in session:
+#             del session["event_id"]
+#             return redirect("/")
 
 # Cancel an event registration
 @app.route("/cancel_registration", methods=["POST"])

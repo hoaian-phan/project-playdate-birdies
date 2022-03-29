@@ -8,7 +8,6 @@ const RegistrationForm = (props) => {
 
     // Register by sending AJAX to server and add registration to database
     const register = () => {
-        alert('trying to register');
         fetch("/register_name", {
             method: 'POST',
             body: JSON.stringify({'name': name, 'num_people': number}),
@@ -18,16 +17,19 @@ const RegistrationForm = (props) => {
         })
         .then(response => response.json())
         .then(responseJson => {
-            props.setCount(count => count + responseJson.registration.num_people);
-            props.setParticipants(participants => [... participants, responseJson.registration.name]);
-            alert(`Registered for this event ${responseJson.registration.event_title}`);
+            if (responseJson.success === true) {
+                props.setCount(count => count + responseJson.registration.num_people);
+                props.setParticipants(participants => [... participants, responseJson.registration.name]);
+                alert(`Successfully registered for ${responseJson.event.title}`);
+            } else {
+                alert("You've already registered for this playdate.");
+            } 
         })
-        
     }
     return (
         <div>
-            <h2>Who's coming</h2>
-            <label htmlFor="name">Your Name</label>
+            <h2>Tell us about you</h2>
+            <label htmlFor="name">What is your name?</label>
             <input
                 value={name}
                 onChange={(event) => setName(event.target.value)}
@@ -39,7 +41,13 @@ const RegistrationForm = (props) => {
                 onChange={(event) => setNumber(event.target.value)}
                 id="people"
             ></input><br />
-            <button onClick={register}>Register</button>
+            <button 
+                onClick={() => {
+                    const confirmBox = window.confirm("Do you want to register for this playdate?")
+                    if (confirmBox) {
+                        register()
+                    }
+                }}>Register</button>
         </div>
     );
 }
@@ -61,21 +69,26 @@ const RegistrationContainer = () => {
             })
     }, [])
 
-    const totalNum = count;
-    const registeredPartipants = [];
-
-    for (const participant of participants) {
-        registeredPartipants.push(participant);
-        
+    const showNumber = () => {
+        if (count) {
+            return (
+                <div>
+                    <p>Total number of participants: {count}</p>
+                    <p>Who's coming: Families of {participants.join(", ")}</p>
+                </div>
+                )
+        } else {
+            return (
+                <p>Nobody has registered for this playdate yet</p>
+            )
+        }
     }
-    console.log(`how many ${totalNum}`)
-    console.log(`who's coming ${registeredPartipants}`);
+    
 
     return (
         <div>
             <RegistrationForm setCount={setCount} setParticipants={setParticipants} />
-            <p>Total number of participants: {totalNum} </p>
-            <p>Who's coming: Families of {registeredPartipants.join(", ")}</p>
+            {showNumber()}
         </div>
     )
 

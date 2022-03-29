@@ -25,7 +25,6 @@ for (const button of buttons) {
                     On ${responseJson.date} from ${responseJson.start_time} to ${responseJson.end_time}<br>
                     Activities: ${responseJson.activity_list.join(", ")}<br>
                     Who's coming: Family of ${responseJson.attendants.join(", ")}<br>
-                    Equipment: ${responseJson.equipments.join(", ")}
                     `
                     // if upcoming events, show Register form
                     if (button.value === "upcoming_event") {
