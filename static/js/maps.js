@@ -1,7 +1,8 @@
 'use strict';
 
-// This function uses: 1. autocomplete searchbox to suggest the full address of the location,
-// 2. geocoding to get location's coordinates 
+// This function uses: 
+// 1. autocomplete to suggest addresses and upon chosen, it fills in the rest of the address,
+// 2. also by autocomplete, it gets the coordinates of the location 
 // 3. textSearch to get location's photo
 function otherMap() {
     // Create a basicMap, which will not be displayed on the page
@@ -16,6 +17,7 @@ function otherMap() {
     // 1. Use Autocomplete Address Form to populate location's full address
     let addressField = document.getElementById("address");
     let postalField = document.getElementById("zipcode");
+    let coords, fullAddress;
     
     // Create the autocomplete object, restricting the search predictions to addresses in the US 
     const autocomplete = new google.maps.places.Autocomplete(addressField, {
@@ -64,145 +66,70 @@ function otherMap() {
         }
         addressField.value = address;
         postalField.value = postcode;
-    })
-        // // 2. Get the coordinates of the location
-        // coordinates = {
-        //     lat: place.geometry.location.lat(),
-        //     lng: place.geometry.location.lng()
-        // };
-        // console.log(`lat: ${coordinates.lat}, lng: ${coordinates.lng}`);
-        // // 3. Get photo of the location by TextSearch
-        // const request = {
-        //     location: coordinates,
-        //     radius: '50',
-        //     query: place.formatted_address,
-        // };
-        // const photoRequest = new google.maps.places.PlacesService(basicMap);
-        // console.log(photoRequest);
-        // let photoUrl;
-        // photoRequest.textSearch(request, (results, status) => {
-        //     console.log("trying to get photo");
-        //     if (status === 'OK') {
-        //         // Save place photo object in an array
-        //         const photos = results[0].photos;
-        //         if (!photos) {
-        //             return;
-        //         }                
-        //         // Get url of the first photo
-        //         photoUrl = photos[0].getUrl({maxWidth: 500, maxHeight: 500});
-        //         console.log(`inside if, photo link: ${photoUrl}`);
-        //     } else {
-        //         alert(`TextSearch was unsuccessful for the following reason: ${status}`);
-        //     }
-        //     console.log(`outside if, photo link: ${photoUrl}`);
-        // });
+
+        // 2. Save location coordinates 
+        coords = {
+            lat: place.geometry.location.lat(),
+            lng: place.geometry.location.lng()
+        };
         
-
-        // // When the host submits the form, send AJAX request to update coordinates and photo of the event location
-        // document.getElementById("host_form").addEventListener("submit", () => {
-        //     // evt.preventDefault();
-        //     console.log("Form submitted")
-        //     const locationDetails = {
-        //         lat: coordinates.lat,
-        //         lng: coordinates.lng,
-        //         photo: photoUrl,
-        //         name: document.getElementById("location").value,
-        //         address: address,
-        //     };
-        //     alert(`locationDetails ${locationDetails}`);
-        //     fetch("/update_location_details", {
-        //         method: 'POST',
-        //         body: JSON.stringify(locationDetails),
-        //         headers: {
-        //             'Content-Type': 'application/json',
-        //         },
-        //     })
-        //         .then(reply => reply.json())
-        //         .then(replyJson => {
-        //             const status = replyJson.status;
-        //             console.log(status);
-        //         })
-        //     });
-        // });
+        // Save full address for looking up photos
+        fullAddress = place.formatted_address;
+    })
     
 
-    
-
-
-    // Geocode the location when host submits the hosting form
-    // Select the form and add event handler
+    // Select the form and upon submitting, send AJAX request to update coordinates and photo of the location in database
     document.getElementById("host_form").addEventListener("submit", () => {
         
-        // Get the full address of the event
-        const locationAddress = document.getElementById("address").value + ", " +
-                                document.getElementById("city").value + ", " +
-                                document.getElementById("state").value + " " +
-                                document.getElementById("zipcode").value;
-        console.log(`locationAddress : ${locationAddress}`);
-        // Geocode the address to coordinates
-        const geocoder = new google.maps.Geocoder();
-        geocoder.geocode({ address: locationAddress }, (results, status) => {
+        // Get photo of the location by TextSearch
+        const request = {
+            location: coords,
+            radius: '500',
+            query: document.getElementById("location").value + " " + fullAddress,
+        };
+        console.log(` textSearch query ${request.query}`);
+        const photoRequest = new google.maps.places.PlacesService(basicMap);
+        console.log(photoRequest);
+        let photoUrl;
+        photoRequest.textSearch(request, (results, status) => {
+            console.log("trying to get photo");
+            console.log(results);
             if (status === 'OK') {
-                // Save coordinates 
-                const coords = {
-                    lat: results[0].geometry.location.lat(),
-                    lng: results[0].geometry.location.lng()
-                };
-                console.log(`coordinates ${coords.lat}, ${coords.lng}`);
-                // const park = new google.maps.LatLng(37.4464501, -121.8964089);
-                // Get photo of the location by TextSearch
-                const request = {
-                    location: coords,
-                    radius: '500',
-                    query: locationAddress
-                };
-                const photoRequest = new google.maps.places.PlacesService(basicMap);
-                console.log(photoRequest);
-                let photoUrl;
-                photoRequest.textSearch(request, (results, status) => {
-                    console.log("trying to get photo");
-                    console.log(results);
-                    if (status === 'OK') {
-                        // Save place photo object in an array
-                        const photos = results[0].photos;
-                        console.log(photos);
-                        if (!photos) {
-                            return;
-                        }                
-                        // Get url of the first photo
-                        photoUrl = photos[0].getUrl({maxWidth: 500, maxHeight: 500});
-                        console.log(`inside if, photo link: ${photoUrl}`);
-                    } else {
-                        alert(`TextSearch was unsuccessful for the following reason: ${status}`);
-                    }
-                    console.log(`outside if, photo link: ${photoUrl}`);
-                    // Sending AJAX to update the coordinates and photo of location in the database 
-                    const locationDetails = {
-                        lat: coords.lat,
-                        lng: coords.lng,
-                        photo: photoUrl,
-                        name: document.getElementById("location").value,
-                        address: document.getElementById("address").value
-                    };
-                    alert(`locationDetails ${locationDetails}`);
-                    fetch("/update_location_details", {
-                        method: 'POST',
-                        body: JSON.stringify(locationDetails),
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                    })
-                        .then(reply => reply.json())
-                        .then(replyJson => {
-                            const status = replyJson.status;
-                            console.log(status);
-                        })
-                })    
+                // Save place photo object in an array
+                const photos = results[0].photos;
+                console.log(photos);
+                if (!photos) {
+                    return;
+                }                
+                // Get url of the first photo
+                photoUrl = photos[0].getUrl({maxWidth: 500, maxHeight: 500});
+                console.log(`inside if, photo link: ${photoUrl}`);
             } else {
-                alert(`Geocode was unsuccessful for the following reason: ${status}`);
+                alert(`TextSearch was unsuccessful for the following reason: ${status}`);
             }
-            
+            // Sending AJAX to update the coordinates and photo of location in the database 
+            const locationDetails = {
+                lat: coords.lat,
+                lng: coords.lng,
+                photo: photoUrl,
+                name: document.getElementById("location").value,
+                address: document.getElementById("address").value
+            };
+            // alert(`location details ${locationDetails.lat}, ${locationDetails.lng},${locationDetails.photo},
+            // ${locationDetails.name},${locationDetails.address},`)
+            fetch("/update_location_details", {
+                method: 'POST',
+                body: JSON.stringify(locationDetails),
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            })
+                .then(reply => reply.json())
+                .then(replyJson => {
+                    const status = replyJson.status;
+                    console.log(status);
+                })
         });
         
-    });  
+    });
 }
