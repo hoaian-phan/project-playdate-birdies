@@ -371,6 +371,11 @@ def show_details():
     # Get the event by event_id
     event = crud.get_event_by_id(event_id)
 
+    # Get number of participants
+    count = 1
+    for registration in event.registrations:
+        count += registration.num_people
+
     # Remake event dictionary for jsonify
     event = {
         "event_id": event.event_id,
@@ -391,6 +396,7 @@ def show_details():
         "lng": event.location.lng,
         "activity_list": [activity.name for activity in event.activities],
         "attendants": [(registration.user.fname + " " + registration.user.lname) for registration in event.registrations],
+        "num_people": count,
         "equipments": [(equipment.name + ": " + str(equipment.quantity)) for equipment in event.equipments],
     }
  
@@ -403,11 +409,10 @@ def show_details():
 @app.route("/attend")
 def render_register():
     """ Render register page """
-    
-    # Get event_id from the form
-    event_id = request.form.get("event_id")
+    # Get event_id from the form and save in session
+    event_id = request.args.get("event_id")
     session["event_id"] = event_id
-
+    
     # If user is not logged in, return to login page
     if "user_id" not in session:
         flash("Please log in to register")
@@ -418,44 +423,65 @@ def render_register():
 
     return render_template("register.html", event=event)
 
+# Get participants of the event
+@app.route("/participants.json")
+def get_participants_json():
+    """ Return a JSON response with all participants"""
+
+    # Get event object by event_id
+    event = crud.get_event_by_id(session["event_id"])
+    # Get the total count and list of participants
+    total_count = 0
+    attendants = []
+    for registration in event.registrations:
+        total_count += registration.num_people
+        attendants.append(registration.user.fname + " " + registration.user.lname)
+
+    return jsonify({"counts": total_count, "participants": attendants})
+
 # 7a Register for a playdate using AJAX request from REACT form
 @app.route("/register_name", methods = ["POST"])
 def register_name():
     """ Register user for an event with name and number of people """
-    # Get inputs from the AJAX request. Right now doesn't need them yet
+    # Get inputs from the AJAX request. 
     name = request.get_json().get("name")
-    people = request.get_json().get("people")
+    num_people = int(request.get_json().get("num_people"))
 
     # Get the registration by this user_id and event_id
     registration = crud.get_registration(session["event_id"], session["user_id"])
     # Check if this user has already registered for this event
     if registration:
         flash("You have already registered for this playdate.")
-        # will return to user profile to see list of future events
+        # will return to user profile 
         return redirect("/user_profile")
-    
-    registration = crud.create_new_registration(session["event_id"], session["user_id"])
+    # If not register, create a new registration and add to database
+    registration = crud.create_new_registration(session["event_id"], session["user_id"], num_people)
     db.session.add(registration)
     db.session.commit()
+
+    # Save registration id to session
+    session["regist_id"] = registration.regist_id
+
     # Create registration string
     new_registration = {
         "name": name,
-        "people": people
+        "num_people": num_people,
+        "event_title": registration.event.title,
     }
     
     return jsonify({"success": True, "registration": new_registration})
 
 
-# Update registration with equipment to bring:
-@app.route("/register_equipment", methods = ["POST"])
-def update_equipment():
-    """ Updating equipment list needed for the event """
-    # Get equipment input from AJAX request
-    item = request.get_json().get("item")
-    quantity = request.get_json().get("quantity")
-    # Get event object
-    event = crud.get_event_by_id(session["event_id"])
-    # Update equipment list
+# # Update registration with equipment to bring:
+# @app.route("/register_equipment", methods = ["POST"])
+# def update_equipment():
+#     """ Updating equipment list needed for the event """
+#     # Get equipment input from AJAX request
+#     item = request.get_json().get("item")
+#     quantity = request.get_json().get("quantity")
+#     # Get event object
+#     event = crud.get_event_by_id(session["event_id"])
+#     # Update equipment list
 
 
 

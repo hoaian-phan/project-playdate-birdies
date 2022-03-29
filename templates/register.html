@@ -47,8 +47,22 @@
 {% block body %}
 
 <div id="root">
-    <div id="register_name"></div>
-    <div id="equipment"></div>
+
+</div>
+
+<div id="event_details">
+    <p>Title: {{ event.title }}</p>
+    <p>Description: {{ event.description }}</p>
+    <img src={{ event.location.photo }} alt="parkPhoto" />
+    <p>Location: {{ event.location.name }}</p>
+    <p>Address: {{ event.location.address }}, {{ event.location.city }}, 
+        {{ event.location.state }} {{ event.location.zipcode }} </p>
+    <p>On {{ event.date }} from {{ event.start_time }} to {{ event.end_time }}</p>
+    <p>Activities: 
+        {% for activity in event.activities %}
+            {{ activity.name }}.  
+        {% endfor %}
+    </p>
 
 </div>
 

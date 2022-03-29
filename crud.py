@@ -111,10 +111,10 @@ def get_registration(event_id, user_id):
     return registration
 
 # Registration: Create a new registration
-def create_new_registration(event_id, user_id):
+def create_new_registration(event_id, user_id, num_people = 1):
     """ Create and return a new registration """
 
-    registration = Registration(event_id=event_id, user_id=user_id)
+    registration = Registration(event_id=event_id, user_id=user_id, num_people=num_people)
 
     return registration
 

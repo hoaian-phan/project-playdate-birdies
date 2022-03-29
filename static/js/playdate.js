@@ -29,10 +29,11 @@ for (const button of buttons) {
                     `
                     // if upcoming events, show Register form
                     if (button.value === "upcoming_event") {
+                        console.log(button.id);
                         document.getElementById(`display-detail${button.id}`).insertAdjacentHTML("beforeend", 
-                        `<form action="/attend" 
+                        `<form action="/attend"> 
                             <input type="hidden" name="event_id" value="${button.id}">
-                            <input type=submit value="Register">
+                            <input type="submit" value="Attend">
                         </form>
                         `)
                     }
@@ -43,7 +44,7 @@ for (const button of buttons) {
                         <div id="cancel_host">
                             <form action="/cancel_event" method="POST" onsubmit="return confirm('Do you really want to cancel this playdate?');">
                                 <input type="hidden" name="event_id" value="${button.id}">
-                                <input type=submit value="Cancel playdate">
+                                <input type="submit" value="Cancel playdate">
                             </form>
                         </div>
                         `)

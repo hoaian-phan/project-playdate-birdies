@@ -62,6 +62,7 @@ class Registration(db.Model):
     regist_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     event_id = db.Column(db.Integer, db.ForeignKey("events.event_id"), nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey("users.user_id"), nullable=False)
+    num_people = db.Column(db.Integer)
     
     event = db.relationship("Event", back_populates="registrations")
     user = db.relationship("User", back_populates="registrations")

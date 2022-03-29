@@ -89,7 +89,7 @@ for n in range(10):
             model.db.session.commit()
 
 for m in range(100):
-    registration = crud.create_new_registration(choice(range(1, 101)), choice(range(1, 10)))
+    registration = crud.create_new_registration(choice(range(1, 101)), choice(range(1, 10)), choice(range(1,5)))
     model.db.session.add(registration)
     model.db.session.commit()
 
