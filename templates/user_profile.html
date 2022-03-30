@@ -93,6 +93,17 @@
     {% endif %}
 </div>
 
+<div id="show_friends">
+    <h3>Your friends:</h3>
+    {% for friend in user.get_all_friends() %}
+        {% if loop.last %}
+            {{ friend.fname }} {{ friend.lname }}.
+        {% else %}
+            {{ friend.fname }} {{ friend.lname }},
+        {% endif %}
+    {% endfor %}
+</div>
+
 
 <!-- Script for DOM and event handling -->
 <script src="static/js/playdate.js"></script>
