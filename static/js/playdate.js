@@ -17,16 +17,43 @@ for (const button of buttons) {
                     button.innerText = "Hide details";
                     document.getElementById(`display-detail${button.id}`).innerHTML = 
                     `
+                    
                     ${responseJson.description}<br>
-                    For ${responseJson.age_group}.
-                    Hosted by ${responseJson.host}<br>
+                    Recommended age group: ${responseJson.age_group}<br>
                     At ${responseJson.location}<br>
                     Address: ${responseJson.address}, ${responseJson.city}, ${responseJson.state} ${responseJson.zipcode}<br>
                     On ${responseJson.date} from ${responseJson.start_time} to ${responseJson.end_time}<br>
                     Activities: ${responseJson.activity_list.join(", ")}<br>
-                    Who's coming: Family of ${responseJson.attendants.join(", ")}<br>
+                    Hosted by ${responseJson.host}<br>
+                    
+                    <form id="follow">
+                        <input type="hidden" name="user2_id" value="${responseJson.host_id}">
+                        <input type="submit" value="Follow host">
+                    </form>
                     `
-                    // if upcoming events, show Register form
+                    // Follow the host: add event handler
+                    const follow_btns = document.querySelectorAll("#follow");
+                    if (follow_btns) {
+                        for (const btn of follow_btns) {
+                            btn.addEventListener("submit", (evt) => {
+                                evt.preventDefault();
+                                const followUrl = `/follow?user2_id=${responseJson.host_id}`;
+                                // fetch and sending data
+                                fetch(followUrl)
+                                    .then(reply => reply.json())
+                                    .then(dataJson => {
+                                        if (dataJson.success === true) {
+                                            alert(`You successfully followed ${responseJson.host}.`)
+                                        }
+                                        else {
+                                            alert(`You already followed ${responseJson.host}.`)
+                                        }
+                                    })
+                            })
+                        }
+                    }
+                    
+                    // if upcoming events, show Attend 
                     if (button.value === "upcoming_event") {
                         console.log(button.id);
                         document.getElementById(`display-detail${button.id}`).insertAdjacentHTML("beforeend", 
@@ -55,7 +82,7 @@ for (const button of buttons) {
                         <div id="cancel_registration">
                             <form action="/cancel_registration" method="POST" onsubmit="return confirm('Do you really want to cancel this registration?');">
                                 <input type="hidden" name="event_id" value="${button.id}">
-                                <input type=submit value="Cancel registration">
+                                <input type="submit" value="Cancel registration">
                             </form>
                         </div>
                         `)
@@ -73,61 +100,44 @@ for (const button of buttons) {
 // If host chooses to add activities in their hosting form
 // Select the element with id "add_activities" and set display to none
 const suggestedActivities = document.getElementById('suggested_activities');
-suggestedActivities.style.display = 'none';
+if (suggestedActivities) {
+    suggestedActivities.style.display = 'none';
+}
 // Select the element with id "other" and add event handler
 const addActivities = document.getElementById('add_activities');
-addActivities.addEventListener('change', () => {
-    if(addActivities.checked) {
-        suggestedActivities.style.display = 'block';
-        suggestedActivities.value = '';
-    } else {
-        suggestedActivities.style.display = 'none';
-    }
-});
+if (addActivities) {
+    addActivities.addEventListener('change', () => {
+        if(addActivities.checked) {
+            suggestedActivities.style.display = 'block';
+            suggestedActivities.value = '';
+        } else {
+            suggestedActivities.style.display = 'none';
+        }
+    });
+}
 
 
 // Adding other activities in text box in hosting form (hosting.html)
 // Select the element with id "otherValue" and set display to none
 const otherText = document.getElementById('otherActivity');
-otherText.style.visibility = 'hidden';
+if (otherText) {
+    otherText.style.visibility = 'hidden';
+}
 // Select the element with id "other" and add event handler
 const otherCheckbox = document.getElementById('other');
-otherCheckbox.addEventListener('change', () => {
-    if(otherCheckbox.checked) {
-        otherText.style.visibility = 'visible';
-        otherText.value = '';
-    } else {
-        otherText.style.visibility = 'hidden';
-    }
-});
-
-
-// Adding list of items and quantity in hosting form (hosting.html) if host chooses to
-// Select the element with id "add" and add event handler to insert element
-const add_btn = document.getElementById('add');
-let i = 0; // to set unique id for each item
-add_btn.addEventListener("click", () => {
-    i += 1; 
-    document.getElementById('item_quantity').insertAdjacentHTML("beforeend",
-        `
-        <li id="item_quantity_${i}">
-            <label for="item_${i}">Item</label>
-            <input type="text" id="item_${i}" name="item">
-            <label for="quantity_${i}">Quantity</label>
-            <input type="text" id="quantity_${i}" name="quantity">
-            <button type="button" id="delete_${i}" name="delete">Delete</button>
-            <br>
-        </li>
-        `)
-    // Select the element with id "delete" and add event handler to delete element
-    const delete_btn = document.getElementById(`delete_${i}`);
-    delete_btn.addEventListener("click", () => {
-        delete_btn.parentElement.remove();
+if (otherCheckbox) {
+    otherCheckbox.addEventListener('change', () => {
+        if(otherCheckbox.checked) {
+            otherText.style.visibility = 'visible';
+            otherText.value = '';
+        } else {
+            otherText.style.visibility = 'hidden';
+        }
     });
-});
-// Count how many equipments ( how many child element of <ul>)
-const numEquipment = document.querySelector("#item_quantity").childElementCount;
-document.querySelector("#item_quantity").value = numEquipment;
+}
+
+
+
 
 
 

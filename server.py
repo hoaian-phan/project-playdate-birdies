@@ -5,6 +5,7 @@ from model import connect_to_db, db
 import crud
 from jinja2 import StrictUndefined
 from datetime import datetime, date
+from passlib.hash import argon2
 
 app = Flask(__name__)
 app.secret_key = "giahoa"
@@ -107,9 +108,14 @@ def create_user():
     # Otherwise, get user object by the input email
     user = crud.get_user_by_email(email)
 
+    # Hash password for security reason
+    hashed = argon2.hash(password)
+    del password
+    del confirm_pw
+
     # If this user doesn't exist in database, create and add this new user to database
     if not user:
-        new_user = crud.sign_up(fname, lname, email, password)
+        new_user = crud.sign_up(fname, lname, email, hashed)
         db.session.add(new_user)
         db.session.commit()
         # Flash message and add user_id to session 
@@ -118,7 +124,7 @@ def create_user():
         session["user_fname"] = new_user.fname
         if "event_id" in session:
             event = crud.get_event_by_id(session["event_id"])
-            return render_template("confirm.html", event=event)
+            return render_template("register.html", event=event)
         # return user to their previous page (hosting or register or homepage) - add later
         return redirect("/")
     else: # if user exists, flash message and restart sign up form
@@ -152,7 +158,7 @@ def login():
 
     # If this user exists in database, check if password matches; if yes, log in
     if user:
-        if password == user.password:
+        if argon2.verify(password, user.password):
             flash(f"Hi {user.fname}, welcome back.")
             session["user_id"] = user.user_id
             session["user_fname"] = user.fname
@@ -371,15 +377,11 @@ def show_details():
     # Get the event by event_id
     event = crud.get_event_by_id(event_id)
 
-    # Get number of participants
-    count = 1
-    for registration in event.registrations:
-        count += registration.num_people
-
     # Remake event dictionary for jsonify
     event = {
         "event_id": event.event_id,
         "host": event.host.fname + " " + event.host.lname,
+        "host_id": event.host.user_id,
         "title": event.title,
         "description": event.description,
         "date": str(event.date),
@@ -396,7 +398,6 @@ def show_details():
         "lng": event.location.lng,
         "activity_list": [activity.name for activity in event.activities],
         "attendants": [(registration.user.fname + " " + registration.user.lname) for registration in event.registrations],
-        "num_people": count,
         "equipments": [(equipment.name + ": " + str(equipment.quantity)) for equipment in event.equipments],
     }
  
@@ -457,9 +458,6 @@ def register_name():
     db.session.add(registration)
     db.session.commit()
 
-    # Save registration id to session
-    session["regist_id"] = registration.regist_id
-
     # Create registration string
     new_registration = {
         "name": name,
@@ -499,6 +497,26 @@ def cancel_registration():
         flash("You did not register for this playdate.")
 
     return redirect("/profile")
+
+# Follow a user
+@app.route("/follow")
+def follow():
+    """ Follow a user """
+    # Get user1_id from session and retrieve user1 object
+    user1_id = session["user_id"]
+    user1 = crud.get_user_by_id(user1_id)
+    # Get user2_id from the url and retrieve user2 object
+    user2_id = request.args.get("user2_id")
+    user2 = crud.get_user_by_id(user2_id)
+    # Check if user1 and user2 are friends already
+    if user1 in user2.get_all_friends():
+        return jsonify({"success": False})
+    # User1 follows user2
+    user1.following.append(user2)
+    db.session.commit()
+
+    return jsonify({"success": True})
+
 
 
 if __name__ == "__main__":

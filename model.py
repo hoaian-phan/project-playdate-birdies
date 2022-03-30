@@ -4,6 +4,15 @@ from flask_sqlalchemy import SQLAlchemy
 
 db = SQLAlchemy()
 
+# Association table between users. It defines a many-to-many relationship between 2 users (friends).
+friend = db.Table(
+    'friends',
+    db.Column('friend_id', db.Integer, primary_key=True),
+    db.Column('f1_id', db.Integer, db.ForeignKey('users.user_id')),
+    db.Column('f2_id', db.Integer, db.ForeignKey('users.user_id'))
+)
+
+
 # 1. User class
 class User(db.Model):
     """ User information """
@@ -18,11 +27,23 @@ class User(db.Model):
 
     events = db.relationship("Event", back_populates="host")
     registrations = db.relationship("Registration", back_populates="user")
+    # Following other users
+    following = db.relationship("User", secondary=friend,
+                                primaryjoin=user_id == friend.c.f1_id,
+                                secondaryjoin=user_id == friend.c.f2_id,
+                                backref='followers')
+    # followers: those following you
+
+    def get_all_friends(self):
+        """ Get all friends, those you are following AND those following you. """
+        return self.following + self.followers
 
     def __repr__(self):
         """ Display user object on the screen """
 
         return f"<User user_id={self.user_id} name={self.fname} {self.lname}>"
+
+    
 
 
 # 2. Event class
