@@ -376,6 +376,14 @@ def show_details():
 
     # Get the event by event_id
     event = crud.get_event_by_id(event_id)
+    
+    # Check if this user_id already register for this event
+    if "user_id" in session:
+        registration = crud.get_registration(event_id, session["user_id"])
+    if registration:
+        registered = True
+    else:
+        registered = False
 
     # Remake event dictionary for jsonify
     event = {
@@ -399,6 +407,8 @@ def show_details():
         "activity_list": [activity.name for activity in event.activities],
         "attendants": [(registration.user.fname + " " + registration.user.lname) for registration in event.registrations],
         "equipments": [(equipment.name + ": " + str(equipment.quantity)) for equipment in event.equipments],
+        "attendant_ids": [registration.user.user_id for registration in event.registrations],
+        "is_registered": registered,
     }
  
     return jsonify(event)

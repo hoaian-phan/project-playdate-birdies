@@ -22,87 +22,87 @@
     {{user.fname}} {{user.lname}} 
 </h2>
 
-<div id="future_host_events">
-    <h3>Playdates you are hosting: </h3>
-    {% if future_host|length > 0 %}
-        <ul>
-        {% for event in future_host | sort(attribute="date", reverse=true) %}
-            <li>
-                {{ event.title }} on {{event.date}} at {{event.location.name}} 
-                <button class="event-details" id="{{ event.event_id }}" value="host_event">Show details</button>
-                <p id="display-detail{{event.event_id}}"></p>
-            </li>
-        {% endfor %}
-        </ul>
-    {% else %}
-        <p>You are not hosting any playdates. 
-            Would you like to  <a href="/host">be the host</a>?</p>
-    {% endif %}
-</div>
-
-<div id="past_host_events">
-    <h3>Playdates you hosted: </h3>
-    {% if past_host|length > 0 %}
-        <ul>
-        {% for event in past_host | sort(attribute="date", reverse=true) %}
-            <li>
-                {{ event.title }} on {{event.date}} at {{event.location.name}}
-                <button class="event-details" id="{{ event.event_id }}" value="hosted_event">Show details</button>
-                <p id="display-detail{{event.event_id}}"></p>
-            </li>
-        {% endfor %}
-        </ul>
-    {% else %}
-        <p>You have not hosted any playdates.</p>
-    {% endif %}
-</div>
-
-<div id="future_guess_events">
-    <h3>Playdates you are attending: </h3>
-    {% if future_guess|length > 0 %}
-        <ul>
-        {% for registration in future_guess | sort(attribute="event.date", reverse=true) %}
-            <li>
-                {{ registration.event.title }} on {{ registration.event.date }} at {{ registration.event.location.name}}
-                <button class="event-details" id="{{ registration.event.event_id }}" value="attending_event">Show details</button>
-                <p id="display-detail{{registration.event.event_id}}"></p>
-            </li>
-        {% endfor %}
-        </ul>
-    {% else %}
-        <p>You have not registered for any playdates.
-        Would you like to <a href="/"> search for a playdate </a> ?
-        </p>
-    {% endif %}
-</div>
-
-<div id="past_guess_events">
-    <h3>Playdates you attended: </h3>
-    {% if past_guess|length > 0 %}
-        <ul>
-            {% for registration in past_guess | sort(attribute="event.date", reverse=true) %}
-            <li>
-                {{ registration.event.title }} on {{ registration.event.date }} at {{ registration.event.location.name}}
-                <button class="event-details" id="{{ registration.event.event_id }}" value="attended_event">Show details</button>
-                <p id="display-detail{{registration.event.event_id}}"></p>
-            </li>
-        {% endfor %}
-        </ul>
-    {% else %}
-        <p>You have not attended any playdates.</p>
-    {% endif %}
-</div>
-
-<div id="show_friends">
-    <h3>Your friends:</h3>
-    {% for friend in user.get_all_friends() %}
-        {% if loop.last %}
-            {{ friend.fname }} {{ friend.lname }}.
+<h3>Playdates you are hosting: </h3>
+    <div id="future_host_events">
+        {% if future_host|length > 0 %}
+            <ul>
+            {% for event in future_host | sort(attribute="date", reverse=true) %}
+                <li>
+                    {{ event.title }} on {{event.date}} at {{event.location.name}} 
+                    <button class="event-details" id="{{ event.event_id }}" value="host_event">Show details</button>
+                    <p id="display-detail{{event.event_id}}"></p>
+                </li>
+            {% endfor %}
+            </ul>
         {% else %}
-            {{ friend.fname }} {{ friend.lname }},
+            <p>You are not hosting any playdates. 
+                Would you like to  <a href="/host">be the host</a>?</p>
         {% endif %}
-    {% endfor %}
-</div>
+    </div>
+
+<h3>Playdates you hosted: </h3>
+    <div class="what" id="past_host_events">
+        {% if past_host|length > 0 %}
+            <ul>
+            {% for event in past_host | sort(attribute="date", reverse=true) %}
+                <li>
+                    {{ event.title }} on {{event.date}} at {{event.location.name}}
+                    <button class="event-details" id="{{ event.event_id }}" value="hosted_event">Show details</button>
+                    <p id="display-detail{{event.event_id}}"></p>
+                </li>
+            {% endfor %}
+            </ul>
+        {% else %}
+            <p>You have not hosted any playdates.</p>
+        {% endif %}
+    </div>
+
+<h3>Playdates you are attending: </h3>
+    <div id="future_guess_events">
+        {% if future_guess|length > 0 %}
+            <ul>
+            {% for registration in future_guess | sort(attribute="event.date", reverse=true) %}
+                <li>
+                    {{ registration.event.title }} on {{ registration.event.date }} at {{ registration.event.location.name}}
+                    <button class="event-details" id="{{ registration.event.event_id }}" value="attending_event">Show details</button>
+                    <p id="display-detail{{registration.event.event_id}}"></p>
+                </li>
+            {% endfor %}
+            </ul>
+        {% else %}
+            <p>You have not registered for any playdates.
+            Would you like to <a href="/"> search for a playdate </a> ?
+            </p>
+        {% endif %}
+    </div>
+
+<h3 >Playdates you attended: </h3>
+    <div id="past_guess_events">
+        {% if past_guess|length > 0 %}
+            <ul>
+                {% for registration in past_guess | sort(attribute="event.date", reverse=true) %}
+                <li>
+                    {{ registration.event.title }} on {{ registration.event.date }} at {{ registration.event.location.name}}
+                    <button class="event-details" id="{{ registration.event.event_id }}" value="attended_event">Show details</button>
+                    <p id="display-detail{{registration.event.event_id}}"></p>
+                </li>
+            {% endfor %}
+            </ul>
+        {% else %}
+            <p>You have not attended any playdates.</p>
+        {% endif %}
+    </div>
+
+<h3>Your friends:</h3>
+    <div>
+        {% for friend in user.get_all_friends() %}
+            {% if loop.last %}
+                {{ friend.fname }} {{ friend.lname }}.
+            {% else %}
+                {{ friend.fname }} {{ friend.lname }},
+            {% endif %}
+        {% endfor %}
+    </div>
 
 
 <!-- Script for DOM and event handling -->

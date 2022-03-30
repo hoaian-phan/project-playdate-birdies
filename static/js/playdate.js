@@ -53,8 +53,8 @@ for (const button of buttons) {
                         }
                     }
                     
-                    // if upcoming events, show Attend 
-                    if (button.value === "upcoming_event") {
+                    // if upcoming events and this user hasn't registered, show Attend 
+                    if ((button.value === "upcoming_event") & (!responseJson.is_registered )) {
                         console.log(button.id);
                         document.getElementById(`display-detail${button.id}`).insertAdjacentHTML("beforeend", 
                         `<form action="/attend"> 
@@ -95,6 +95,8 @@ for (const button of buttons) {
             })
     });
 }
+
+
 
 
 // If host chooses to add activities in their hosting form

@@ -1,4 +1,3 @@
-//console.log("event_id =", event.event_id);
 
 // Registration with name and number of people
 const RegistrationForm = (props) => {
@@ -20,7 +19,7 @@ const RegistrationForm = (props) => {
             if (responseJson.success === true) {
                 props.setCount(count => count + responseJson.registration.num_people);
                 props.setParticipants(participants => [... participants, responseJson.registration.name]);
-                alert(`Successfully registered for ${responseJson.event.title}`);
+                alert("Successfully registered for this playdate");
             } else {
                 alert("You've already registered for this playdate.");
             } 
@@ -69,6 +68,7 @@ const RegistrationContainer = () => {
             })
     }, [])
 
+    // to show different messages when nobody has registered yet
     const showNumber = () => {
         if (count) {
             return (
@@ -84,7 +84,6 @@ const RegistrationContainer = () => {
         }
     }
     
-
     return (
         <div>
             <RegistrationForm setCount={setCount} setParticipants={setParticipants} />
