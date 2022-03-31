@@ -520,12 +520,28 @@ def follow():
     user2 = crud.get_user_by_id(user2_id)
     # Check if user1 and user2 are friends already
     if user1 in user2.get_all_friends():
-        return jsonify({"success": False})
+        return jsonify({"success": False, "friend": user2.fname + " " + user2.lname})
     # User1 follows user2
     user1.following.append(user2)
     db.session.commit()
 
-    return jsonify({"success": True})
+    return jsonify({"success": True, "friend": user2.fname + " " + user2.lname})
+
+
+# Invite friends to join playdates
+@app.route("/invite")
+def invite_friends():
+    """ Choose friends from the list to invite """
+    # Get user_id and event_id from the form
+    user_id = session["user_id"]
+    event_id = request.args.get("event_id")
+    # Get user obj and event obj
+    event = crud.get_event_by_id(event_id)
+    user = crud.get_user_by_id(user_id)
+    friend_list = user.get_all_friends()
+
+
+    return render_template("invitation.html", event=event, user=user, friend_list=friend_list)
 
 
 

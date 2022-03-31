@@ -26,32 +26,30 @@ for (const button of buttons) {
                     Activities: ${responseJson.activity_list.join(", ")}<br>
                     Hosted by ${responseJson.host}<br>
                     
-                    <form id="follow">
-                        <input type="hidden" name="user2_id" value="${responseJson.host_id}">
+                    <form class="follow" id="follow-${responseJson.event_id}">
+                        <input type="hidden" name="user2_id" id="${responseJson.event_id}" value="${responseJson.host_id}">
                         <input type="submit" value="Follow host">
                     </form>
                     `
-                    // Follow the host: add event handler
-                    const follow_btns = document.querySelectorAll("#follow");
-                    if (follow_btns) {
-                        for (const btn of follow_btns) {
-                            btn.addEventListener("submit", (evt) => {
-                                evt.preventDefault();
-                                const followUrl = `/follow?user2_id=${responseJson.host_id}`;
-                                // fetch and sending data
-                                fetch(followUrl)
-                                    .then(reply => reply.json())
-                                    .then(dataJson => {
-                                        if (dataJson.success === true) {
-                                            alert(`You successfully followed ${responseJson.host}.`)
-                                        }
-                                        else {
-                                            alert(`You already followed ${responseJson.host}.`)
-                                        }
-                                    })
+
+                    const follow_form = document.querySelector(`#follow-${responseJson.event_id}`);
+                    follow_form.addEventListener("submit", (evt) => {
+                        evt.preventDefault();
+                        const followUrl = `/follow?user2_id=${responseJson.host_id}`;
+                        console.log(followUrl);
+                        // fetch and sending data
+                        fetch(followUrl)
+                            .then(reply => reply.json())
+                            .then(dataJson => {
+                                if (dataJson.success === true) {
+                                    alert(`You successfully followed ${dataJson.friend}.`)
+                                }
+                                else {
+                                    alert(`You already followed ${dataJson.friend}.`)
+                                }
                             })
-                        }
-                    }
+                    })
+                    
                     
                     // if upcoming events and this user hasn't registered, show Attend 
                     if ((button.value === "upcoming_event") & (!responseJson.is_registered )) {
@@ -87,6 +85,18 @@ for (const button of buttons) {
                         </div>
                         `)
                     }
+                    // if hosting or attending future events, show Invite friends form
+                    if (button.classList.contains("invite_friends")) {
+                        document.getElementById(`invite${button.id}`).innerHTML =
+                        `
+                        <div id="invitation">
+                            <form action="/invite" onsubmit="return confirm('Do you really want to invite your friends to join this playdate?');">
+                                <input type="hidden" name="event_id" value="${button.id}">
+                                <input type="submit" value="Invite friends">
+                            </form>
+                        </div>
+                        `
+                    }
                     
                 } else { // Hide event details
                     button.innerText = "Show details";
@@ -97,46 +107,6 @@ for (const button of buttons) {
 }
 
 
-
-
-// If host chooses to add activities in their hosting form
-// Select the element with id "add_activities" and set display to none
-const suggestedActivities = document.getElementById('suggested_activities');
-if (suggestedActivities) {
-    suggestedActivities.style.display = 'none';
-}
-// Select the element with id "other" and add event handler
-const addActivities = document.getElementById('add_activities');
-if (addActivities) {
-    addActivities.addEventListener('change', () => {
-        if(addActivities.checked) {
-            suggestedActivities.style.display = 'block';
-            suggestedActivities.value = '';
-        } else {
-            suggestedActivities.style.display = 'none';
-        }
-    });
-}
-
-
-// Adding other activities in text box in hosting form (hosting.html)
-// Select the element with id "otherValue" and set display to none
-const otherText = document.getElementById('otherActivity');
-if (otherText) {
-    otherText.style.visibility = 'hidden';
-}
-// Select the element with id "other" and add event handler
-const otherCheckbox = document.getElementById('other');
-if (otherCheckbox) {
-    otherCheckbox.addEventListener('change', () => {
-        if(otherCheckbox.checked) {
-            otherText.style.visibility = 'visible';
-            otherText.value = '';
-        } else {
-            otherText.style.visibility = 'hidden';
-        }
-    });
-}
 
 
 

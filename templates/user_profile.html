@@ -29,8 +29,9 @@
             {% for event in future_host | sort(attribute="date", reverse=true) %}
                 <li>
                     {{ event.title }} on {{event.date}} at {{event.location.name}} 
-                    <button class="event-details" id="{{ event.event_id }}" value="host_event">Show details</button>
+                    <button class="event-details invite_friends" id="{{ event.event_id }}" value="host_event">Show details</button>
                     <p id="display-detail{{event.event_id}}"></p>
+                    <p id="invite{{ event.event_id }}"></p>
                 </li>
             {% endfor %}
             </ul>
@@ -41,7 +42,7 @@
     </div>
 
 <h3>Playdates you hosted: </h3>
-    <div class="what" id="past_host_events">
+    <div id="past_host_events">
         {% if past_host|length > 0 %}
             <ul>
             {% for event in past_host | sort(attribute="date", reverse=true) %}
@@ -64,8 +65,9 @@
             {% for registration in future_guess | sort(attribute="event.date", reverse=true) %}
                 <li>
                     {{ registration.event.title }} on {{ registration.event.date }} at {{ registration.event.location.name}}
-                    <button class="event-details" id="{{ registration.event.event_id }}" value="attending_event">Show details</button>
-                    <p id="display-detail{{registration.event.event_id}}"></p>
+                    <button class="event-details invite_friends" id="{{ registration.event.event_id }}" value="attending_event">Show details</button>
+                    <p id="display-detail{{ registration.event.event_id }}"></p>
+                    <p id="invite{{ registration.event.event_id }}"></p>
                 </li>
             {% endfor %}
             </ul>
