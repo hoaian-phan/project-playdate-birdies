@@ -6,10 +6,23 @@ import crud
 from jinja2 import StrictUndefined
 from datetime import datetime, date
 from passlib.hash import argon2
+from flask_mail import Mail, Message
 
 app = Flask(__name__)
 app.secret_key = "giahoa"
 app.jinja_env.undefined = StrictUndefined
+mail = Mail(app)
+
+app.config['MAIL_SERVER']='smtp.mailtrap.io'
+app.config['MAIL_PORT'] = 2525
+app.config['MAIL_USERNAME'] = 'a3cce479bf46dc'
+app.config['MAIL_PASSWORD'] = '69f2ae717a8e05'
+app.config['MAIL_USE_TLS'] = True
+app.config['MAIL_USE_SSL'] = False
+app.config['MAIL_DEFAULT_SENDER'] = "do-not-reply@playdatebirdies.com"
+
+
+mail = Mail(app)
 
 US_STATES = {
   "AL": "Alabama",
@@ -413,9 +426,6 @@ def show_details():
  
     return jsonify(event)
 
-
-
-
 # 7a. Render the register page
 @app.route("/attend")
 def render_register():
@@ -478,19 +488,6 @@ def register_name():
     return jsonify({"success": True, "registration": new_registration})
 
 
-# # 7c. Confirm registration after user log in
-# @app.route("/confirm")
-# def confirm():
-#     """ After user logs in, ask for confirmation before registering for the event """
-
-#     answer = request.args.get("confirm")
-#     if answer == "yes":
-#         return redirect("/register")
-#     else:
-#         if "event_id" in session:
-#             del session["event_id"]
-#             return redirect("/")
-
 # Cancel an event registration
 @app.route("/cancel_registration", methods=["POST"])
 def cancel_registration():
@@ -540,8 +537,30 @@ def invite_friends():
     user = crud.get_user_by_id(user_id)
     friend_list = user.get_all_friends()
 
-
     return render_template("invitation.html", event=event, user=user, friend_list=friend_list)
+
+
+# Send email invitation to friends
+@app.route("/send_invitation")
+def send_invitation():
+    """ Send email to user """
+    # Get info from session
+    user_id = session["user_id"]
+    event_id = session["event_id"]
+    # Get user obj and event obj
+    event = crud.get_event_by_id(event_id)
+    user = crud.get_user_by_id(user_id)
+    #Get inputs from the form
+    recipients = request.args.getlist("friend")
+    event_url = request.args.get("event_info")
+    message_body = request.args.get("message")
+    message_body += f"<br><a href='{event_url}'>{event.title}</a>"
+
+    msg = Message(f'{user.fname} {user.lname} recommends you check out this playdate', bcc=recipients)
+    msg.html = message_body
+    mail.send(msg)
+    flash("You successfully sent invitations to this playdate.")
+    return redirect("/profile")
 
 
 
