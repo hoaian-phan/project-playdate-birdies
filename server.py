@@ -2,21 +2,22 @@
 
 from flask import (Flask, render_template, request, redirect, flash, session, jsonify)
 from model import connect_to_db, db
-import crud
 from jinja2 import StrictUndefined
 from datetime import datetime, date
 from passlib.hash import argon2
 from flask_mail import Mail, Message
+import crud
+import os
 
 app = Flask(__name__)
-app.secret_key = "giahoa"
+app.secret_key = os.environ['SECRET_KEY']
 app.jinja_env.undefined = StrictUndefined
 mail = Mail(app)
 
 app.config['MAIL_SERVER']='smtp.mailtrap.io'
 app.config['MAIL_PORT'] = 2525
-app.config['MAIL_USERNAME'] = 'a3cce479bf46dc'
-app.config['MAIL_PASSWORD'] = '69f2ae717a8e05'
+app.config['MAIL_USERNAME'] = os.environ['MAIL_USERNAME']
+app.config['MAIL_PASSWORD'] = os.environ['MAIL_PASSWORD']
 app.config['MAIL_USE_TLS'] = True
 app.config['MAIL_USE_SSL'] = False
 app.config['MAIL_DEFAULT_SENDER'] = "do-not-reply@playdatebirdies.com"
@@ -340,14 +341,20 @@ def cancel_event():
     event = crud.get_event_by_id(event_id)
     # Check if this is the host of the event
     if event.host.user_id == session["user_id"]:
+        # Send email notifications to the participants
+        emails = [registration.user.email for registration in event.registrations]
+        msg = Message(f"Your {event.title} is canceled", bcc=emails)
+        homepage_url = '''<br><a href='http://localhost:5000'>Playdate Birdies</a>'''
+        msg.html = f"We are sorry your playdate got canceled. Please visit {homepage_url} to see other events."
+        mail.send(msg)
+
         # Delete all registrations for this event
         crud.delete_registrations(event_id)
+
         # Delete all activity association for this event
         crud.delete_activity_event_asso(event_id)
         db.session.commit()
-        #Delete equipments associated with this event
-        crud.delete_equipments(event_id)
-        db.session.commit()
+    
         #Delete this event
         db.session.delete(event)
         db.session.commit()
@@ -467,23 +474,33 @@ def register_name():
     # Get inputs from the AJAX request. 
     name = request.get_json().get("name")
     num_people = int(request.get_json().get("num_people"))
-
+    # Get user_id and event_id from the form
+    user_id = session["user_id"]
+    event_id = session["event_id"]
+    # Get user obj and event obj
+    event = crud.get_event_by_id(event_id)
+    user = crud.get_user_by_id(user_id)
     # Get the registration by this user_id and event_id
-    registration = crud.get_registration(session["event_id"], session["user_id"])
+    registration = crud.get_registration(event_id, user_id)
     # Check if this user has already registered for this event
     if registration:
         return jsonify({"success": False})
     # If not register, create a new registration and add to database
-    registration = crud.create_new_registration(session["event_id"], session["user_id"], num_people)
+    registration = crud.create_new_registration(event_id, user_id, num_people)
     db.session.add(registration)
     db.session.commit()
-
     # Create registration string
     new_registration = {
         "name": name,
         "num_people": num_people,
         "event_title": registration.event.title,
     }
+
+    # Send email updates to the host every time there is a new registration
+    msg = Message(f"Your {event.title} got a new registration", recipients=[event.host.email])
+    profile_url = '''<br><a href='http://localhost:5000/profile'>your profile</a>'''
+    msg.html = f"{user.fname} {user.lname} has just registered to join your playdate {event.title}. Visit {profile_url} to see more."
+    mail.send(msg)
     
     return jsonify({"success": True, "registration": new_registration})
 
@@ -494,9 +511,16 @@ def cancel_registration():
     """ Cancel an event registration """
     # Get event_id from the form
     event_id = request.form.get("event_id")
+    event = crud.get_event_by_id(event_id)
     # If this registration exists, delete it
     registration = crud.get_registration(event_id, session["user_id"])
     if registration:
+        # Send email notification to the host of the cancelation
+        msg = Message(f"Update for your {registration.event.title}", recipients=[registration.event.host.email])
+        profile_url = "<br><a href='http://localhost:5000/profile'>your profile</a>"
+        msg.html = f"{registration.user.fname} {registration.user.lname} has just canceled their registration for your playdate {registration.event.title}. Visit {profile_url} to see more."
+        mail.send(msg)
+        # Delete the registration
         db.session.delete(registration)
         db.session.commit()
         flash("You successfully deleted your registration.")
