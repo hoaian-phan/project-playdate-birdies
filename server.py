@@ -87,10 +87,12 @@ ACTIVITIES = ["Draw with chalk", "Go on a scavenger hunt", "Kick a ball", "Blow 
             "Hula hoop", "Painting", "Collect leaves", "Jumping rope", "Bag jumping", 
             "Bike/scooter riding"]
 
+
 # 1. Homepage route
 @app.route("/")
 def homepage():
     """ Display homepage """
+    # Get homepage base url
 
     return render_template("homepage.html", age_groups = AGE_GROUP, today = date.today())
 
@@ -339,14 +341,17 @@ def cancel_event():
     event_id = request.form.get("event_id")
     # Get event object from event_id
     event = crud.get_event_by_id(event_id)
+    # Get the homepage url root
+    url_root = request.url_root
     # Check if this is the host of the event
     if event.host.user_id == session["user_id"]:
         # Send email notifications to the participants
-        emails = [registration.user.email for registration in event.registrations]
-        msg = Message(f"Your {event.title} is canceled", bcc=emails)
-        homepage_url = '''<br><a href='http://localhost:5000'>Playdate Birdies</a>'''
-        msg.html = f"We are sorry your playdate got canceled. Please visit {homepage_url} to see other events."
-        mail.send(msg)
+        if event.registrations:
+            emails = [registration.user.email for registration in event.registrations]
+            msg = Message(f"Your {event.title} is canceled", bcc=emails)
+            homepage_url = f"<br><a href={url_root}>Playdate Birdies</a>"
+            msg.html = f"We are sorry your playdate got canceled. Please visit {homepage_url} to see other events."
+            mail.send(msg)
 
         # Delete all registrations for this event
         crud.delete_registrations(event_id)
@@ -495,10 +500,11 @@ def register_name():
         "num_people": num_people,
         "event_title": registration.event.title,
     }
-
+    # Get the url root
+    url_root = request.url_root
     # Send email updates to the host every time there is a new registration
     msg = Message(f"Your {event.title} got a new registration", recipients=[event.host.email])
-    profile_url = '''<br><a href='http://localhost:5000/profile'>your profile</a>'''
+    profile_url = f"<br><a href={url_root}/profile>your profile</a>"
     msg.html = f"{user.fname} {user.lname} has just registered to join your playdate {event.title}. Visit {profile_url} to see more."
     mail.send(msg)
     
@@ -512,12 +518,14 @@ def cancel_registration():
     # Get event_id from the form
     event_id = request.form.get("event_id")
     event = crud.get_event_by_id(event_id)
+    # Get the url root
+    url_root = request.url_root
     # If this registration exists, delete it
     registration = crud.get_registration(event_id, session["user_id"])
     if registration:
         # Send email notification to the host of the cancelation
         msg = Message(f"Update for your {registration.event.title}", recipients=[registration.event.host.email])
-        profile_url = "<br><a href='http://localhost:5000/profile'>your profile</a>"
+        profile_url = f"<br><a href={url_root}/profile>your profile</a>"
         msg.html = f"{registration.user.fname} {registration.user.lname} has just canceled their registration for your playdate {registration.event.title}. Visit {profile_url} to see more."
         mail.send(msg)
         # Delete the registration
@@ -578,6 +586,9 @@ def send_invitation():
     recipients = request.args.getlist("friend")
     event_url = request.args.get("event_info")
     message_body = request.args.get("message")
+    # Make the hyperlink by concatenating the root url and event url
+    url_root = request.url_root
+    event_url = url_root + event_url 
     message_body += f"<br><a href='{event_url}'>{event.title}</a>"
 
     msg = Message(f'{user.fname} {user.lname} recommends you check out this playdate', bcc=recipients)
@@ -585,6 +596,8 @@ def send_invitation():
     mail.send(msg)
     flash("You successfully sent invitations to this playdate.")
     return redirect("/profile")
+
+
 
 
 
