@@ -590,7 +590,7 @@ def send_invitation():
     url_root = request.url_root
     event_url = url_root + event_url 
     message_body += f"<br><a href='{event_url}'>{event.title}</a>"
-
+    # Create an email notification and send
     msg = Message(f'{user.fname} {user.lname} recommends you check out this playdate', bcc=recipients)
     msg.html = message_body
     mail.send(msg)
@@ -598,8 +598,37 @@ def send_invitation():
     return redirect("/profile")
 
 
+# Route to render Calendar page
+@app.route("/calendar")
+def show_calendar():
+    """ Show the personal calendar with events"""
 
-
+    user_id = session["user_id"]
+    user = crud.get_user_by_id(user_id)
+    # Get all attending events and set color to purple
+    calendar_events = crud.get_events_by_userid(user_id)
+    events_dict = []
+    for event in calendar_events:
+        events_dict.append(
+            {
+                "title": event.title,
+                "start": str(event.date) + "T" + str(event.start_time),
+                "end": str(event.date) + "T" + str(event.end_time),
+                "color": "purple"
+            }
+        )
+    # Then add all hosting events and set color to green
+    for event in user.events:
+        events_dict.append(
+            {
+                "title": event.title,
+                "start": str(event.date) + "T" + str(event.start_time),
+                "end": str(event.date) + "T" + str(event.end_time),
+                "color": "green"
+            }
+        )
+    
+    return render_template("calendar.html", cal_events=events_dict)
 
 if __name__ == "__main__":
     # DebugToolbarExtension(app)

@@ -2,6 +2,7 @@
 
 {% block title %} Your profile {% endblock %}
 
+
 {% block navbar %}
 <div class="nav_bar">
     <form action="/">
@@ -22,6 +23,12 @@
     {{user.fname}} {{user.lname}} 
 </h2>
 
+
+
+<div><br>
+<a href="/profile">View your playdates as a list</a> | <a href="/calendar">View your playdates in a calendar</a>
+</div>
+
 <h3>Playdates you are hosting: </h3>
     <div id="future_host_events">
         {% if future_host|length > 0 %}
@@ -29,9 +36,10 @@
             {% for event in future_host | sort(attribute="date", reverse=true) %}
                 <li>
                     {{ event.title }} on {{event.date}} at {{event.location.name}} 
-                    <button class="event-details invite_friends" id="{{ event.event_id }}" value="host_event">Show details</button>
+                    <button class="event-details invite_friends add_calendar" id="{{ event.event_id }}" value="host_event">Show details</button>
                     <p id="display-detail{{event.event_id}}"></p>
                     <p id="invite{{ event.event_id }}"></p>
+                    <p id="calendar{{ event.event_id }}"></p>
                 </li>
             {% endfor %}
             </ul>
@@ -65,9 +73,10 @@
             {% for registration in future_guess | sort(attribute="event.date", reverse=true) %}
                 <li>
                     {{ registration.event.title }} on {{ registration.event.date }} at {{ registration.event.location.name}}
-                    <button class="event-details invite_friends" id="{{ registration.event.event_id }}" value="attending_event">Show details</button>
+                    <button class="event-details invite_friends add_calendar" id="{{ registration.event.event_id }}" value="attending_event">Show details</button>
                     <p id="display-detail{{ registration.event.event_id }}"></p>
                     <p id="invite{{ registration.event.event_id }}"></p>
+                    <p id="calendar{{ registration.event.event_id }}"></p>
                 </li>
             {% endfor %}
             </ul>
@@ -95,6 +104,7 @@
         {% endif %}
     </div>
 
+
 <h3>Your friends:</h3>
     <div>
         {% for friend in user.get_all_friends() %}
@@ -105,7 +115,6 @@
             {% endif %}
         {% endfor %}
     </div>
-
 
 <!-- Script for DOM and event handling -->
 <script src="static/js/playdate.js"></script>

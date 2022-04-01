@@ -92,6 +92,14 @@ def get_event_by_id(event_id):
 
     return event
 
+# Event: Get a list of events this user has registered for
+def get_events_by_userid(user_id):
+    """ Return a list of events this user has registered for"""
+
+    events = Event.query.join(Registration).filter(Registration.user_id==user_id).all()
+
+    return events
+
 # Categorize pass and future events:
 def is_future(event):
     """ Return true if the input event date is in the future """
@@ -123,7 +131,7 @@ def delete_registrations(event_id):
     """ Delete registrations associated with this input event_id """
 
     Registration.query.filter(Registration.event_id==event_id).delete()
-    
+
 
 # Activity: Get an activity object by its name
 def get_activity_by_name(activity_name):
