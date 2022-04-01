@@ -90,7 +90,7 @@ for (const button of buttons) {
                         document.getElementById(`invite${button.id}`).innerHTML =
                         `
                         <div id="invitation">
-                            <form action="/invite" onsubmit="return confirm('Do you really want to invite your friends to join this playdate?');">
+                            <form action="/invite">
                                 <input type="hidden" name="event_id" value="${button.id}">
                                 <input type="submit" value="Invite friends">
                             </form>

@@ -3,7 +3,9 @@
 // This function uses: 
 // 1. autocomplete to suggest addresses and upon chosen, it fills in the rest of the address,
 // 2. also by autocomplete, it gets the coordinates of the location 
-// 3. textSearch to get location's photo
+// 3. textSearch to get location's photo 
+// 4. Sending AJAX call to server to update coordinates and photo of the location in the database
+
 function otherMap() {
     // Create a basicMap, which will not be displayed on the page
     const basicMap = new google.maps.Map(document.querySelector('#map'), {
@@ -115,8 +117,7 @@ function otherMap() {
                 name: document.getElementById("location").value,
                 address: document.getElementById("address").value
             };
-            // alert(`location details ${locationDetails.lat}, ${locationDetails.lng},${locationDetails.photo},
-            // ${locationDetails.name},${locationDetails.address},`)
+           
             fetch("/update_location_details", {
                 method: 'POST',
                 body: JSON.stringify(locationDetails),

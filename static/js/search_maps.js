@@ -1,4 +1,6 @@
 'use strict';
+// This file is used for displaying the map and location markers of all events resulted from
+// a search
 
 
 // Display a map and mark locations on the map

@@ -1,3 +1,5 @@
+// This REACT file is used to update changing states of total participants and their names
+// after a successful registration without reloading the page
 
 // Registration with name and number of people
 const RegistrationForm = (props) => {

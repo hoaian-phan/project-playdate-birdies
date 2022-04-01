@@ -1,4 +1,5 @@
 'use strict';
+// This file is for DOM manipulation in the hosting form
 
 // If host chooses to add activities in their hosting form
 // Select the element with id "add_activities" and set display to none
