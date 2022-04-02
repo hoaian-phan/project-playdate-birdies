@@ -683,17 +683,6 @@ def reminder():
     
     # Get the url root
     url_root = request.url_root
-
-    # Send bulk emails:
-    # with mail.connect() as conn:
-    #     for user in users:
-    #         message = f"Don't need to wait long, your playdate is tomorrow! Log in to <br><a href={url_root}/profile>your profile</a> to see details."
-    #         subject = "You have an upcoming playdate tomorrow"
-    #         msg = Message(bcc=[user.email],
-    #                     html=message,
-    #                     subject=subject)
-
-    #         conn.send(msg)
     
     # Get email list
     recipients = []
