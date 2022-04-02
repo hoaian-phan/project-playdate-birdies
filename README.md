@@ -31,7 +31,7 @@ A web app where parents and grandparents can find playdates for their children.
 - Personalize playdate suggestions based on users' interests (to be implemented)
 
 
-### Set Up
+## Set Up
 
 To run this project, install it locally:
 
@@ -48,5 +48,5 @@ $ pip3 install -r requirements.txt
 $ python3 server.py
 
 
-### Project Status: 
+## Project Status: 
 Project is in progress
