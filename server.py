@@ -21,6 +21,7 @@ app.config['MAIL_PASSWORD'] = os.environ['MAIL_PASSWORD']
 app.config['MAIL_USE_TLS'] = True
 app.config['MAIL_USE_SSL'] = False
 app.config['MAIL_DEFAULT_SENDER'] = "do-not-reply@playdatebirdies.com"
+app.config['MAIL_MAX_EMAILS'] = 3
 
 
 mail = Mail(app)
@@ -189,6 +190,46 @@ def login():
         flash("This email and password combination is incorrect.") #or click Forget email address
     
     return redirect("/login")
+
+# Render the form to reset password
+@app.route("/forget_pw")
+def forget_password():
+    """ Render the reset password form"""
+
+    return render_template("reset_password.html")
+
+# Reset password
+@app.route("/reset_pw", methods=["POST"])
+def reset_password():
+    """ Reset password"""
+
+    # Using POST request, get input from the reset password form
+    fname = request.form.get("first")
+    lname = request.form.get("last")
+    email = request.form.get("email")
+    password = request.form.get("password")
+    confirm_pw = request.form.get("confirm_password")
+
+    # Check if confirm password matches with password, if not, restart the form
+    if password != confirm_pw:
+        flash("Passwords don't match. Please try again.")
+        return redirect("/reset_pw")
+
+    # Hash password for security reason
+    hashed = argon2.hash(password)
+    del password
+    del confirm_pw
+
+    # Check if name and email address match with a current user
+    user = crud.get_user_by_name_email(fname, lname, email)
+    if user:
+        user.password = hashed
+        db.session.commit()
+        flash("Successfully reset your password. ")
+        return redirect("/login")
+    else:
+        flash("Name and email addres do not match our record. Please try again or sign up for a new account.")
+        return redirect("/forget_pw")
 
 # 4. Log out
 @app.route("/logout")
@@ -629,6 +670,43 @@ def show_calendar():
         )
     
     return render_template("calendar.html", cal_events=events_dict)
+
+
+# Send reminder email route
+@app.route("/reminder")
+def reminder():
+    """ Send email reminders about an upcoming events"""
+
+    # Get a list of users that have events tomorrow
+    users = crud.get_users_of_tomorrow_events(date.today())
+    print("\n" * 5, "Users from query: ", users)
+    
+    # Get the url root
+    url_root = request.url_root
+
+    # Send bulk emails:
+    # with mail.connect() as conn:
+    #     for user in users:
+    #         message = f"Don't need to wait long, your playdate is tomorrow! Log in to <br><a href={url_root}/profile>your profile</a> to see details."
+    #         subject = "You have an upcoming playdate tomorrow"
+    #         msg = Message(bcc=[user.email],
+    #                     html=message,
+    #                     subject=subject)
+
+    #         conn.send(msg)
+    
+    # Get email list
+    recipients = []
+    for user in users:
+        recipients.append(user.email)
+    print("email list: ", recipients)
+
+    # Create an email notification and send
+    msg = Message("You have an upcoming playdate tomorrow", bcc=recipients)
+    msg.html = f"Don't need to wait long, your playdate is tomorrow! Log in to <br><a href={url_root}/profile>your profile</a> to see details."
+    mail.send(msg)
+
+    return "Sent"
 
 if __name__ == "__main__":
     # DebugToolbarExtension(app)

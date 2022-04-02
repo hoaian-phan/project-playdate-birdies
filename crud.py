@@ -30,6 +30,25 @@ def get_user_by_id(user_id):
 
     return user
 
+# User: Get user by name and email
+def get_user_by_name_email(fname, lname, email):
+    """ Return a user with the input name and email """
+
+    user = User.query.filter_by(fname=fname, lname=lname, email=email).first()
+
+    return user
+
+
+
+# User: Get a list of users that have events tomorrow
+def get_users_of_tomorrow_events(day):
+    """ Return a list of users who have events tomorrow"""
+
+    hosts = User.query.join(Event).filter(Event.date - day == 1).all()
+    attendants = User.query.join(Registration).join(Event).filter(Event.date - day == 1).all()
+
+    return hosts + attendants
+
 # Location: Get location by name and adress
 def get_location_by_name_and_address(name, address):
     """ Return location object of the input name and address"""
@@ -99,6 +118,15 @@ def get_events_by_userid(user_id):
     events = Event.query.join(Registration).filter(Registration.user_id==user_id).all()
 
     return events
+
+# Event: Get a list of events which are scheduled for tomorrow
+def get_tomorrow_events(day):
+    """ Return a list of events which are scheduled for tomorrow"""
+
+    events = Event.query.filter(Event.date - day == 1).all()
+
+    return events
+
 
 # Categorize pass and future events:
 def is_future(event):

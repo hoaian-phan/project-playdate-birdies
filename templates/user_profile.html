@@ -49,22 +49,6 @@
         {% endif %}
     </div>
 
-<h3>Playdates you hosted: </h3>
-    <div id="past_host_events">
-        {% if past_host|length > 0 %}
-            <ul>
-            {% for event in past_host | sort(attribute="date", reverse=true) %}
-                <li>
-                    {{ event.title }} on {{event.date}} at {{event.location.name}}
-                    <button class="event-details" id="{{ event.event_id }}" value="hosted_event">Show details</button>
-                    <p id="display-detail{{event.event_id}}"></p>
-                </li>
-            {% endfor %}
-            </ul>
-        {% else %}
-            <p>You have not hosted any playdates.</p>
-        {% endif %}
-    </div>
 
 <h3>Playdates you are attending: </h3>
     <div id="future_guess_events">
@@ -84,6 +68,23 @@
             <p>You have not registered for any playdates.
             Would you like to <a href="/"> search for a playdate </a> ?
             </p>
+        {% endif %}
+    </div>
+
+<h3>Playdates you hosted: </h3>
+    <div id="past_host_events">
+        {% if past_host|length > 0 %}
+            <ul>
+            {% for event in past_host | sort(attribute="date", reverse=true) %}
+                <li>
+                    {{ event.title }} on {{event.date}} at {{event.location.name}}
+                    <button class="event-details" id="{{ event.event_id }}" value="hosted_event">Show details</button>
+                    <p id="display-detail{{event.event_id}}"></p>
+                </li>
+            {% endfor %}
+            </ul>
+        {% else %}
+            <p>You have not hosted any playdates.</p>
         {% endif %}
     </div>
 
