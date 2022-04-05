@@ -33,6 +33,11 @@ function otherMap() {
         // 1. Populate the address fields to fill in the rest of the address form
         // Get the place details from the autocomplete object
         const place = autocomplete.getPlace();
+        console.log("geometry", place.geometry);
+        if(!place.geometry) {
+            // User did not select a prediction, reset the input field
+            addressField.placeholder = "Enter an address";
+        }
         let address = "";
         let postcode = "";
         // Get each component of the address from the place details, and fill-in the corresponding field on the form.
@@ -77,6 +82,7 @@ function otherMap() {
         
         // Save full address for looking up photos
         fullAddress = place.formatted_address;
+        
     })
     
 

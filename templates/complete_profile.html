@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+
+{% block title %} Complete your profile {% endblock %}
+
+
+{% block navbar %}
+<div class="nav_bar">
+    <form action="/">
+        <input type="submit" value="Home">
+    </form>
+    <form action="/host">
+        <input type="submit" value="Hosting">
+    </form>
+    <form action="/logout">
+        <input type="submit" value="Log out">
+    </form>
+</div>
+{% endblock %}
+
+{% block body %}
+
+<h2>Tell us more about you and your interests</h2>
+
+<form id="profile" action="/complete_profile" method="POST">
+    <div>
+        <label for="address">Your address</label>
+        <input type="text" name="address" placeholder="Full address" id="address" size="50" required>
+    </div>
+
+    <div>
+        Your children's favorite activities<br>
+        
+        {% for activity in activities %}
+                <input class="choices" type="checkbox" name="activity" value="{{activity}}" id="activity{{loop.index}}">
+                <label for="activity{{loop.index}}">{{activity}}</label>
+        {% endfor %}
+        
+    </div>
+
+    <div>
+        <button type="submit" form="profile" value="Submit">Submit</button>
+    </div>
+</form>
+
+
+<div id="map" style="display: None"></div>
+
+<!-- Script for DOM and event handling -->
+<script src="static/js/completeProfile.js"></script>
+
+<!-- Google Map APIs -->
+<script
+    async
+    src="https://maps.googleapis.com/maps/api/js?&libraries=places&key=AIzaSyAD0oTJmmfCcudTYnSthIF1Z9QW3H5GC5s&callback=userMap">
+</script>
+
+{% endblock %}

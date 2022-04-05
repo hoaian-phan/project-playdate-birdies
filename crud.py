@@ -1,7 +1,7 @@
 """ CRUD operations """
 
 from model import (db, connect_to_db, User, Event, Registration, Location,
-                   Activity, Equipment, ActivityAssociation) # UserAssociation
+                   Activity, ActivityAssociation, UserLikeActivity, UserLikePark) 
 from datetime import date
 
 
@@ -191,16 +191,20 @@ def delete_activity_event_asso(event_id):
 
     ActivityAssociation.query.filter(ActivityAssociation.event_id==event_id).delete()
 
-# Equipment: Create an equipment object
-def create_an_equipment(event_id, name, quantity):
-    """ Create and return an equipment object """
+# User like activity: Create
+def create_user_favorite_activity(user_id, activity_id):
+    """ Create and return user's favorite activity"""
 
-    equipment = Equipment(event_id=event_id, name=name, quantity=quantity)
+    user_like_activity = UserLikeActivity(user_id=user_id, activity_id=activity_id)
 
-    return equipment
+    return user_like_activity
 
-# Equipment: Create all equipment objects associated with an event
-def delete_equipments(event_id):
-    """ Delete all equipments associated with an event """
 
-    Equipment.query.filter(Equipment.event_id == event_id).delete()
+# User like park
+def create_user_favorite_park(user_id, location_id):
+    """ Create and return user's favorite park"""
+
+    user_like_park = UserLikePark(user_id=user_id, location_id=location_id)
+
+    return user_like_park
+

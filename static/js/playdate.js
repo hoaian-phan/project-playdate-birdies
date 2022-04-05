@@ -27,11 +27,16 @@ for (const button of buttons) {
                     Hosted by ${responseJson.host}<br>
                     
                     <form class="follow" id="follow-${responseJson.event_id}">
-                        <input type="hidden" name="user2_id" id="${responseJson.event_id}" value="${responseJson.host_id}">
+                        <input type="hidden" name="user2_id" id="follow${responseJson.event_id}" value="${responseJson.host_id}">
                         <input type="submit" value="Follow host">
                     </form>
-                    `
 
+                    <form class="like_park" id="like_park-${responseJson.event_id}">
+                        <input type="hidden" name="location_id" id="like_park${responseJson.event_id}" value="${responseJson.location_id}">
+                        <input type="submit" value="Add park to favorites">
+                    </form>
+                    `
+                    // Follow host feature
                     const follow_form = document.querySelector(`#follow-${responseJson.event_id}`);
                     follow_form.addEventListener("submit", (evt) => {
                         evt.preventDefault();
@@ -46,6 +51,25 @@ for (const button of buttons) {
                                 }
                                 else {
                                     alert(`You already followed ${dataJson.friend}.`)
+                                }
+                            })
+                    })
+
+                    // Add park to favorite feature
+                    const likePark = document.querySelector(`#like_park-${responseJson.event_id}`);
+                    likePark.addEventListener("submit", (evt) => {
+                        evt.preventDefault();
+                        const likeParkUrl = `/like_park?location_id=${responseJson.location_id}`;
+                        console.log(likeParkUrl);
+                        // fetch and sending data
+                        fetch(likeParkUrl)
+                            .then(reply => reply.json())
+                            .then(dataJson => {
+                                if (dataJson.success === true) {
+                                    alert(`You successfully added this park to your favorites.`)
+                                }
+                                else {
+                                    alert(`You already liked this park.`)
                                 }
                             })
                     })

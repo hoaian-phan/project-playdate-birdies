@@ -93,7 +93,7 @@ ACTIVITIES = ["Draw with chalk", "Go on a scavenger hunt", "Kick a ball", "Blow 
 @app.route("/")
 def homepage():
     """ Display homepage """
-    # Get homepage base url
+    
 
     return render_template("homepage.html", age_groups = AGE_GROUP, today = date.today())
 
@@ -271,6 +271,49 @@ def show_profile():
                                                 past_guess= past_guess_events, future_guess=future_guess_events)
     
     
+# Render the complete profile page
+@app.route("/complete_profile", methods = ["GET", "POST"])
+def complete_profile():
+    """ Get request renders the complete profile form, post request updates info in database"""
+
+    user = crud.get_user_by_id(session["user_id"])
+    if request.method == "POST":
+        activity_list = request.form.getlist("activity")
+        print("activity_list ", activity_list, type(activity_list))
+        
+        # Create user's favorite activity and add to database
+        for one_activity in activity_list:
+            activity = crud.get_activity_by_name(one_activity)
+            if activity not in user.activities:
+                user_like_activity = crud.create_user_favorite_activity(session["user_id"], activity.activity_id)
+                db.session.add(user_like_activity)
+                db.session.commit()
+        return redirect("/profile")
+
+    return render_template("complete_profile.html", age_groups = AGE_GROUP, activities=ACTIVITIES)
+
+
+# Get data from AJAX and update user's address, coordinates and favorite activities
+@app.route("/update_profile", methods = ["POST"])
+def update_address():
+    """ Update user's address, coordinates and favorite activities in database"""
+
+    home_address = request.json.get("address")
+    home_lat = request.json.get("lat")
+    home_lng = request.json.get("lng")
+    
+    # Get the user object by user id
+    user = crud.get_user_by_id(session["user_id"])
+    # Update the coordinates
+    user.home_address = home_address
+    user.home_lat = home_lat
+    user.home_lng = home_lng
+    db.session.commit()
+
+    return {"status": "ok"}
+
+
+
 # 4a. Rendering the Hosting papge with GET
 @app.route("/host")
 def host():
@@ -304,9 +347,6 @@ def hosting():
     age_group = request.form.get("age_group")
     standard_activities = request.form.getlist("activity")
     other_activity = request.form.get("otherActivity")
-    equipment_names = request.form.getlist("item")
-    equipment_quantities = request.form.getlist("quantity")
-
 
     # Query this input location to check it is already in database
     input_location = crud.get_location_by_name_and_address(name=name, address=address)
@@ -339,12 +379,6 @@ def hosting():
         # Create association between activity and event
         activity_event = crud.create_activity_event_asso(activity.activity_id, new_event.event_id)
         db.session.add(activity_event)
-        db.session.commit()
-    
-    # Add equipment and its quantity to database
-    for i, equipment in enumerate(equipment_names):
-        equipment = crud.create_an_equipment(new_event.event_id, equipment, equipment_quantities[i])
-        db.session.add(equipment)
         db.session.commit()
 
     flash(f"{new_event.host.fname}, your playdate {new_event.title} is scheduled on {new_event.date} from {new_event.start_time} to {new_event.end_time} at {new_event.location.name}.")
@@ -472,7 +506,6 @@ def show_details():
         "lng": event.location.lng,
         "activity_list": [activity.name for activity in event.activities],
         "attendants": [(registration.user.fname + " " + registration.user.lname) for registration in event.registrations],
-        "equipments": [(equipment.name + ": " + str(equipment.quantity)) for equipment in event.equipments],
         "attendant_ids": [registration.user.user_id for registration in event.registrations],
         "is_registered": registered,
     }
@@ -564,7 +597,7 @@ def cancel_registration():
     # If this registration exists, delete it
     registration = crud.get_registration(event_id, session["user_id"])
     if registration:
-        # Send email notification to the host of the cancelation
+        # Send email notification to the host about the cancelation
         msg = Message(f"Update for your {registration.event.title}", recipients=[registration.event.host.email])
         profile_url = f"<br><a href={url_root}/profile>your profile</a>"
         msg.html = f"{registration.user.fname} {registration.user.lname} has just canceled their registration for your playdate {registration.event.title}. Visit {profile_url} to see more."
@@ -637,6 +670,26 @@ def send_invitation():
     mail.send(msg)
     flash("You successfully sent invitations to this playdate.")
     return redirect("/profile")
+
+
+# Route to add parks to favorites
+@app.route("/like_park")
+def like_park():
+    """ Add parks to favorite and update in the database """
+
+    location_id = request.args.get("location_id")
+    location = crud.get_location_by_id(location_id)
+    user = crud. get_user_by_id(session["user_id"])
+    # Create and update user like park to database
+    if location in user.locations:
+        return jsonify({"success": False})
+
+    user_like_park = crud.create_user_favorite_park(session["user_id"], location_id)
+    db.session.add(user_like_park)
+    db.session.commit()
+    
+    return jsonify({"success": True})
+
 
 
 # Route to render Calendar page

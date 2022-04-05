@@ -46,6 +46,7 @@ function initMap() {
                     const marker = new google.maps.Marker({
                         position: eventLocation.coords,
                         title: eventLocation.name,
+                        animation: google.maps.Animation.DROP,
                         map: basicMap,
                         address: eventLocation.address,
                         icon: "https://img.icons8.com/external-nawicon-flat-nawicon/40/000000/external-park-location-nawicon-flat-nawicon.png",
@@ -115,6 +116,7 @@ function initMap() {
                         const marker = new google.maps.Marker({
                             position: eventLocation.coords,
                             title: eventLocation.name,
+                            animation: google.maps.Animation.DROP,
                             map: basicMap,
                             address: eventLocation.address,
                             icon: "https://img.icons8.com/external-nawicon-flat-nawicon/40/000000/external-park-location-nawicon-flat-nawicon.png",

@@ -24,6 +24,9 @@ class User(db.Model):
     lname = db.Column(db.String, nullable=False)
     email = db.Column(db.String, nullable=False, unique=True)
     password = db.Column(db.String, nullable=False)
+    home_address = db.Column(db.String)
+    home_lat = db.Column(db.Float)
+    home_lng = db.Column(db.Float)
 
     events = db.relationship("Event", back_populates="host")
     registrations = db.relationship("Registration", back_populates="user")
@@ -33,6 +36,8 @@ class User(db.Model):
                                 secondaryjoin=user_id == friend.c.f2_id,
                                 backref='followers')
     # followers: those following you
+    locations = db.relationship("Location", secondary="user_like_park", back_populates="users")
+    activities = db.relationship("Activity", secondary="user_like_activity", back_populates="users")
 
     def get_all_friends(self):
         """ Get all friends, those you are following AND those following you. """
@@ -43,7 +48,6 @@ class User(db.Model):
 
         return f"<User user_id={self.user_id} name={self.fname} {self.lname}>"
 
-    
 
 
 # 2. Event class
@@ -66,7 +70,6 @@ class Event(db.Model):
     location = db.relationship("Location", back_populates="events")
     registrations = db.relationship("Registration", back_populates="event")
     activities = db.relationship("Activity", secondary="activity_association", back_populates="events")
-    equipments = db.relationship("Equipment", back_populates="event")
 
 
     def __repr__(self):
@@ -111,6 +114,7 @@ class Location(db.Model):
     photo = db.Column(db.String) # url
 
     events = db.relationship("Event", back_populates="location")
+    users = db.relationship("User", secondary="user_like_park", back_populates="locations")
 
     def __repr__(self):
         """ Display location object on the screen"""
@@ -128,6 +132,7 @@ class Activity(db.Model):
     description = db.Column(db.Text)
 
     events = db.relationship("Event", secondary="activity_association", back_populates="activities")
+    users = db.relationship("User", secondary="user_like_activity", back_populates="activities")
 
     def __repr__(self):
         """ Display an activity object on the screen"""
@@ -149,27 +154,37 @@ class ActivityAssociation(db.Model):
 
         return f"<ActivityAssociation id={self.id} activity_id={self.activity_id} event_id={self.event_id}>"
 
-# 7. Equipment class
-class Equipment(db.Model):
-    """ Equipment """
 
-    __tablename__ = "equipments"
+# User's interests (Association table)
+class UserLikeActivity(db.Model):
+    """ User's interests"""
 
-    equipment_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    event_id = db.Column(db.Integer, db.ForeignKey("events.event_id"), nullable=False)
-    name = db.Column(db.String, nullable=False)
-    quantity = db.Column(db.Integer)
+    __tablename__ = "user_like_activity"
 
-    event = db.relationship("Event", back_populates="equipments") # one-to-many relationship?
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    activity_id = db.Column(db.Integer, db.ForeignKey("activities.activity_id"), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey("users.user_id"), nullable=False)
 
     def __repr__(self):
-        """ Display equipment object on the screen """
+        """ Display user's interests on the screen"""
 
-        return f"<Equipment equipment_id={self.equipment_id} name={self.name}>"
+        return f"<UserLikeActivity id={self.id} user_id={self.user_id} activity_id={self.activity_id}>"
 
 
-# 8. User association class (save it for later due to complexity)
+# User's interests (Association table)
+class UserLikePark(db.Model):
+    """ User's interests"""
 
+    __tablename__ = "user_like_park"
+
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    location_id = db.Column(db.Integer, db.ForeignKey("locations.location_id"), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey("users.user_id"), nullable=False)
+
+    def __repr__(self):
+        """ Display user's interests on the screen"""
+
+        return f"<UserLikePark id={self.id} user_id={self.user_id} location_id={self.location_id}>"
 
 # Connect to database: how to seed data?
 def connect_to_db(flask_app, db_uri="postgresql:///playdates", echo=True):
