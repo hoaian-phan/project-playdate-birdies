@@ -6,9 +6,9 @@ A web app where parents and grandparents can find playdates for their children.
 
 - Playdate Birdies is a community of parents and grandparents who love to bring their kids to outdoor activities to learn, play and make friends.
 - No matter how young children are, outdoor activities are beneficial to their development.
-- Interacting with other kids of similar age help them socialize and have fun.
+- Interacting with other kids of similar age helps them socialize and have fun.
 - Parents can volunteer to host a playdate at their chosen location (usually a public park). Other parents can search for a playdate of their interest and register to join.
-- The app supports meany features, such as following hosts, send email invitations to friends, add events to personal calendar, receive email reminders, recommend activities based on age group, and personalize playdate suggestions based on users' interests.
+- The app supports many features, such as following hosts, send email invitations to friends, add events to personal calendar, receive email reminders, recommend activities based on age group, and personalize playdate suggestions based on users' interests.
 - Let's help our kids play, grow and make friends, one playdate at a time.
 
 ## Technologies Used
