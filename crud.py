@@ -151,10 +151,18 @@ def recommend_events(user):
     events = db.session.query(Event).join(Location)
     events = events.filter(Event.date - today < 15, Event.date - today > 0)
     events = events.filter(Location.state == user.home_state)
-    # events = events.options(db.joinedload(Event.host).joinedload(Event.locations).joinedload(Event.activities)).all()
+    events = events.options(db.joinedload('location'), db.joinedload('activities'), db.joinedload('host')).all()
     
-    # Give each events a score based on scoring criteria
+    user_home = (user.home_lat, user.home_lng)
+    
+    # Give each event a score based on scoring criteria
     for event in events:
+        print("\n"* 2, "Starting scoring")
+        # Using geopy distance to calculate distance between home and parks, if over 25 miles, skip it
+        event_coords = (event.location.lat, event.location.lng)
+        if distance.distance(user_home, event_coords).miles > 25:
+            continue
+
         score = 0
         if event.host in user.get_all_friends():
             score += 10
@@ -166,17 +174,8 @@ def recommend_events(user):
                 break
         if event.date - today < timedelta(days=7):
             score += 7
-        else:
-            score += 3
-
-        # Using geopy distance to calculate distance between home and parks, score +7 if within 5 miles
-        if distance.distance((user.home_lat, user.home_lng), (event.location.lat, event.location.lng)).miles < 5:
-            score += 7
-
-
-        # newport_ri = (41.49008, -71.312796)
-        # cleveland_oh = (41.499498, -81.695391)
-        # print(distance.distance(newport_ri, cleveland_oh).miles)
+        if distance.distance(user_home, event_coords).miles < 10:
+            score += 6
 
         # Add event and its score to dict
         recommended[f"{event.event_id}"] = (score, event.date)

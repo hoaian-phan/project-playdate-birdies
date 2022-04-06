@@ -9,6 +9,7 @@ from flask_mail import Mail, Message
 import crud
 import os
 import re
+from geopy import distance
 
 app = Flask(__name__)
 app.secret_key = os.environ['SECRET_KEY']
@@ -99,18 +100,19 @@ def homepage():
     recommendation_events = []
     if "user_id" in session:
         user = crud.get_user_by_id(session["user_id"])
+        print("\n" * 10, "Starting querying")
         recommended = crud.recommend_events(user)
 
-        # Sort recommended dictionary by (score, datev) in descending order
+        # Sort recommended dictionary by (score, date) 
         sorted_recommendation = dict(sorted(recommended.items(), key=lambda item: (-item[1][0], item[1][1])))
         recommendations = []
         for key, value in sorted_recommendation.items():
-            print("\n" * 5)
+            print("\n")
             print(f"Sorted Recommended events {key} has the score of {value}")
             # Store event_id in a list
             recommendations.append(key)
         # From a list of event_id, make a list of maximum 15 first event objects
-        if len(recommendations) < 15:
+        if len(recommendations) <= 15:
             for item in recommendations:
                 event = crud.get_event_by_id(item)
                 recommendation_events.append(event)
@@ -793,6 +795,19 @@ def reminder():
     mail.send(msg)
 
     return "Sent"
+
+# Route to test distance calculation
+@app.route("/distance")
+def cal_distance():
+    """ Calculate distance between 2 coordinates """
+
+    newport_ri = (41.49008, -71.312796)
+    cleveland_oh = (41.499498, -81.695391)
+    print("*********")
+    print("the distance is", distance.distance(newport_ri, cleveland_oh).miles)
+    print("the type is", type(distance.distance(newport_ri, cleveland_oh).miles))
+    print("within 5 miles", distance.distance(newport_ri, cleveland_oh).miles < 5 )
+    return "Calculated"
 
 if __name__ == "__main__":
     # DebugToolbarExtension(app)
