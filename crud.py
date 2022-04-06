@@ -98,7 +98,6 @@ def get_events_by_inputs(city_zipcode, date, age_group, activity):
         events = events.filter((Location.zipcode==city_zipcode) | (Location.city==city_zipcode))
     if activity:
         events = events.join(ActivityAssociation).join(Activity)
-        # for activity in activities:
         events = events.filter((Activity.name.like(f"%{activity}%")))
     
     return events.all()
@@ -168,14 +167,15 @@ def recommend_events(user):
             score += 10
         if event.location in user.locations:
             score += 9
+        elif distance.distance(user_home, event_coords).miles < 10:
+            score += 6
         for activity in event.activities:
             if activity in user.activities:
                 score += 8
                 break
         if event.date - today < timedelta(days=7):
             score += 7
-        if distance.distance(user_home, event_coords).miles < 10:
-            score += 6
+        
 
         # Add event and its score to dict
         recommended[f"{event.event_id}"] = (score, event.date)

@@ -74,6 +74,9 @@
 
 <div class="host">
     <h2>Host a Playdate</h2>
+    Can't find a playdate that fits your schedule? <br>
+    Love to organize fun games for your kids and others?<br>
+    Want to join a loving community of parent hosts and meet new friends?<br><br>
     <form action="/host">
         <input type="submit" value="Try Hosting">
     </form>
@@ -82,16 +85,22 @@
 
 <div class="recommended">
     <h2>Recommended playdates for you</h2>
-    {% for event in recommendations %}
-        <div>
-            <p> <a href="/attend?event_id={{event.event_id}}"> Title: {{ event.title }} </a></p>
-            <p>On {{ event.date }} from {{ event.start_time }} to {{ event.end_time }}</p>
-           
-            {% if event.location.photo %}
-                <img src={{ event.location.photo }} alt="parkPhoto" />
-            {% endif %}
+    {% if 'user_id' in session and recommendations|length > 0 %}    
+        {% for event in recommendations %}
+            <div>
+                <p> <a href="/attend?event_id={{event.event_id}}"> Title: {{ event.title }} </a></p>
+                <p>On {{ event.date }} from {{ event.start_time }} to {{ event.end_time }}</p>
+            
+                {% if event.location.photo %}
+                    <img src={{ event.location.photo }} alt="parkPhoto" />
+                {% endif %}
+            </div>
+        {% endfor %}
+    {% else %}
+    <div>
+        Want to see playdates that fit your interests? Tell us more about you by <a href="/complete_profile">completing your profile.</a>
         </div>
-    {% endfor %}
+    {% endif %}
 </div>
 
 <div id="map" style="display: None"></div>

@@ -23,8 +23,6 @@ app.config['MAIL_PASSWORD'] = os.environ['MAIL_PASSWORD']
 app.config['MAIL_USE_TLS'] = True
 app.config['MAIL_USE_SSL'] = False
 app.config['MAIL_DEFAULT_SENDER'] = "do-not-reply@playdatebirdies.com"
-app.config['MAIL_MAX_EMAILS'] = 3
-
 
 mail = Mail(app)
 
@@ -91,139 +89,155 @@ ACTIVITIES = ["Draw with chalk", "Go on a scavenger hunt", "Kick a ball", "Blow 
             "Bike/scooter riding"]
 
 
-# 1. Homepage route
+# Homepage route
 @app.route("/")
 def homepage():
     """ Display homepage """
 
     # Recommend maximum 15 upcoming events of user's interests by the order of relevance
+    MAX_EVENTS = 15
     recommendation_events = []
     if "user_id" in session:
         user = crud.get_user_by_id(session["user_id"])
         print("\n" * 10, "Starting querying")
+        # Querying based on user's address, interests, friends, date, favorite parks
         recommended = crud.recommend_events(user)
-
         # Sort recommended dictionary by (score, date) 
         sorted_recommendation = dict(sorted(recommended.items(), key=lambda item: (-item[1][0], item[1][1])))
-        recommendations = []
-        for key, value in sorted_recommendation.items():
-            print("\n")
-            print(f"Sorted Recommended events {key} has the score of {value}")
-            # Store event_id in a list
-            recommendations.append(key)
-        # From a list of event_id, make a list of maximum 15 first event objects
-        if len(recommendations) <= 15:
-            for item in recommendations:
-                event = crud.get_event_by_id(item)
+        # From the dictionary, make a list of maximum 15 first event objects
+        if len(sorted_recommendation) <= MAX_EVENTS:
+            for key in sorted_recommendation.keys():
+                print("key", key, "type of key", type(key))
+                event = crud.get_event_by_id(key)
                 recommendation_events.append(event)
         else:
-            for index in range(15):
-                event = crud.get_event_by_id(recommendations[index])
+            # Create new dict with 15 first key-value pairs
+            limit_sorted_recommendation = dict(list(sorted_recommendation.items())[:15])
+            print("15 sorted recommendation", limit_sorted_recommendation)
+            for key in limit_sorted_recommendation.keys():
+                event = crud.get_event_by_id(key)
                 recommendation_events.append(event)
         print("\n" * 5)
         print(f"List of top events {recommendation_events}")
     
-
     return render_template("homepage.html", age_groups = AGE_GROUP, today = date.today(), recommendations = recommendation_events)
 
-# 2a. Sign up page with GET to render template with the sign up form
-@app.route("/signup")
+# Sign up page 
+@app.route("/signup", methods =["GET", "POST"])
 def sign_up():
-    """ Render the sign up page with the form in it"""
+    """ Get request renders the sign up page with the form in it, POST request processes the form"""
 
-    return render_template("signup.html")
-
-
-# 2b. Create an account route
-@app.route("/signup", methods = ["POST"])
-def create_user():
-    """ Create a new user """
     # Using POST request, get input from the sign up form
-    fname = request.form.get("first")
-    lname = request.form.get("last")
-    email = request.form.get("email")
-    password = request.form.get("password")
-    confirm_pw = request.form.get("confirm_password")
+    if request.method == "POST":
+        fname = request.form.get("first")
+        lname = request.form.get("last")
+        email = request.form.get("email")
+        password = request.form.get("password")
+        confirm_pw = request.form.get("confirm_password")
 
-    # Check if confirm password matches with password, if not, restart the sign up form
-    # Use Javascript to add event handler and prevent submitting the form
-    if password != confirm_pw:
-        flash("Passwords don't match. Please try again.")
-        return redirect("/signup")
+        # Check if confirm password matches with password, if not, restart the sign up form
+        # Use Javascript to add event handler and prevent submitting the form
+        if password != confirm_pw:
+            flash("Passwords don't match. Please try again.")
+            return redirect("/signup")
 
-    # Otherwise, get user object by the input email
-    user = crud.get_user_by_email(email)
+        # Otherwise, get user object by the input email
+        user = crud.get_user_by_email(email)
 
-    # Hash password for security reason
-    hashed = argon2.hash(password)
-    del password
-    del confirm_pw
+        # Hash password for security reason
+        hashed = argon2.hash(password)
+        del password
+        del confirm_pw
 
-    # If this user doesn't exist in database, create and add this new user to database
-    if not user:
-        new_user = crud.sign_up(fname, lname, email, hashed)
-        db.session.add(new_user)
-        db.session.commit()
-        # Flash message and add user_id to session 
-        flash(f"Hi {new_user.fname}, welcome to Playdate Birdies community.")
-        session["user_id"] = new_user.user_id 
-        session["user_fname"] = new_user.fname
-        if "event_id" in session:
-            event = crud.get_event_by_id(session["event_id"])
-            return render_template("register.html", event=event)
-        # return user to their previous page (hosting or register or homepage) - add later
-        return redirect("/")
-    else: # if user exists, flash message and restart sign up form
-        flash("This email has already been used. Please try a different email.")
-        return redirect("/signup")
-
-
-# 3a. Login with GET to render template login with the login form
-@app.route("/login")
-def login_get():
-    """ Render the login page with the form in it"""
-
-    if "user_id" in session:
-        flash("You are already logged in.")
-        return redirect ("/")
-    
-    return render_template("login.html")
-
-# 3b. Login route with POST 
-@app.route("/login", methods = ["POST"])
-def login():
-    """ User login """
-
-    # Using POST method, get the input email and password from the log in form
-    email = request.form.get("email")
-    password = request.form.get("password")
-    # remember = request.form.get("remember_me")
-
-    # Get the user object by input email
-    user = crud.get_user_by_email(email)
-
-    # If this user exists in database, check if password matches; if yes, log in
-    if user:
-        if argon2.verify(password, user.password):
-            flash(f"Hi {user.fname}, welcome back.")
-            session["user_id"] = user.user_id
-            session["user_fname"] = user.fname
+        # If this user doesn't exist in database, create and add this new user to database
+        if not user:
+            new_user = crud.sign_up(fname, lname, email, hashed)
+            db.session.add(new_user)
+            db.session.commit()
+            # Flash message and add user_id to session 
+            flash(f"Hi {new_user.fname}, welcome to Playdate Birdies community.")
+            session["user_id"] = new_user.user_id 
+            session["user_fname"] = new_user.fname
             if "event_id" in session:
                 event = crud.get_event_by_id(session["event_id"])
                 return render_template("register.html", event=event)
             # return user to their previous page (hosting or register or homepage) - add later
             return redirect("/")
-        else: # if not, flash message
-            flash("This email and password combination is incorrect.") #or click Forget password
-    else:
-        flash("This email and password combination is incorrect.") #or click Forget email address
-    
-    return redirect("/login")
+        # if user exists, flash message and restart sign up form
+        flash("This email has already been used. Please try a different email.")
+        return redirect("/signup")
+
+    return render_template("signup.html")
+
+
+# Login page
+@app.route("/login", methods = ["GET", "POST"])
+def login():
+    """ GET request renders the login form, POST request processes the form """
+
+    if "user_id" in session:
+        flash("You are already logged in.")
+        return redirect ("/")
+
+    # Using POST method, get the input email and password from the log in form
+    if request.method == "POST":
+        email = request.form.get("email")
+        password = request.form.get("password")
+        # remember = request.form.get("remember_me")
+
+        # Get the user object by input email
+        user = crud.get_user_by_email(email)
+
+        # If this user exists in database, check if password matches; if yes, log in
+        if user:
+            if argon2.verify(password, user.password):
+                flash(f"Hi {user.fname}, welcome back.")
+                session["user_id"] = user.user_id
+                session["user_fname"] = user.fname
+                if "event_id" in session:
+                    event = crud.get_event_by_id(session["event_id"])
+                    return render_template("register.html", event=event)
+                return redirect("/")
+            else: # if not, flash message
+                flash("This email and password combination is incorrect.") 
+        else:
+            flash("This email and password combination is incorrect.") 
+        
+        return redirect("/login")
+
+    return render_template("login.html")
 
 # Render the form to reset password
-@app.route("/forget_pw")
-def forget_password():
-    """ Render the reset password form"""
+@app.route("/forget_pw", methods = ["GET", "POST"])
+def rest_password():
+    """ GET request renders the reset password form, POST request processes the form"""
+
+    # Using POST request, get input from the reset password form
+    if request.method == "POST": 
+        fname = request.form.get("first")
+        lname = request.form.get("last")
+        email = request.form.get("email")
+        password = request.form.get("password")
+        confirm_pw = request.form.get("confirm_password")
+
+        # Check if confirm password matches with password, if not, restart the form
+        if password != confirm_pw:
+            flash("Passwords don't match. Please try again.")
+            return redirect("/reset_pw")
+
+        # Check if name and email address match with a current user
+        user = crud.get_user_by_name_email(fname, lname, email)
+        if user:
+            # Hash password for security reason
+            user.password = argon2.hash(password)
+            del password
+            del confirm_pw
+            db.session.commit()
+            flash("Successfully reset your password. ")
+            return redirect("/login")
+        else:
+            flash("Name and email addres do not match our record. Please try again or sign up for a new account.")
+            return redirect("/forget_pw")
 
     return render_template("reset_password.html")
 
@@ -267,7 +281,7 @@ def logout():
 
     if "user_id" in session:
         session.clear()
-        flash("You were logged out.")
+        flash("You were logged out. Come back soon!")
     
     return redirect("/")
 
@@ -276,7 +290,7 @@ def logout():
 def show_profile():
     """ Show user profile """
     if "user_id" not in session:
-        return redirect("/")
+        return redirect("/login")
     # Get user object by user_id
     user = crud.get_user_by_id(session["user_id"])
     # Iterate through each event this user is the host, and make a pass and future events
@@ -507,17 +521,18 @@ def show_details():
 
     # Get the event_id from fetch call
     event_id = request.args.get("event_id")
+    print("event id", event_id)
 
     # Get the event by event_id
     event = crud.get_event_by_id(event_id)
     
     # Check if this user_id already register for this event
+    registered = False
     if "user_id" in session:
         registration = crud.get_registration(event_id, session["user_id"])
-    if registration:
-        registered = True
-    else:
-        registered = False
+        if registration:
+            registered = True
+        
 
     # Remake event dictionary for jsonify
     event = {
@@ -727,21 +742,12 @@ def like_park():
     
     return jsonify({"success": True})
 
-# Route to answer fetch call to get user's home coordinates
-@app.route("/nearby")
-def get_coordinates():
-    """ Answer fetch call for user's home coordinates """
-
-    if "user_id" in session:
-        user = crud.get_user_by_id(session["user_id"])
-        return jsonify({"success": True, "lat": user.home_lat, "lng": user.home_lng})
-
-
 
 # Route to render Calendar page
 @app.route("/calendar")
 def show_calendar():
     """ Show the personal calendar with events"""
+    
 
     user_id = session["user_id"]
     user = crud.get_user_by_id(user_id)
@@ -768,7 +774,7 @@ def show_calendar():
             }
         )
     
-    return render_template("calendar.html", cal_events=events_dict)
+    return render_template("calendar.html", cal_events=events_dict, today = date.today())
 
 
 # Send reminder email route
@@ -796,18 +802,6 @@ def reminder():
 
     return "Sent"
 
-# Route to test distance calculation
-@app.route("/distance")
-def cal_distance():
-    """ Calculate distance between 2 coordinates """
-
-    newport_ri = (41.49008, -71.312796)
-    cleveland_oh = (41.499498, -81.695391)
-    print("*********")
-    print("the distance is", distance.distance(newport_ri, cleveland_oh).miles)
-    print("the type is", type(distance.distance(newport_ri, cleveland_oh).miles))
-    print("within 5 miles", distance.distance(newport_ri, cleveland_oh).miles < 5 )
-    return "Calculated"
 
 if __name__ == "__main__":
     # DebugToolbarExtension(app)
