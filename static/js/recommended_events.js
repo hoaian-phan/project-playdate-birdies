@@ -1,8 +1,7 @@
 'use strict';
 // This file is used for :
-// 1. autocomplete user's physical address
-// 2. get coordinates of user's address
-// 3. search by radius for near by locations
+// 1. search by radius for near by locations
+// 2. Compute the distance between places
 
 
 
@@ -16,5 +15,47 @@ function nearbyMap() {
         },
         zoom: 11,
     });
-}
+    // Send fetch request to get user's home coordinates
+    document.addEventListener('DOMContentLoaded', () => {
+        let user_location;
+        fetch("/nearby")
+            .then(reply => reply.json())
+            .then(dataJson => {
+                if (dataJson.lat && dataJson.lng){
+                    console.log(typeof(dataJson.lat), typeof(dataJson.lng));
+                    user_location = {
+                        "lat" : dataJson.lat,
+                        "lng" : dataJson.lng,
+                    };
+                }
+                //Request to be sent to nearbySearch
+                const request = {
+                    location: user_location,
+                    radius: '8000',
+                    type: ['park']
+                };
+                console.log(`request: ${request.location.lat}, ${request.location.lng} `)
 
+                // Search for parks around user's home address using nearbySearch
+                let listResults = [];
+                const service = new google.maps.places.PlacesService(basicMap);
+                console.log(service);
+                // Use nearbySearch and get the first 10 closest parks
+                service.nearbySearch(request, (results, status)  => {
+                    
+                    if (status == google.maps.places.PlacesServiceStatus.OK) {
+                        console.log(results.length);
+                        for (let i = 0; i < results.length; i++) {
+                            console.log(results[i]);
+                            listResults.push(results[i]);
+                        }
+                    }
+                })
+                
+
+            })
+    
+
+         
+    });
+}

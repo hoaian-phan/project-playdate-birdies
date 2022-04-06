@@ -37,6 +37,7 @@ function userMap() {
         // Save full address and coordinates
         address = place.formatted_address;
         console.log("full address", address);
+        
 
         coordinates = {
             lat: place.geometry.location.lat(),
@@ -47,23 +48,23 @@ function userMap() {
     
     // Select the form and upon submitting, send AJAX request to update coordinates and full address of the user in database
     document.getElementById("profile").addEventListener("submit", () => {
-    const userAddress = {
-        lat: coordinates.lat,
-        lng: coordinates.lng,
-        address: address,
-    };
-   
-    fetch("/update_profile", {
-        method: 'POST',
-        body: JSON.stringify(userAddress),
-        headers: {
-            'Content-Type': 'application/json',
-        },
-    })
-        .then(reply => reply.json())
-        .then(replyJson => {
-            const status = replyJson.status;
-            console.log(status);
+        const userAddress = {
+            lat: coordinates.lat,
+            lng: coordinates.lng,
+            address: address,
+        };
+    
+        fetch("/update_profile", {
+            method: 'POST',
+            body: JSON.stringify(userAddress),
+            headers: {
+                'Content-Type': 'application/json',
+            },
         })
-    });
+            .then(reply => reply.json())
+            .then(replyJson => {
+                const status = replyJson.status;
+                console.log(status);
+            })
+        });
 }

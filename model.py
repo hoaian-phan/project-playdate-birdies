@@ -25,8 +25,10 @@ class User(db.Model):
     email = db.Column(db.String, nullable=False, unique=True)
     password = db.Column(db.String, nullable=False)
     home_address = db.Column(db.String)
+    home_state = db.Column(db.String(2))
     home_lat = db.Column(db.Float)
     home_lng = db.Column(db.Float)
+
 
     events = db.relationship("Event", back_populates="host")
     registrations = db.relationship("Registration", back_populates="user")

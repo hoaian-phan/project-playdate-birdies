@@ -8,6 +8,7 @@ from passlib.hash import argon2
 from flask_mail import Mail, Message
 import crud
 import os
+import re
 
 app = Flask(__name__)
 app.secret_key = os.environ['SECRET_KEY']
@@ -93,9 +94,35 @@ ACTIVITIES = ["Draw with chalk", "Go on a scavenger hunt", "Kick a ball", "Blow 
 @app.route("/")
 def homepage():
     """ Display homepage """
+
+    # Recommend maximum 15 upcoming events of user's interests by the order of relevance
+    recommendation_events = []
+    if "user_id" in session:
+        user = crud.get_user_by_id(session["user_id"])
+        recommended = crud.recommend_events(user)
+
+        # Sort recommended dictionary by (score, datev) in descending order
+        sorted_recommendation = dict(sorted(recommended.items(), key=lambda item: (-item[1][0], item[1][1])))
+        recommendations = []
+        for key, value in sorted_recommendation.items():
+            print("\n" * 5)
+            print(f"Sorted Recommended events {key} has the score of {value}")
+            # Store event_id in a list
+            recommendations.append(key)
+        # From a list of event_id, make a list of maximum 15 first event objects
+        if len(recommendations) < 15:
+            for item in recommendations:
+                event = crud.get_event_by_id(item)
+                recommendation_events.append(event)
+        else:
+            for index in range(15):
+                event = crud.get_event_by_id(recommendations[index])
+                recommendation_events.append(event)
+        print("\n" * 5)
+        print(f"List of top events {recommendation_events}")
     
 
-    return render_template("homepage.html", age_groups = AGE_GROUP, today = date.today())
+    return render_template("homepage.html", age_groups = AGE_GROUP, today = date.today(), recommendations = recommendation_events)
 
 # 2a. Sign up page with GET to render template with the sign up form
 @app.route("/signup")
@@ -301,16 +328,21 @@ def update_address():
     home_address = request.json.get("address")
     home_lat = request.json.get("lat")
     home_lng = request.json.get("lng")
+    address_components = home_address.split(", ")
+    home_state = re.search(r"[A-Z]{2}", address_components[2])
+    print("\n" * 5)
+    print("home state", home_state)
     
     # Get the user object by user id
     user = crud.get_user_by_id(session["user_id"])
     # Update the coordinates
     user.home_address = home_address
+    user.home_state = str(home_state.group())
     user.home_lat = home_lat
     user.home_lng = home_lng
     db.session.commit()
 
-    return {"status": "ok"}
+    return jsonify({"status": "ok"})
 
 
 
@@ -621,9 +653,12 @@ def follow():
     # Get user2_id from the url and retrieve user2 object
     user2_id = request.args.get("user2_id")
     user2 = crud.get_user_by_id(user2_id)
+    # Check if user1 and user2 is the same
+    if user1 == user2:
+        return jsonify({"success": "self", "reason": "You can't follow yourself."})
     # Check if user1 and user2 are friends already
     if user1 in user2.get_all_friends():
-        return jsonify({"success": False, "friend": user2.fname + " " + user2.lname})
+        return jsonify({"success": False, "reason": "You already followed this host."})
     # User1 follows user2
     user1.following.append(user2)
     db.session.commit()
@@ -689,6 +724,15 @@ def like_park():
     db.session.commit()
     
     return jsonify({"success": True})
+
+# Route to answer fetch call to get user's home coordinates
+@app.route("/nearby")
+def get_coordinates():
+    """ Answer fetch call for user's home coordinates """
+
+    if "user_id" in session:
+        user = crud.get_user_by_id(session["user_id"])
+        return jsonify({"success": True, "lat": user.home_lat, "lng": user.home_lng})
 
 
 

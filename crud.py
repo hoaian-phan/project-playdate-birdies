@@ -2,7 +2,8 @@
 
 from model import (db, connect_to_db, User, Event, Registration, Location,
                    Activity, ActivityAssociation, UserLikeActivity, UserLikePark) 
-from datetime import date
+from datetime import date, timedelta
+from geopy import distance
 
 
 
@@ -137,6 +138,51 @@ def is_future(event):
     if event.date > today:
         return True
     return False
+
+# Recommended upcoming events:
+def recommend_events(user):
+    """ Return a list of recommended upcoming events sorted by score"""
+
+    # Create a dictionary with key is the event and value is the scores
+    recommended = {}
+    
+    # Get all upcoming events within the next 15 days in user's home state
+    today = date.today()
+    events = db.session.query(Event).join(Location)
+    events = events.filter(Event.date - today < 15, Event.date - today > 0)
+    events = events.filter(Location.state == user.home_state)
+    # events = events.options(db.joinedload(Event.host).joinedload(Event.locations).joinedload(Event.activities)).all()
+    
+    # Give each events a score based on scoring criteria
+    for event in events:
+        score = 0
+        if event.host in user.get_all_friends():
+            score += 10
+        if event.location in user.locations:
+            score += 9
+        for activity in event.activities:
+            if activity in user.activities:
+                score += 8
+                break
+        if event.date - today < timedelta(days=7):
+            score += 7
+        else:
+            score += 3
+
+        # Using geopy distance to calculate distance between home and parks, score +7 if within 5 miles
+        if distance.distance((user.home_lat, user.home_lng), (event.location.lat, event.location.lng)).miles < 5:
+            score += 7
+
+
+        # newport_ri = (41.49008, -71.312796)
+        # cleveland_oh = (41.499498, -81.695391)
+        # print(distance.distance(newport_ri, cleveland_oh).miles)
+
+        # Add event and its score to dict
+        recommended[f"{event.event_id}"] = (score, event.date)
+
+    return recommended
+
 
 # Registration: Get registration by event id and user id
 def get_registration(event_id, user_id):

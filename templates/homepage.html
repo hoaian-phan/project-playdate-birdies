@@ -82,13 +82,29 @@
 
 <div class="recommended">
     <h2>Recommended playdates for you</h2>
-    
-    <ul>
-        <li>Playdate 3</li>
-        <li>Playdate 2</li>
-        <li>Playdate 1</li>
-
-    </ul>
+    {% for event in recommendations %}
+        <div>
+            <p> <a href="/attend?event_id={{event.event_id}}"> Title: {{ event.title }} </a></p>
+            <p>On {{ event.date }} from {{ event.start_time }} to {{ event.end_time }}</p>
+            <!-- <p>Description: {{ event.description }}</p>
+            {% if event.location.photo %}
+                <img src={{ event.location.photo }} alt="parkPhoto" />
+            {% endif %}
+            <p>Location: {{ event.location.name }}</p>
+            <p>Address: {{ event.location.address }}, {{ event.location.city }}, 
+                {{ event.location.state }} {{ event.location.zipcode }} </p>
+            <p>On {{ event.date }} from {{ event.start_time }} to {{ event.end_time }}</p>
+            <p>Activities: 
+                {% for activity in event.activities %}
+                    {% if loop.last %}
+                        {{ activity.name }}.
+                    {% else %}
+                        {{ activity.name }},
+                    {% endif %}
+                {% endfor %} -->
+            </p>
+        </div>
+    {% endfor %}
 
 
 </div>
@@ -107,7 +123,7 @@
 <!-- Google Map APIs -->
 <script
     async
-    src="https://maps.googleapis.com/maps/api/js?&libraries=places&key=AIzaSyAD0oTJmmfCcudTYnSthIF1Z9QW3H5GC5s&callback=nearbyMap">
+    src="https://maps.googleapis.com/maps/api/js?&libraries=places, geometry&key=AIzaSyAD0oTJmmfCcudTYnSthIF1Z9QW3H5GC5s&callback=nearbyMap">
 </script>
 
 

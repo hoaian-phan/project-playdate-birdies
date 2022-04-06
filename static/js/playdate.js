@@ -48,9 +48,10 @@ for (const button of buttons) {
                             .then(dataJson => {
                                 if (dataJson.success === true) {
                                     alert(`You successfully followed ${dataJson.friend}.`)
-                                }
-                                else {
-                                    alert(`You already followed ${dataJson.friend}.`)
+                                } else if (dataJson.success === "self") {
+                                    alert(`${dataJson.reason}`)
+                                } else {
+                                    alert(`${dataJson.reason}.`)
                                 }
                             })
                     })
