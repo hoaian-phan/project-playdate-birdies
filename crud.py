@@ -111,6 +111,15 @@ def get_event_by_id(event_id):
 
     return event
 
+# Event: Get event by inputs
+def get_event_by_inputs(host_id, event_date, start, end):
+    """ Return an event by inputs"""
+
+    event = Event.query.filter_by(host_id=host_id, date=event_date, start_time=start, end_time=end).first()
+
+    return event
+
+
 # Event: Get a list of events this user has registered for
 def get_events_by_userid(user_id):
     """ Return a list of events this user has registered for"""
@@ -176,8 +185,7 @@ def recommend_events(user):
                 break
         if event.date - today < timedelta(days=7):
             score += 7
-        
-
+    
         # Add event and its score to dict
         recommended[f"{event.event_id}"] = (score, event.date)
 

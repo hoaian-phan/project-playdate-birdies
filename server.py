@@ -3,7 +3,7 @@
 from flask import (Flask, render_template, request, redirect, flash, session, jsonify)
 from model import connect_to_db, db
 from jinja2 import StrictUndefined
-from datetime import datetime, date
+from datetime import datetime, date, timedelta
 from passlib.hash import argon2
 from flask_mail import Mail, Message
 import crud
@@ -384,9 +384,13 @@ def host():
             db.session.add(input_location)
             db.session.commit()
 
-        # Create a new event object and add to database
+        # Check if this host already hosted an event on the same day, time and location
+        event = crud.get_event_by_inputs(host_id, datemonth, start, end)
+        if event:
+            flash("You can't host two events at the same time.")
+        # Else, create a new event object and add to database
         new_event = crud.host_a_playdate(host_id, title, description, input_location.location_id,
-                                        datemonth, start, end, age_group)
+                                    datemonth, start, end, age_group)
         db.session.add(new_event)
         db.session.commit()
 
@@ -408,6 +412,14 @@ def host():
             activity_event = crud.create_activity_event_asso(activity.activity_id, new_event.event_id)
             db.session.add(activity_event)
             db.session.commit()
+        
+        # # Process date string input
+        # if datemonth:
+        #     datemonth = datetime.strptime(datemonth, '%Y-%m-%d').date()
+        # # Create an email notification and send
+        # msg = Message("You have an upcoming playdate tomorrow", recipients=[new_event.host.email], date=datemonth - timedelta(days=1))
+        # msg.html = f"Don't need to wait long, your playdate is tomorrow! Log in to <br><a href={request.url_root}/profile>your profile</a> to see details."
+        # mail.send(msg)
 
         flash(f"{new_event.host.fname}, your playdate {new_event.title} is scheduled on {new_event.date} from {new_event.start_time} to {new_event.end_time} at {new_event.location.name}.")
         flash("Congratulations! You will be an awesome host!")
