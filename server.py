@@ -85,8 +85,9 @@ AGE_GROUP = ["infants", "toddlers", "preschoolers", "kindergarteners",
 ACTIVITIES = ["Draw with chalk", "Go on a scavenger hunt", "Kick a ball", "Blow bubbles",
             "Play tag", "Tug of war", "Fly a kite", "Squirt water guns", "Basket ball", 
             "Play with sand", "Have a race", "Make paper airplanes", "Water balloon t-ball",
-            "Hula hoop", "Painting", "Collect leaves", "Jumping rope", "Bag jumping", 
-            "Bike/scooter riding"]
+            "Hula hoop", "Drawing and coloring", "Collect leaves", "Jumping rope", "Bag jumping", 
+            "Bike/scooter riding", "Volley ball", "Obstacle course", "Finger painting", "Singing",
+            "Music time", "Dancing", "Musical chair"]
 
 
 # Homepage route
@@ -129,8 +130,8 @@ def sign_up():
 
     # Using POST request, get input from the sign up form
     if request.method == "POST":
-        fname = request.form.get("first")
-        lname = request.form.get("last")
+        fname = request.form.get("first").title()
+        lname = request.form.get("last").title()
         email = request.form.get("email")
         password = request.form.get("password")
         confirm_pw = request.form.get("confirm_password")
@@ -214,8 +215,8 @@ def rest_password():
 
     # Using POST request, get input from the reset password form
     if request.method == "POST": 
-        fname = request.form.get("first")
-        lname = request.form.get("last")
+        fname = request.form.get("first").title()
+        lname = request.form.get("last").title()
         email = request.form.get("email")
         password = request.form.get("password")
         confirm_pw = request.form.get("confirm_password")
@@ -241,38 +242,6 @@ def rest_password():
 
     return render_template("reset_password.html")
 
-# Reset password
-@app.route("/reset_pw", methods=["POST"])
-def reset_password():
-    """ Reset password"""
-
-    # Using POST request, get input from the reset password form
-    fname = request.form.get("first")
-    lname = request.form.get("last")
-    email = request.form.get("email")
-    password = request.form.get("password")
-    confirm_pw = request.form.get("confirm_password")
-
-    # Check if confirm password matches with password, if not, restart the form
-    if password != confirm_pw:
-        flash("Passwords don't match. Please try again.")
-        return redirect("/reset_pw")
-
-    # Hash password for security reason
-    hashed = argon2.hash(password)
-    del password
-    del confirm_pw
-
-    # Check if name and email address match with a current user
-    user = crud.get_user_by_name_email(fname, lname, email)
-    if user:
-        user.password = hashed
-        db.session.commit()
-        flash("Successfully reset your password. ")
-        return redirect("/login")
-    else:
-        flash("Name and email addres do not match our record. Please try again or sign up for a new account.")
-        return redirect("/forget_pw")
 
 # Log out
 @app.route("/logout")
@@ -412,14 +381,6 @@ def host():
             activity_event = crud.create_activity_event_asso(activity.activity_id, new_event.event_id)
             db.session.add(activity_event)
             db.session.commit()
-        
-        # # Process date string input
-        # if datemonth:
-        #     datemonth = datetime.strptime(datemonth, '%Y-%m-%d').date()
-        # # Create an email notification and send
-        # msg = Message("You have an upcoming playdate tomorrow", recipients=[new_event.host.email], date=datemonth - timedelta(days=1))
-        # msg.html = f"Don't need to wait long, your playdate is tomorrow! Log in to <br><a href={request.url_root}/profile>your profile</a> to see details."
-        # mail.send(msg)
 
         flash(f"{new_event.host.fname}, your playdate {new_event.title} is scheduled on {new_event.date} from {new_event.start_time} to {new_event.end_time} at {new_event.location.name}.")
         flash("Congratulations! You will be an awesome host!")
@@ -496,6 +457,10 @@ def search():
     date = request.args.get("date")
     age_group = request.args.get("age_group")
     activity = request.args.get("activity")
+
+    # Process lower case city_zipcode input
+    if not city_zipcode.isdigit():
+        city_zipcode = city_zipcode.title()
 
     # Process date string input
     if date:
