@@ -159,7 +159,8 @@ def recommend_events(user):
         print("\n"* 2, "Starting scoring")
         # Using geopy distance to calculate distance between home and parks, if over 25 miles, skip it
         event_coords = (event.location.lat, event.location.lng)
-        if distance.distance(user_home, event_coords).miles > 25:
+        distance_from_home = distance.distance(user_home, event_coords).miles
+        if distance_from_home > 25:
             continue
 
         score = 0
@@ -167,7 +168,7 @@ def recommend_events(user):
             score += 10
         if event.location in user.locations:
             score += 9
-        elif distance.distance(user_home, event_coords).miles < 10:
+        elif distance_from_home < 10:
             score += 6
         for activity in event.activities:
             if activity in user.activities:

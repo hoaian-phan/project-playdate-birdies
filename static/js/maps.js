@@ -1,6 +1,6 @@
 'use strict';
 
-// This function uses: 
+// This function serves the host feature. It uses
 // 1. autocomplete to suggest addresses and upon chosen, it fills in the rest of the address,
 // 2. also by autocomplete, it gets the coordinates of the location 
 // 3. textSearch to get location's photo 

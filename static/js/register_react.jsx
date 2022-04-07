@@ -9,7 +9,7 @@ const RegistrationForm = (props) => {
 
     // Register by sending AJAX to server and add registration to database
     const register = () => {
-        fetch("/register_name", {
+        fetch("/register", {
             method: 'POST',
             body: JSON.stringify({'name': name, 'num_people': number}),
             headers: {

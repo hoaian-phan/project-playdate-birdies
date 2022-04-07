@@ -26,6 +26,8 @@
     <p>Description: {{ event.description }}</p>
     {% if event.location.photo %}
         <img src={{ event.location.photo }} alt="parkPhoto" />
+    {% else %}
+        <img src=/static/image/park.jpeg alt="parkPhoto" />
     {% endif %}
     <p>Location: {{ event.location.name }}</p>
     <p>Address: {{ event.location.address }}, {{ event.location.city }}, 

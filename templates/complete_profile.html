@@ -23,12 +23,15 @@
 
 <form id="profile" action="/complete_profile" method="POST">
     <div>
-        <label for="address">Your address</label>
+        <label for="address">Please input your address by choosing one of the suggestions in the suggestion box.</label><br>
         <input type="text" name="address" placeholder="Full address" id="address" size="50" required>
+        <input type="hidden" name="lat" id="lat">
+        <input type="hidden" name="lng" id="lng">
     </div>
 
+    <br><br>
     <div>
-        Your children's favorite activities<br>
+        Your children's favorite activities: Select all that apply<br>
         
         {% for activity in activities %}
                 <input class="choices" type="checkbox" name="activity" value="{{activity}}" id="activity{{loop.index}}">

@@ -274,7 +274,7 @@ def reset_password():
         flash("Name and email addres do not match our record. Please try again or sign up for a new account.")
         return redirect("/forget_pw")
 
-# 4. Log out
+# Log out
 @app.route("/logout")
 def logout():
     """ Log out """
@@ -285,7 +285,7 @@ def logout():
     
     return redirect("/")
 
-# 5. User profile
+# User profile
 @app.route("/profile")
 def show_profile():
     """ Show user profile """
@@ -317,12 +317,24 @@ def show_profile():
 # Render the complete profile page
 @app.route("/complete_profile", methods = ["GET", "POST"])
 def complete_profile():
-    """ Get request renders the complete profile form, post request updates info in database"""
+    """ GET request renders the complete profile form, POST request updates user info in database"""
 
     user = crud.get_user_by_id(session["user_id"])
+    # Post request, get info from the form and update database
     if request.method == "POST":
+        home_address = request.form.get("address")
+        home_lat = request.form.get("lat")
+        home_lng = request.form.get("lng")
         activity_list = request.form.getlist("activity")
-        print("activity_list ", activity_list, type(activity_list))
+
+        # Process address to get the home state
+        address_components = home_address.split(", ")
+        home_state = re.search(r"[A-Z]{2}", address_components[2])
+        # Update the address, state and coordinates to database
+        user.home_address = home_address
+        user.home_state = str(home_state.group())
+        user.home_lat = home_lat
+        user.home_lng = home_lng
         
         # Create user's favorite activity and add to database
         for one_activity in activity_list:
@@ -330,112 +342,82 @@ def complete_profile():
             if activity not in user.activities:
                 user_like_activity = crud.create_user_favorite_activity(session["user_id"], activity.activity_id)
                 db.session.add(user_like_activity)
-                db.session.commit()
+        db.session.commit()
         return redirect("/profile")
 
     return render_template("complete_profile.html", age_groups = AGE_GROUP, activities=ACTIVITIES)
 
 
-# Get data from AJAX and update user's address, coordinates and favorite activities
-@app.route("/update_profile", methods = ["POST"])
-def update_address():
-    """ Update user's address, coordinates and favorite activities in database"""
-
-    home_address = request.json.get("address")
-    home_lat = request.json.get("lat")
-    home_lng = request.json.get("lng")
-    address_components = home_address.split(", ")
-    home_state = re.search(r"[A-Z]{2}", address_components[2])
-    print("\n" * 5)
-    print("home state", home_state)
-    
-    # Get the user object by user id
-    user = crud.get_user_by_id(session["user_id"])
-    # Update the coordinates
-    user.home_address = home_address
-    user.home_state = str(home_state.group())
-    user.home_lat = home_lat
-    user.home_lng = home_lng
-    db.session.commit()
-
-    return jsonify({"status": "ok"})
-
-
-
-# 4a. Rendering the Hosting papge with GET
-@app.route("/host")
+# Hosting an event
+@app.route("/host", methods = ["GET", "POST"])
 def host():
-    """ Display host form"""
+    """ GET request renders the host form, POST request processes the form"""
 
     if "user_id" not in session:
         flash("Please log in to host a playdate.")
         return redirect("/login")
+
+    # Post request, get inputs from the form and create a new event
+    if request.method == "POST":
+        # Get host_id from session
+        host_id = session["user_id"]
+        # Get inputs from the form
+        title = request.form.get("title")
+        description = request.form.get("description")
+        name = request.form.get("location")
+        address = request.form.get("address")
+        city = request.form.get("city")
+        state = request.form.get("state")
+        zipcode = request.form.get("zipcode")
+        datemonth = request.form.get("date")
+        start = request.form.get("start")
+        end = request.form.get("end")
+        age_group = request.form.get("age_group")
+        standard_activities = request.form.getlist("activity")
+        other_activity = request.form.get("otherActivity")
+
+        # Query this input location to check it is already in database
+        input_location = crud.get_location_by_name_and_address(name=name, address=address)
+        # If not, create a new location object and add to database
+        if not input_location:
+            input_location = crud.create_new_location(name, address, city, zipcode, state)
+            db.session.add(input_location)
+            db.session.commit()
+
+        # Create a new event object and add to database
+        new_event = crud.host_a_playdate(host_id, title, description, input_location.location_id,
+                                        datemonth, start, end, age_group)
+        db.session.add(new_event)
+        db.session.commit()
+
+        # Process activity inputs
+        other_activities = other_activity.split(", ")
+        # check to see if "other" is in the list of standard_activities
+        if "other" in standard_activities:
+            activities = standard_activities[:-1] + other_activities
+        else:
+            activities = standard_activities[:] + other_activities
+        # Create activity and add to database
+        for one_activity in activities:
+            activity = crud.get_activity_by_name(one_activity)
+            if not activity:
+                activity = crud.create_an_activity(one_activity)
+                db.session.add(activity)
+                db.session.commit()
+            # Create association between activity and event
+            activity_event = crud.create_activity_event_asso(activity.activity_id, new_event.event_id)
+            db.session.add(activity_event)
+            db.session.commit()
+
+        flash(f"{new_event.host.fname}, your playdate {new_event.title} is scheduled on {new_event.date} from {new_event.start_time} to {new_event.end_time} at {new_event.location.name}.")
+        flash("Congratulations! You will be an awesome host!")
+        
+        return redirect("/profile")
     
     return render_template("hosting.html", today = date.today(), states=US_STATES, age_groups=AGE_GROUP, activities=ACTIVITIES)
 
 
-# 4b. Hosting page with POST to create an event
-@app.route("/host", methods=["POST"])
-def hosting():
-    """ Host a playdate"""
-
-    # Get host_id from session
-    host_id = session["user_id"]
-    # Get input from the form
-    title = request.form.get("title")
-    description = request.form.get("description")
-    name = request.form.get("location")
-    address = request.form.get("address")
-    city = request.form.get("city")
-    state = request.form.get("state")
-    zipcode = request.form.get("zipcode")
-    date = request.form.get("date")
-    start = request.form.get("start")
-    end = request.form.get("end")
-    age_group = request.form.get("age_group")
-    standard_activities = request.form.getlist("activity")
-    other_activity = request.form.get("otherActivity")
-
-    # Query this input location to check it is already in database
-    input_location = crud.get_location_by_name_and_address(name=name, address=address)
-    # If not, create a new location object and add to database
-    if not input_location:
-        input_location = crud.create_new_location(name, address, city, zipcode, state)
-        db.session.add(input_location)
-        db.session.commit()
-
-    # Create a new event object and add to database
-    new_event = crud.host_a_playdate(host_id, title, description, input_location.location_id,
-                                    date, start, end, age_group)
-    db.session.add(new_event)
-    db.session.commit()
-
-    # Process activity inputs
-    other_activities = other_activity.split(", ")
-    # check to see if "other" is in the list of standard_activities
-    if "other" in standard_activities:
-        activities = standard_activities[:-1] + other_activities
-    else:
-        activities = standard_activities[:] + other_activities
-    # Create activity and add to database
-    for one_activity in activities:
-        activity = crud.get_activity_by_name(one_activity)
-        if not activity:
-            activity = crud.create_an_activity(one_activity)
-            db.session.add(activity)
-            db.session.commit()
-        # Create association between activity and event
-        activity_event = crud.create_activity_event_asso(activity.activity_id, new_event.event_id)
-        db.session.add(activity_event)
-        db.session.commit()
-
-    flash(f"{new_event.host.fname}, your playdate {new_event.title} is scheduled on {new_event.date} from {new_event.start_time} to {new_event.end_time} at {new_event.location.name}.")
-    flash("Congratulations! You will be an awesome host!")
-    
-    return redirect("/profile")
-
-
-# 6b. Update coordinates of location to database
+# Update coordinates of location to database
 @app.route("/update_location_details", methods = ["POST"])
 def update_location_details():
     """ Update the location coordinates in the database """
@@ -460,9 +442,8 @@ def update_location_details():
 @app.route("/cancel_event", methods=["POST"])
 def cancel_event():
     """ Cancel an event you created """
-    # Get event_id from the form
+    # Get event object 
     event_id = request.form.get("event_id")
-    # Get event object from event_id
     event = crud.get_event_by_id(event_id)
     # Get the homepage url root
     url_root = request.url_root
@@ -522,8 +503,6 @@ def show_details():
     # Get the event_id from fetch call
     event_id = request.args.get("event_id")
     print("event id", event_id)
-
-    # Get the event by event_id
     event = crud.get_event_by_id(event_id)
     
     # Check if this user_id already register for this event
@@ -533,7 +512,6 @@ def show_details():
         if registration:
             registered = True
         
-
     # Remake event dictionary for jsonify
     event = {
         "event_id": event.event_id,
@@ -595,19 +573,19 @@ def get_participants_json():
 
     return jsonify({"counts": total_count, "participants": attendants})
 
-# 7a Register for a playdate using AJAX request from REACT form
-@app.route("/register_name", methods = ["POST"])
-def register_name():
+# Register for a playdate using AJAX request from REACT form
+@app.route("/register", methods = ["POST"])
+def register():
     """ Register user for an event with name and number of people """
-    # Get inputs from the AJAX request. 
+    # Get inputs from the AJAX request
     name = request.get_json().get("name")
     num_people = int(request.get_json().get("num_people"))
-    # Get user_id and event_id from the form
-    user_id = session["user_id"]
-    event_id = session["event_id"]
     # Get user obj and event obj
-    event = crud.get_event_by_id(event_id)
+    user_id = session["user_id"]
     user = crud.get_user_by_id(user_id)
+    event_id = session["event_id"]
+    event = crud.get_event_by_id(event_id)
+    
     # Get the registration by this user_id and event_id
     registration = crud.get_registration(event_id, user_id)
     # Check if this user has already registered for this event
@@ -640,7 +618,6 @@ def cancel_registration():
     """ Cancel an event registration """
     # Get event_id from the form
     event_id = request.form.get("event_id")
-    event = crud.get_event_by_id(event_id)
     # Get the url root
     url_root = request.url_root
     # If this registration exists, delete it
@@ -702,12 +679,12 @@ def invite_friends():
 @app.route("/send_invitation")
 def send_invitation():
     """ Send email to user """
-    # Get info from session
-    user_id = session["user_id"]
-    event_id = session["event_id"]
     # Get user obj and event obj
-    event = crud.get_event_by_id(event_id)
+    user_id = session["user_id"]
     user = crud.get_user_by_id(user_id)
+    event_id = session["event_id"]
+    event = crud.get_event_by_id(event_id)
+    
     #Get inputs from the form
     recipients = request.args.getlist("friend")
     event_url = request.args.get("event_info")
@@ -732,10 +709,10 @@ def like_park():
     location_id = request.args.get("location_id")
     location = crud.get_location_by_id(location_id)
     user = crud. get_user_by_id(session["user_id"])
-    # Create and update user like park to database
+    # Check if user has already liked this park 
     if location in user.locations:
         return jsonify({"success": False})
-
+    # Create and update user like park to database
     user_like_park = crud.create_user_favorite_park(session["user_id"], location_id)
     db.session.add(user_like_park)
     db.session.commit()
@@ -747,7 +724,6 @@ def like_park():
 @app.route("/calendar")
 def show_calendar():
     """ Show the personal calendar with events"""
-    
 
     user_id = session["user_id"]
     user = crud.get_user_by_id(user_id)
