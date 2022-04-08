@@ -6,16 +6,19 @@ from jinja2 import StrictUndefined
 from datetime import datetime, date, timedelta
 from passlib.hash import argon2
 from flask_mail import Mail, Message
+from celery import Celery
+import redis
 import crud
 import os
 import re
-from geopy import distance
 
+# Flask app config
 app = Flask(__name__)
 app.secret_key = os.environ['SECRET_KEY']
 app.jinja_env.undefined = StrictUndefined
 mail = Mail(app)
 
+# Flask mail config
 app.config['MAIL_SERVER']='smtp.mailtrap.io'
 app.config['MAIL_PORT'] = 2525
 app.config['MAIL_USERNAME'] = os.environ['MAIL_USERNAME']
@@ -25,6 +28,14 @@ app.config['MAIL_USE_SSL'] = False
 app.config['MAIL_DEFAULT_SENDER'] = "do-not-reply@playdatebirdies.com"
 
 mail = Mail(app)
+
+# Celery configuration
+app.config['CELERY_BROKER_URL'] = 'redis://127.0.0.1:6379/0'
+app.config['CELERY_RESULT_BACKEND'] = 'redis://127.0.0.1:6379/0'
+
+# Initialize Celery
+celery = Celery(app.name, broker=app.config['CELERY_BROKER_URL'])
+celery.conf.update(app.config)
 
 US_STATES = {
   "AL": "Alabama",
@@ -330,7 +341,7 @@ def host():
     if request.method == "POST":
         # Get host_id from session
         host_id = session["user_id"]
-        # Get inputs from the form
+        # Get inputs from the form for event details
         title = request.form.get("title")
         description = request.form.get("description")
         name = request.form.get("location")
@@ -344,6 +355,8 @@ def host():
         age_group = request.form.get("age_group")
         standard_activities = request.form.getlist("activity")
         other_activity = request.form.get("otherActivity")
+        # Duration for email reminder (on hosting form)
+        reminder = request.form.get("reminder")
 
         # Query this input location to check it is already in database
         input_location = crud.get_location_by_name_and_address(name=name, address=address)
@@ -357,6 +370,7 @@ def host():
         event = crud.get_event_by_inputs(host_id, datemonth, start, end)
         if event:
             flash("You can't host two events at the same time.")
+            return redirect ("/host")
         # Else, create a new event object and add to database
         new_event = crud.host_a_playdate(host_id, title, description, input_location.location_id,
                                     datemonth, start, end, age_group)
@@ -384,7 +398,33 @@ def host():
 
         flash(f"{new_event.host.fname}, your playdate {new_event.title} is scheduled on {new_event.date} from {new_event.start_time} to {new_event.end_time} at {new_event.location.name}.")
         flash("Congratulations! You will be an awesome host!")
-        
+
+        # If the host chooses to receive email reminder, collect info and store in a dictionary
+        if reminder != "no":
+            
+            # Make dictionary 
+            data = {}
+            data["user"] = new_event.host.fname
+            data["email"] = new_event.host.email
+            data["title"] = new_event.title
+            data["location"] = new_event.location.name
+            data["start"] = new_event.start_time
+            data["url"] = request.url_root
+            if reminder == "1":
+                # Calculate duration to schedule celery to send email
+                duration = (new_event.date - timedelta(days=1) - date.today()).total_seconds()
+                print("\n" * 5, "duration: ", duration)
+                data["date"] = "tomorrow"
+            else: 
+                # Calculate duration to schedule celery to send email
+                duration = (new_event.date - timedelta(days=2) - date.today()).total_seconds()
+                print("\n" * 5, "duration: ", duration)
+                data["date"] = "the day after tomorrow"
+            print("\n" * 5, data["date"])
+            # Schedule email
+            send_reminder.apply_async(args=[data], countdown=duration)
+            flash(f"Successfully scheduled email reminder to send {reminder} day(s) before your event.")
+
         return redirect("/profile")
     
     return render_template("hosting.html", today = date.today(), states=US_STATES, age_groups=AGE_GROUP, activities=ACTIVITIES)
@@ -427,7 +467,7 @@ def cancel_event():
             emails = [registration.user.email for registration in event.registrations]
             msg = Message(f"Your {event.title} is canceled", bcc=emails)
             homepage_url = f"<br><a href={url_root}>Playdate Birdies</a>"
-            msg.html = f"We are sorry your playdate got canceled. Please visit {homepage_url} to see other events."
+            msg.html = f"We are sorry your playdate got canceled.<br> Please visit {homepage_url} to see other events."
             mail.send(msg)
 
         # Delete all registrations for this event
@@ -583,7 +623,7 @@ def register():
     # Send email updates to the host every time there is a new registration
     msg = Message(f"Your {event.title} got a new registration", recipients=[event.host.email])
     profile_url = f"<br><a href={url_root}/profile>your profile</a>"
-    msg.html = f"{user.fname} {user.lname} has just registered to join your playdate {event.title}. Visit {profile_url} to see more."
+    msg.html = f"{user.fname} {user.lname} has just registered to join your playdate {event.title}.<br> Visit {profile_url} to see more."
     mail.send(msg)
     
     return jsonify({"success": True, "registration": new_registration})
@@ -667,8 +707,7 @@ def send_invitation():
     event_url = request.args.get("event_info")
     message_body = request.args.get("message")
     # Make the hyperlink by concatenating the root url and event url
-    url_root = request.url_root
-    event_url = url_root + event_url 
+    event_url = request.url_root + event_url 
     message_body += f"<br><a href='{event_url}'>{event.title}</a>"
     # Create an email notification and send
     msg = Message(f'{user.fname} {user.lname} recommends you check out this playdate', bcc=recipients)
@@ -729,32 +768,14 @@ def show_calendar():
     
     return render_template("calendar.html", cal_events=events_dict, today = date.today())
 
-
-# Send reminder email route
-@app.route("/reminder")
-def reminder():
-    """ Send email reminders about an upcoming events"""
-
-    # Get a list of users that have events tomorrow
-    users = crud.get_users_of_tomorrow_events(date.today())
-    print("\n" * 5, "Users from query: ", users)
-    
-    # Get the url root
-    url_root = request.url_root
-    
-    # Get email list
-    recipients = []
-    for user in users:
-        recipients.append(user.email)
-    print("email list: ", recipients)
-
-    # Create an email notification and send
-    msg = Message("You have an upcoming playdate tomorrow", bcc=recipients)
-    msg.html = f"Don't need to wait long, your playdate is tomorrow! Log in to <br><a href={url_root}/profile>your profile</a> to see details."
-    mail.send(msg)
-
-    return "Sent"
-
+# Send reminder email
+@celery.task
+def send_reminder(data):
+    """ Function to send email reminders """
+    with app.app_context():
+        msg = Message("You have an upcoming playdate tomorrow", recipients=[data["email"]])
+        msg.html = f"{data['user']}, are you excited about your upcoming playdate?<br> Don't need to wait long, your playdate at {data['location']} at {data['start']} is {data['date']}! <br> Log in to <a href={data['url']}/profile>your profile</a> to see details."
+        mail.send(msg)
 
 if __name__ == "__main__":
     # DebugToolbarExtension(app)

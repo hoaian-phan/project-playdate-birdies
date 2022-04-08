@@ -45,7 +45,7 @@ def get_user_by_name_email(fname, lname, email):
 def get_users_of_tomorrow_events(day):
     """ Return a list of users who have events tomorrow"""
 
-    hosts = User.query.join(Event).filter(Event.date - day == 1).all()
+    hosts = User.query.join(Event).filter(Event.date - day == 2).all()
     attendants = User.query.join(Registration).join(Event).filter(Event.date - day == 1).all()
 
     return hosts + attendants
@@ -261,4 +261,5 @@ def create_user_favorite_park(user_id, location_id):
     user_like_park = UserLikePark(user_id=user_id, location_id=location_id)
 
     return user_like_park
+
 
