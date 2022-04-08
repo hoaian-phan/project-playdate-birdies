@@ -56,15 +56,18 @@
     <p>Address: {{ event.location.address }}, {{ event.location.city }}, 
         {{ event.location.state }} {{ event.location.zipcode }} </p>
     <p>On {{ event.date }} from {{ event.start_time }} to {{ event.end_time }}</p>
-    <p>Activities: 
-        {% for activity in event.activities %}
-            {% if loop.last %}
-                {{ activity.name }}.
-            {% else %}
-                {{ activity.name }},
-            {% endif %}
-        {% endfor %}
-    </p>
+    {% if event.activities|length >= 1 %}
+        <p>Activities: 
+            {% for activity in event.activities %}
+                {% if loop.last %}
+                    {{ activity.name }}
+                {% else %}
+                    {{ activity.name }},
+                {% endif %}
+            {% endfor %}
+        </p>
+    {% endif %}
+    
 
 </div>
 

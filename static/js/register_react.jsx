@@ -6,12 +6,13 @@ const RegistrationForm = (props) => {
     // useState to keep track of changing states
     const [name, setName] = React.useState([]);
     const [number, setNumber] = React.useState([]);
+    const [reminder, setReminder] = React.useState([]);
 
     // Register by sending AJAX to server and add registration to database
     const register = () => {
         fetch("/register", {
             method: 'POST',
-            body: JSON.stringify({'name': name, 'num_people': number}),
+            body: JSON.stringify({'name': name, 'num_people': number, 'reminder': reminder}),
             headers: {
                 'Content-Type': 'application/json',
             },
@@ -36,12 +37,30 @@ const RegistrationForm = (props) => {
                 onChange={(event) => setName(event.target.value)}
                 id="name"
             ></input><br />
+
             <label htmlFor="people">How many people in your party?</label>
             <input
                 value={number}
                 onChange={(event) => setNumber(event.target.value)}
                 id="people"
             ></input><br />
+
+            <label htmlFor="reminder">Do you want to receive an email reminder for your playdate?</label><br />
+            <label htmlFor="yesReminder"> Yes </label>
+            <input
+                type="radio"
+                value="yes"
+                onChange={(event) => setReminder(event.target.value)}
+                id="yesReminder"
+            ></input>
+            <label htmlFor="noReminder"> No </label>
+            <input
+                type="radio"
+                value="no"
+                onChange={(event) => setReminder(event.target.value)}
+                id="noReminder"
+            ></input><br />
+           
             <button 
                 onClick={() => {
                     const confirmBox = window.confirm("Do you want to register for this playdate?")

@@ -597,6 +597,8 @@ def register():
     # Get inputs from the AJAX request
     name = request.get_json().get("name")
     num_people = int(request.get_json().get("num_people"))
+    # For email reminder
+    reminder = request.get_json().get("reminder")
     # Get user obj and event obj
     user_id = session["user_id"]
     user = crud.get_user_by_id(user_id)
@@ -622,9 +624,28 @@ def register():
     url_root = request.url_root
     # Send email updates to the host every time there is a new registration
     msg = Message(f"Your {event.title} got a new registration", recipients=[event.host.email])
-    profile_url = f"<br><a href={url_root}/profile>your profile</a>"
+    profile_url = f"<a href={url_root}/profile>your profile</a>"
     msg.html = f"{user.fname} {user.lname} has just registered to join your playdate {event.title}.<br> Visit {profile_url} to see more."
     mail.send(msg)
+
+    # If the host chooses to receive email reminder, collect info and store in a dictionary
+    if reminder != "no":
+        # Make dictionary 
+        data = {}
+        data["user"] = registration.user.fname
+        data["email"] = registration.user.email
+        data["title"] = registration.event.title
+        data["location"] = registration.event.location.name
+        data["start"] = registration.event.start_time
+        data["url"] = request.url_root
+        # Calculate duration to schedule celery to send email 1 day before the event
+        duration = (registration.event.date - timedelta(days=1) - date.today()).total_seconds()
+        print("\n" * 5, "duration: ", duration)
+        data["date"] = "tomorrow"
+        
+        # Schedule email
+        send_reminder.apply_async(args=[data], countdown=duration)
+        flash(f"Successfully scheduled email reminder to send {reminder} day(s) before your event.")
     
     return jsonify({"success": True, "registration": new_registration})
 
@@ -774,7 +795,7 @@ def send_reminder(data):
     """ Function to send email reminders """
     with app.app_context():
         msg = Message("You have an upcoming playdate tomorrow", recipients=[data["email"]])
-        msg.html = f"{data['user']}, are you excited about your upcoming playdate?<br> Don't need to wait long, your playdate at {data['location']} at {data['start']} is {data['date']}! <br> Log in to <a href={data['url']}/profile>your profile</a> to see details."
+        msg.html = f"{data['user']}, are you excited about your upcoming playdate?<br> You don't need to wait long, your playdate at {data['location']} at {data['start']} is {data['date']}! <br> Log in to <a href={data['url']}/profile>your profile</a> to see details."
         mail.send(msg)
 
 if __name__ == "__main__":
