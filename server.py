@@ -16,9 +16,9 @@ import re
 app = Flask(__name__)
 app.secret_key = os.environ['SECRET_KEY']
 app.jinja_env.undefined = StrictUndefined
-mail = Mail(app)
 
 # Flask mail config
+
 app.config['MAIL_SERVER']='smtp.mailtrap.io'
 app.config['MAIL_PORT'] = 2525
 app.config['MAIL_USERNAME'] = os.environ['MAIL_USERNAME']
@@ -111,7 +111,6 @@ def homepage():
     recommendation_events = []
     if "user_id" in session:
         user = crud.get_user_by_id(session["user_id"])
-        print("\n" * 10, "Starting querying")
         # Querying based on user's address, interests, friends, date, favorite parks
         recommended = crud.recommend_events(user)
         # Sort recommended dictionary by (score, date) 
@@ -119,18 +118,14 @@ def homepage():
         # From the dictionary, make a list of maximum 15 first event objects
         if len(sorted_recommendation) <= MAX_EVENTS:
             for key in sorted_recommendation.keys():
-                print("key", key, "type of key", type(key))
                 event = crud.get_event_by_id(key)
                 recommendation_events.append(event)
         else:
             # Create new dict with 15 first key-value pairs
             limit_sorted_recommendation = dict(list(sorted_recommendation.items())[:15])
-            print("15 sorted recommendation", limit_sorted_recommendation)
             for key in limit_sorted_recommendation.keys():
                 event = crud.get_event_by_id(key)
                 recommendation_events.append(event)
-        print("\n" * 5)
-        print(f"List of top events {recommendation_events}")
     
     return render_template("homepage.html", age_groups = AGE_GROUP, today = date.today(), recommendations = recommendation_events)
 
@@ -148,7 +143,6 @@ def sign_up():
         confirm_pw = request.form.get("confirm_password")
 
         # Check if confirm password matches with password, if not, restart the sign up form
-        # Use Javascript to add event handler and prevent submitting the form
         if password != confirm_pw:
             flash("Passwords don't match. Please try again.")
             return redirect("/signup")
@@ -173,7 +167,6 @@ def sign_up():
             if "event_id" in session:
                 event = crud.get_event_by_id(session["event_id"])
                 return render_template("register.html", event=event)
-            # return user to their previous page (hosting or register or homepage) - add later
             return redirect("/")
         # if user exists, flash message and restart sign up form
         flash("This email has already been used. Please try a different email.")
@@ -195,7 +188,6 @@ def login():
     if request.method == "POST":
         email = request.form.get("email")
         password = request.form.get("password")
-        # remember = request.form.get("remember_me")
 
         # Get the user object by input email
         user = crud.get_user_by_email(email)
@@ -205,7 +197,6 @@ def login():
             if argon2.verify(password, user.password):
                 flash(f"Hi {user.fname}, welcome back.")
                 session["user_id"] = user.user_id
-                session["user_fname"] = user.fname
                 if "event_id" in session:
                     event = crud.get_event_by_id(session["event_id"])
                     return render_template("register.html", event=event)
@@ -219,7 +210,7 @@ def login():
 
     return render_template("login.html")
 
-# Render the form to reset password
+# Forget and reset password
 @app.route("/forget_pw", methods = ["GET", "POST"])
 def rest_password():
     """ GET request renders the reset password form, POST request processes the form"""
@@ -235,7 +226,7 @@ def rest_password():
         # Check if confirm password matches with password, if not, restart the form
         if password != confirm_pw:
             flash("Passwords don't match. Please try again.")
-            return redirect("/reset_pw")
+            return redirect("/forget_pw")
 
         # Check if name and email address match with a current user
         user = crud.get_user_by_name_email(fname, lname, email)
@@ -362,12 +353,12 @@ def host():
         input_location = crud.get_location_by_name_and_address(name=name, address=address)
         # If not, create a new location object and add to database
         if not input_location:
-            input_location = crud.create_new_location(name, address, city, zipcode, state)
+            input_location = crud.create_new_location_no_coords(name, address, city, zipcode, state)
             db.session.add(input_location)
             db.session.commit()
 
-        # Check if this host already hosted an event on the same day, time and location
-        event = crud.get_event_by_inputs(host_id, datemonth, start, end)
+        # Check if this host already hosted an event on the same day and time
+        event = crud.get_event_by_inputs(host_id, datemonth, start)
         if event:
             flash("You can't host two events at the same time.")
             return redirect ("/host")
@@ -378,7 +369,9 @@ def host():
         db.session.commit()
 
         # Process activity inputs
-        other_activities = other_activity.split(", ")
+        other_activities = []
+        if other_activity:
+            other_activities = other_activity.split(", ")
         # check to see if "other" is in the list of standard_activities
         if "other" in standard_activities:
             activities = standard_activities[:-1] + other_activities
@@ -413,14 +406,12 @@ def host():
             if reminder == "1":
                 # Calculate duration to schedule celery to send email
                 duration = (new_event.date - timedelta(days=1) - date.today()).total_seconds()
-                print("\n" * 5, "duration: ", duration)
                 data["date"] = "tomorrow"
             else: 
                 # Calculate duration to schedule celery to send email
                 duration = (new_event.date - timedelta(days=2) - date.today()).total_seconds()
-                print("\n" * 5, "duration: ", duration)
                 data["date"] = "the day after tomorrow"
-            print("\n" * 5, data["date"])
+            
             # Schedule email
             send_reminder.apply_async(args=[data], countdown=duration)
             flash(f"Successfully scheduled email reminder to send {reminder} day(s) before your event.")
@@ -498,9 +489,16 @@ def search():
     age_group = request.args.get("age_group")
     activity = request.args.get("activity")
 
-    # Process lower case city_zipcode input
-    if not city_zipcode.isdigit():
-        city_zipcode = city_zipcode.title()
+    # Validate zipcode input
+    if city_zipcode:
+        if city_zipcode.isdigit():
+            zip = re.match(r"^[0-9]{5}", city_zipcode)
+            if not zip:
+                flash("Please enter a 5-digit US zipcode.")
+                return redirect("/")
+        # Process lower case city_zipcode input
+        else:
+            city_zipcode = city_zipcode.title()
 
     # Process date string input
     if date:
@@ -519,7 +517,6 @@ def show_details():
 
     # Get the event_id from fetch call
     event_id = request.args.get("event_id")
-    print("event id", event_id)
     event = crud.get_event_by_id(event_id)
     
     # Check if this user_id already register for this event
@@ -596,7 +593,9 @@ def register():
     """ Register user for an event with name and number of people """
     # Get inputs from the AJAX request
     name = request.get_json().get("name")
-    num_people = int(request.get_json().get("num_people"))
+    num_people = str(request.get_json().get("num_people"))
+    num_people = ''.join(filter(str.isdigit, num_people)) # remove not digit characters
+    num_people = int(num_people)
     # For email reminder
     reminder = request.get_json().get("reminder")
     # Get user obj and event obj
@@ -640,7 +639,6 @@ def register():
         data["url"] = request.url_root
         # Calculate duration to schedule celery to send email 1 day before the event
         duration = (registration.event.date - timedelta(days=1) - date.today()).total_seconds()
-        print("\n" * 5, "duration: ", duration)
         data["date"] = "tomorrow"
         
         # Schedule email
@@ -679,6 +677,9 @@ def cancel_registration():
 @app.route("/follow")
 def follow():
     """ Follow a user """
+    if "user_id" not in session:
+        return jsonify({"success": "no", "reason": "You need to log in to follow hosts."})
+    
     # Get user1_id from session and retrieve user1 object
     user1_id = session["user_id"]
     user1 = crud.get_user_by_id(user1_id)
@@ -742,6 +743,9 @@ def send_invitation():
 @app.route("/like_park")
 def like_park():
     """ Add parks to favorite and update in the database """
+    # If user not log in, can't add park to favorite
+    if "user_id" not in session:
+        return jsonify({"success": "no"})
 
     location_id = request.args.get("location_id")
     location = crud.get_location_by_id(location_id)

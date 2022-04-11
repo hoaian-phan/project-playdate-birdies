@@ -4,69 +4,89 @@
         "address": "24016 Eden Ave",
         "city": "Hayward",
         "zipcode": "94541",
-        "state": "CA"
+        "state": "CA",
+        "lat": "37.6483815",
+        "lng": "-122.1153284"
     },
     {
         "name": "Twin Bridges Park",
         "address": "301 Arrowhead Way",
         "city": "Hayward",
         "zipcode": "94544",
-        "state": "CA"
+        "state": "CA",
+        "lat": "37.6235709",
+        "lng": "-122.0468717"
     },
     {
         "name": "Mia's Dream Come True",
         "address": "28377 Huntwood Ave",
         "city": "Hayward",
         "zipcode": "94544",
-        "state": "CA"
+        "state": "CA",
+        "lat": "37.6319921",
+        "lng": "-122.0650413"
     },
     {
         "name": "Golden Gate Park",
         "address": "501 Stanyan St",
         "city": "San Francisco",
         "zipcode": "94117",
-        "state": "CA"
+        "state": "CA",
+        "lat": "37.7718709",
+        "lng": "-122.4546413"
     },
     {
         "name": "Buena Vista Park",
         "address": "Buena Vista & Haight Street",
         "city": "San Francisco",
         "zipcode": "94117",
-        "state": "CA"
+        "state": "CA",
+        "lat": "37.7704789",
+        "lng": "-122.4433505"
     },
     {
         "name": "Alamo Square Park",
         "address": "Hayes St",
         "city": "San Francisco",
         "zipcode": "94117",
-        "state": "CA"
+        "state": "CA",
+        "lat": "37.7745617",
+        "lng": "-122.4413326"
     },
     {
         "name": "East Ave Park",
         "address": "3221 East Ave",
         "city": "Hayward",
         "zipcode": "94541",
-        "state": "CA"
+        "state": "CA",
+        "lat": "37.666959",
+        "lng": "-122.0442816"
     },
     {
         "name": "San Felipe Community Park",
         "address": "2058 D St",
         "city": "Hayward",
         "zipcode": "94541",
-        "state": "CA"
+        "state": "CA",
+        "lat": "37.6792242",
+        "lng": "-122.0607437"
     },
     {
         "name": "Sorensdale Park",
         "address": "275 Goodwin St",
         "city": "Hayward",
         "zipcode": "94544",
-        "state": "CA"
+        "state": "CA",
+        "lat": "37.6440911",
+        "lng": "-122.0714494"
     },
     {
         "name": "Centennial Park",
         "address": "24000 Amador St",
         "city": "Hayward",
         "zipcode": "94541",
-        "state": "CA"
+        "state": "CA",
+        "lat": "37.6614959",
+        "lng": "-122.0952172"
     }
 ]

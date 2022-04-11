@@ -188,8 +188,8 @@ class UserLikePark(db.Model):
 
         return f"<UserLikePark id={self.id} user_id={self.user_id} location_id={self.location_id}>"
 
-# Connect to database: how to seed data?
-def connect_to_db(flask_app, db_uri="postgresql:///playdates", echo=True):
+# Connect to database
+def connect_to_db(flask_app, db_uri="postgresql:///testdb", echo=True):
     flask_app.config["SQLALCHEMY_DATABASE_URI"] = db_uri
     flask_app.config["SQLALCHEMY_ECHO"] = echo
     flask_app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
@@ -204,8 +204,8 @@ def connect_to_db(flask_app, db_uri="postgresql:///playdates", echo=True):
 def example_data():
     """ Create example data for the test database"""
 
-    user_1 = User(fname="Dung", lname="Nguyen", email="hd@hb.com", password="12345")
-    user_2 = User(fname="Nu", lname="Phan", email="nu@hb.com", password="12345")
+    user_1 = User(fname="Rhena", lname="Fanun", email="rhena@hb.com", password="12345")
+    user_2 = User(fname="Abriel", lname="Fanun", email="abriel@hb.com", password="12345")
     db.session.add(user_1)
     db.session.add(user_2)
     db.session.commit()

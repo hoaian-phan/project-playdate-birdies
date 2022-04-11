@@ -23,8 +23,49 @@
     {{user.fname}} {{user.lname}} 
 </h2>
 
+<div>
+    <h3>Contact info</h3>
+    <p>Email: {{user.email}}</p>
+    <p>Password: <a href="/forget_pw">Reset password</a></p>
+    <p>Address: {{user.home_address}}</p>    
+</div>
+
+<div>
+    <h3>Your favorites</h3>
+    <p>Friend list: 
+        {% for friend in user.get_all_friends() %}
+            {% if loop.last %}
+                {{ friend.fname }} {{ friend.lname }}.
+            {% else %}
+                {{ friend.fname }} {{ friend.lname }},
+            {% endif %}
+        {% endfor %}
+    </p>
+    <p>Favorite parks:
+        {% for park in user.locations %}
+            {% if loop.last %}
+                {{ park.name }}.
+            {% else %}
+                {{ park.name }},
+            {% endif %}
+        {% endfor %}
+    </p>
+    <p>Favorite activities:
+        {% for activity in user.activities %}
+            {% if loop.last %}
+                {{ activity.name }}.
+            {% else %}
+                {{ activity.name }},
+            {% endif %}
+        {% endfor %}
+    </p>
+
+
+
+</div>
+
 <div><br>
-    Want us to recommend playdates that fit your interests? Tell us more about you by <a href="/complete_profile">completing your profile</a>
+    Want us to recommend playdates that fit your interests? Tell us more about you by <a href="/complete_profile">updating your profile</a>
     </div>
 
 <div><br>
@@ -107,17 +148,6 @@
         {% endif %}
     </div>
 
-
-<h3>Your friends:</h3>
-    <div>
-        {% for friend in user.get_all_friends() %}
-            {% if loop.last %}
-                {{ friend.fname }} {{ friend.lname }}.
-            {% else %}
-                {{ friend.fname }} {{ friend.lname }},
-            {% endif %}
-        {% endfor %}
-    </div>
 
 <!-- Script for DOM and event handling -->
 <script src="static/js/playdate.js"></script>

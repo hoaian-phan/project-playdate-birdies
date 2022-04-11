@@ -58,11 +58,19 @@ def get_location_by_name_and_address(name, address):
 
     return location
 
-# Location: Create a new location
-def create_new_location(name, address, city, zipcode, state):
+# Location: Create a new location without coordinates
+def create_new_location_no_coords(name, address, city, zipcode, state):
     """ Create and return a location object """
 
     location = Location(name=name, address=address, city=city, zipcode=zipcode, state=state)
+
+    return location
+
+# Location: Create a new location
+def create_new_location(name, address, city, zipcode, state, lat, lng):
+    """ Create and return a location object """
+
+    location = Location(name=name, address=address, city=city, zipcode=zipcode, state=state, lat=lat, lng=lng)
 
     return location
 
@@ -112,10 +120,10 @@ def get_event_by_id(event_id):
     return event
 
 # Event: Get event by inputs
-def get_event_by_inputs(host_id, event_date, start, end):
+def get_event_by_inputs(host_id, event_date, start):
     """ Return an event by inputs"""
 
-    event = Event.query.filter_by(host_id=host_id, date=event_date, start_time=start, end_time=end).first()
+    event = Event.query.filter_by(host_id=host_id, date=event_date, start_time=start).first()
 
     return event
 
@@ -171,18 +179,23 @@ def recommend_events(user):
         distance_from_home = distance.distance(user_home, event_coords).miles
         if distance_from_home > 25:
             continue
-
+        # Initialize score
         score = 0
+        # If host is a friend -> +10 points
         if event.host in user.get_all_friends():
             score += 10
+        # If location is in favorite parks -> +10 points
         if event.location in user.locations:
             score += 9
+        # otherwise, if location is within 10 miles from home -> +6 points
         elif distance_from_home < 10:
             score += 6
+        # If event has at least one interested activity -> +8 points
         for activity in event.activities:
             if activity in user.activities:
                 score += 8
                 break
+        # If event is within the next 7 days -> +7 points
         if event.date - today < timedelta(days=7):
             score += 7
     

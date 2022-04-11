@@ -47,11 +47,13 @@ for (const button of buttons) {
                             .then(reply => reply.json())
                             .then(dataJson => {
                                 if (dataJson.success === true) {
-                                    alert(`You successfully followed ${dataJson.friend}.`)
+                                    alert(`You successfully followed ${dataJson.friend}.`);
                                 } else if (dataJson.success === "self") {
-                                    alert(`${dataJson.reason}`)
+                                    alert(`${dataJson.reason}`);
+                                } else if (dataJson.success === "no") {
+                                    alert(`${dataJson.reason}`);
                                 } else {
-                                    alert(`${dataJson.reason}.`)
+                                    alert(`${dataJson.reason}`);
                                 }
                             })
                     })
@@ -67,10 +69,12 @@ for (const button of buttons) {
                             .then(reply => reply.json())
                             .then(dataJson => {
                                 if (dataJson.success === true) {
-                                    alert(`You successfully added this park to your favorites.`)
+                                    alert(`You successfully added this park to your favorites.`);
                                 }
-                                else {
-                                    alert(`You already liked this park.`)
+                                else if (dataJson.success === false) {
+                                    alert(`You already liked this park.`);
+                                } else {
+                                    alert('You need to log in to add parks to favorites.')
                                 }
                             })
                     })

@@ -93,6 +93,8 @@
             
                 {% if event.location.photo %}
                     <img src={{ event.location.photo }} alt="parkPhoto" />
+                {% else %}
+                    <img src="/static/image/general_park.jpeg" alt="parkPhoto" />
                 {% endif %}
             </div>
         {% endfor %}
