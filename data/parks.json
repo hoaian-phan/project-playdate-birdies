@@ -6,7 +6,8 @@
         "zipcode": "94541",
         "state": "CA",
         "lat": "37.6483815",
-        "lng": "-122.1153284"
+        "lng": "-122.1153284",
+        "photo": "/static/image/seed parks/greenwood.jpeg"
     },
     {
         "name": "Twin Bridges Park",
@@ -15,7 +16,9 @@
         "zipcode": "94544",
         "state": "CA",
         "lat": "37.6235709",
-        "lng": "-122.0468717"
+        "lng": "-122.0468717",
+        "photo": "https://www.haywardrec.org/ImageRepository/Path?filePath=%2fDocuments%5c13%2fTwin+Bridges_201409091823400829.JPG"
+
     },
     {
         "name": "Mia's Dream Come True",
@@ -24,7 +27,8 @@
         "zipcode": "94544",
         "state": "CA",
         "lat": "37.6319921",
-        "lng": "-122.0650413"
+        "lng": "-122.0650413",
+        "photo": "https://www.haywardrec.org/ImageRepository/Document?documentID=7636"
     },
     {
         "name": "Golden Gate Park",
@@ -33,7 +37,8 @@
         "zipcode": "94117",
         "state": "CA",
         "lat": "37.7718709",
-        "lng": "-122.4546413"
+        "lng": "-122.4546413",
+        "photo": "https://25va3qc1hw-flywheel.netdna-ssl.com/wp-content/uploads/2011/03/San-Francisco-Botanical-Garden-1064x640.jpg"
     },
     {
         "name": "Buena Vista Park",
@@ -42,7 +47,8 @@
         "zipcode": "94117",
         "state": "CA",
         "lat": "37.7704789",
-        "lng": "-122.4433505"
+        "lng": "-122.4433505",
+        "photo": "https://sfrecpark.org/ImageRepository/Document?documentID=7803"
     },
     {
         "name": "Alamo Square Park",
@@ -51,7 +57,8 @@
         "zipcode": "94117",
         "state": "CA",
         "lat": "37.7745617",
-        "lng": "-122.4413326"
+        "lng": "-122.4413326",
+        "photo": "https://sfrecpark.org/ImageRepository/Document?documentID=7013"
     },
     {
         "name": "East Ave Park",
@@ -60,7 +67,8 @@
         "zipcode": "94541",
         "state": "CA",
         "lat": "37.666959",
-        "lng": "-122.0442816"
+        "lng": "-122.0442816",
+        "photo": "/static/image/seed parks/eastave.jpeg"
     },
     {
         "name": "San Felipe Community Park",
@@ -69,7 +77,8 @@
         "zipcode": "94541",
         "state": "CA",
         "lat": "37.6792242",
-        "lng": "-122.0607437"
+        "lng": "-122.0607437",
+        "photo": "/static/image/seed parks/san felipe.jpeg"
     },
     {
         "name": "Sorensdale Park",
@@ -78,7 +87,8 @@
         "zipcode": "94544",
         "state": "CA",
         "lat": "37.6440911",
-        "lng": "-122.0714494"
+        "lng": "-122.0714494",
+        "photo": "https://www.haywardrec.org/ImageRepository/Path?filePath=%2fDocuments%5c13%2fSorensdale+Park_201409091819401721.JPG"
     },
     {
         "name": "Centennial Park",
@@ -87,6 +97,7 @@
         "zipcode": "94541",
         "state": "CA",
         "lat": "37.6614959",
-        "lng": "-122.0952172"
+        "lng": "-122.0952172",
+        "photo": "https://www.haywardrec.org/ImageRepository/Path?filePath=%2fDocuments%5c13%2fCentennial+New+Playground+1_201409091701191742.jpg"
     }
 ]

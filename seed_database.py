@@ -67,8 +67,9 @@ for park in park_data:
     state = park['state']
     lat = park['lat']
     lng = park['lng']
+    photo = park['photo']
 
-    locations_in_db.append(crud.create_new_location(name, address, city, zipcode, state, lat, lng))
+    locations_in_db.append(crud.create_new_location(name, address, city, zipcode, state, lat, lng, photo))
 
 model.db.session.add_all(locations_in_db)
 model.db.session.commit()
@@ -88,8 +89,9 @@ for n in range(10):
     lname = LAST_NAME[n]
     email = f'user{n}@test.com'
     password = '12345'
+    home_state = 'CA'
 
-    user = crud.sign_up(fname, lname, email, password)
+    user = crud.sign_up_with_homestate(fname, lname, email, password, home_state)
     model.db.session.add(user)
     model.db.session.commit()
 

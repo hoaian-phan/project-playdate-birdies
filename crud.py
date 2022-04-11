@@ -15,6 +15,14 @@ def sign_up(first, last, email, password):
 
     return user
 
+# Sign up with homestate for seed database
+def sign_up_with_homestate(first, last, email, password, home_state):
+    """ Create and return a new user """
+
+    user = User(fname=first, lname=last, email=email, password=password, home_state=home_state)
+
+    return user
+
 # Log in: Get user by email
 def get_user_by_email(email):
     """ Return user object of the input email """
@@ -67,10 +75,10 @@ def create_new_location_no_coords(name, address, city, zipcode, state):
     return location
 
 # Location: Create a new location
-def create_new_location(name, address, city, zipcode, state, lat, lng):
+def create_new_location(name, address, city, zipcode, state, lat, lng, photo):
     """ Create and return a location object """
 
-    location = Location(name=name, address=address, city=city, zipcode=zipcode, state=state, lat=lat, lng=lng)
+    location = Location(name=name, address=address, city=city, zipcode=zipcode, state=state, lat=lat, lng=lng, photo=photo)
 
     return location
 

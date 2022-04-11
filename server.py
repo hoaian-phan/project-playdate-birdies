@@ -643,7 +643,7 @@ def register():
         
         # Schedule email
         send_reminder.apply_async(args=[data], countdown=duration)
-        flash(f"Successfully scheduled email reminder to send {reminder} day(s) before your event.")
+        flash("Successfully scheduled email reminder to send one day before your event.")
     
     return jsonify({"success": True, "registration": new_registration})
 

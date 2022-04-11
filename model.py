@@ -189,7 +189,7 @@ class UserLikePark(db.Model):
         return f"<UserLikePark id={self.id} user_id={self.user_id} location_id={self.location_id}>"
 
 # Connect to database
-def connect_to_db(flask_app, db_uri="postgresql:///testdb", echo=True):
+def connect_to_db(flask_app, db_uri="postgresql:///playdates", echo=True):
     flask_app.config["SQLALCHEMY_DATABASE_URI"] = db_uri
     flask_app.config["SQLALCHEMY_ECHO"] = echo
     flask_app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
