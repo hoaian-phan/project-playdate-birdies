@@ -7,7 +7,7 @@
         "state": "CA",
         "lat": "37.6483815",
         "lng": "-122.1153284",
-        "photo": "/static/image/seed parks/greenwood.jpeg"
+        "photo": "/static/image/seed_parks/greenwood.jpeg"
     },
     {
         "name": "Twin Bridges Park",
@@ -68,7 +68,7 @@
         "state": "CA",
         "lat": "37.666959",
         "lng": "-122.0442816",
-        "photo": "/static/image/seed parks/eastave.jpeg"
+        "photo": "/static/image/seed_parks/eastave.jpeg"
     },
     {
         "name": "San Felipe Community Park",
@@ -78,7 +78,7 @@
         "state": "CA",
         "lat": "37.6792242",
         "lng": "-122.0607437",
-        "photo": "/static/image/seed parks/san felipe.jpeg"
+        "photo": "/static/image/seed_parks/san_felipe.jpeg"
     },
     {
         "name": "Sorensdale Park",
