@@ -1,0 +1,32 @@
+body {
+    font-family: 'Source Sans Pro', sans-serif;
+}
+
+#hp_search_bg_image {
+    margin-left: 25%;
+    border-radius: 10px;
+    height: 520px;  
+    min-height: 520px;
+    width: 740px;
+    min-width: 740px;
+    z-index: 1;
+}
+
+#search_box {
+    width: 375px;
+    border-radius: 10px;
+    box-shadow: 0 6px 20px rgb(0 0 0 / 20%);
+    z-index: 2;
+}
+
+#sign_up {
+    width: 350px;
+    border-radius: 10px;
+    box-shadow: 0 6px 20px rgb(0 0 0 / 20%);
+}
+
+#log_in {
+    width: 350px;
+    border-radius: 10px;
+    box-shadow: 0 6px 20px rgb(0 0 0 / 20%);
+}
