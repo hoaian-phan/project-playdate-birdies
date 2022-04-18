@@ -24,32 +24,35 @@
     {% endfor %}
 
     {% block navbar %} 
-    <nav class="row ms-5 me-5 navbar navbar-expand-lg navbar-light">
-      <div class="container-fluid">
+    <nav class="ms-5 me-5 navbar navbar-expand-md bg-light">
+      
           <a class="navbar-brand" href="#">
               <img src="/static/image/Playdate_Birdies-logos/logo.png" alt="logo" height="50">
           </a>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+          </button>
           
           {% if 'user_id' in session %}
-          <div class="collapse navbar-collapse">
-              <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                <li class="nav-item">
-                  <a class="nav-link active" aria-current="page" href="/">Home</a>
+          <div class="collapse navbar-collapse text-right flex-grow-1" id="navbarSupportedContent">
+              <ul class="navbar-nav ms-auto mb-2 mb-lg-0 flex-nowrap">
+                <li class="nav-item active">
+                  <a class="nav-link" aria-current="page" href="/">Home</a>
                 </li>
-                <li class="nav-item">
-                  <a class="nav-link active" aria-current="page" href="/host">Hosting</a>
+                <li class="nav-item active">
+                  <a class="nav-link" aria-current="page" href="/host">Hosting</a>
                 </li>
-                <li class="nav-item">
-                  <a class="nav-link active" href="/profile">Profile</a>
+                <li class="nav-item active">
+                  <a class="nav-link" href="/profile">Profile</a>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link active" href="/logout">Log out</a>
+                <li class="nav-item active">
+                    <a class="nav-link" href="/logout">Log out</a>
                 </li>
               </ul>
           </div>
           {% else %}
-          <div class="collapse navbar-collapse">
-              <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+          <div class="collapse navbar-collapse text-right flex-grow-1" id="navbarSupportedContent">
+              <ul class="navbar-nav ms-auto mb-2 mb-lg-0 flex-nowrap">
                 <li class="nav-item">
                   <a class="nav-link active" aria-current="page" href="/">Home</a>
                 </li>
@@ -65,8 +68,8 @@
               </ul>
           </div>
           {% endif %}
-      </div>
-  </nav>
+      
+    </nav>
   {% endblock %}
 
     {% block body %}

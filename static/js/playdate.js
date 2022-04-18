@@ -17,24 +17,25 @@ for (const button of buttons) {
                     button.innerText = "Hide details";
                     document.getElementById(`display-detail${button.id}`).innerHTML = 
                     `
-                    
-                    ${responseJson.description}<br>
                     Recommended age group: ${responseJson.age_group}<br>
                     At ${responseJson.location}<br>
-                    Address: ${responseJson.address}, ${responseJson.city}, ${responseJson.state} ${responseJson.zipcode}<br>
                     On ${responseJson.date} from ${responseJson.start_time} to ${responseJson.end_time}<br>
                     Activities: ${responseJson.activity_list.join(", ")}<br>
                     Hosted by ${responseJson.host}<br>
                     
-                    <form class="follow" id="follow-${responseJson.event_id}">
-                        <input type="hidden" name="user2_id" id="follow${responseJson.event_id}" value="${responseJson.host_id}">
-                        <input type="submit" value="Follow host">
-                    </form>
+                    <span class="inline">
+                        <form class="follow" id="follow-${responseJson.event_id}">
+                            <input type="hidden" name="user2_id" id="follow${responseJson.event_id}" value="${responseJson.host_id}">
+                            <input type="submit" value="Follow host">
+                        </form>
+                    </span>
 
-                    <form class="like_park" id="like_park-${responseJson.event_id}">
-                        <input type="hidden" name="location_id" id="like_park${responseJson.event_id}" value="${responseJson.location_id}">
-                        <input type="submit" value="Add park to favorites">
-                    </form>
+                    <span class="inline">
+                        <form class="like_park" id="like_park-${responseJson.event_id}">
+                            <input type="hidden" name="location_id" id="like_park${responseJson.event_id}" value="${responseJson.location_id}">
+                            <input type="submit" value="Add park to favorites">
+                        </form>
+                    </span>
                     `
                     // Follow host feature
                     const follow_form = document.querySelector(`#follow-${responseJson.event_id}`);
@@ -84,10 +85,12 @@ for (const button of buttons) {
                     if ((button.value === "upcoming_event") & (!responseJson.is_registered )) {
                         console.log(button.id);
                         document.getElementById(`display-detail${button.id}`).insertAdjacentHTML("beforeend", 
-                        `<form action="/attend"> 
-                            <input type="hidden" name="event_id" value="${button.id}">
-                            <input type="submit" value="Attend">
-                        </form>
+                        `<span class="inline">
+                            <form action="/attend"> 
+                                <input type="hidden" name="event_id" value="${button.id}">
+                                <input type="submit" value="Attend">
+                            </form>
+                        </span>
                         `)
                     }
                     // if host event, show Cancel form

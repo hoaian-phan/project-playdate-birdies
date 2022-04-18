@@ -6,105 +6,129 @@
 
 {% block body %}
 
-<h2>Host a Playdate</h2>
+<h2 class="text-center fw-bold">Host a Playdate</h2>
 
-<form action="/host" method="POST" id="host_form">
-    <div>
-        <label for="title">Title</label>
-        <input type="text" name="title" placeholder="e.g. Easter Egg Hunt" id="title" required>
-    </div>
-    
-    <div>
-        <label for="description">Description</label>
-        <input type="textarea" name="description" placeholder="e.g. Kids can dress up as bunnies and go egg hunting" id="description">
-    </div>
+<div class="container">
+    <div class="row">
+        <div class="col-12 col-md-6 col-lg-4"><br>
+            <img class="img-fluid rounded-25 m-100" id="host_form_image2" src="/static/image/Background_images/host_3.jpeg" alt="tree image"><br>
+            <img class="img-fluid rounded-25 m-100" id="host_form_image" src="/static/image/Background_images/host.jpeg" alt="host image">
+            
+        </div>
 
-    <div>
-        <label for="location">Location</label>
-        <input type="text" name="location" placeholder="e.g. Greenwood Park" id="location" required>
-    </div>
-        
-    <div>
-        <label for="address">Street address</label>
-        <input type="text" name="address" placeholder="e.g. 24016 Eden Ave" id="address" size="50" required>
-    </div>
-    
-    <div>
-        <label for="city">City</label>
-        <input type="text" name="city" placeholder="e.g. Hayward" id="city" required>
-    </div>
+        <div class="col-12 col-md-6 col-lg-8">
 
-    <div>
-        <label for="state">State</label>
-        <select name="state" id="state" required> State
-            <option value="">--Select one--</option>
-            {% for code, state in states.items() %}
-            <option value="{{code}}">{{state}}, {{code}}</option> 
-            {% endfor %}
-        </select>
-    </div>
+            <form action="/host" method="POST" id="host_form">
+                <br>
+                <div class="form-floating mb-3">
+                    <input class="form-control" type="text" name="title" id="title" required>
+                    <label for="title">Title: e.g. e.g. Easter Egg Hunt</label>
+                </div>
+                
+                <div class="form-floating mb-3">
+                    <input class="form-control" type="textarea" name="description" id="description">
+                    <label class="form-label" for="description">Description: e.g. Kids can dress up as bunnies and go egg hunting</label>
+                </div>
 
-    <div>
-        <label for="zipcode">Zipcode</label>
-        <input type="text" name="zipcode" placeholder="e.g. 94541" id="zipcode" required>
-    </div>
+                <div class="form-floating mb-3">
+                    <input class="form-control" type="text" name="location" id="location" required>
+                    <label class="form-label" for="location">Location: e.g. Greenwood Park</label>
+                </div>
+                    
+                <div class="form-floating mb-3">
+                    <input class="form-control" type="text" name="address" id="address" required>
+                    <label class="form-label" for="address">Street address: Start typing and choose one from the address suggestion box</label>    
+                </div>
+                
+                <div class="form-floating mb-3">
+                    <input class="form-control" type="text" name="city" id="city" required>
+                    <label class="form-label" for="city">City</label>
+                </div>
 
-    <div>
-        <label for="date">date</label>
-        <input type="date" name="date" min="{{today}}" value="{{today}}" id="date" required>
-    </div>
+                <div class="form-floating mb-3">
+                    <select class="form-select" name="state" id="state" required> State
+                        <option value="">--Select one option--</option>
+                        {% for code, state in states.items() %}
+                        <option value="{{code}}">{{state}}, {{code}}</option> 
+                        {% endfor %}
+                    </select>
+                    <label class="form-label" for="state">State</label>
+                    
+                </div>
 
-    <div>
-        <label for="start">Start time</label>
-        <input type="time" id="start" required name="start">
-    </div>
+                <div class="form-floating mb-3">
+                    <input class="form-control" type="text" name="zipcode" id="zipcode" required>
+                    <label class="form-label" for="zipcode">Zipcode</label>
+                </div>
 
-    <div>
-        <label for="end">End time</label>
-        <input type="time" id="end" required name="end">
-    </div>
+                <div class="form-floating mb-3">
+                    <input class="form-control" type="date" name="date" min="{{today}}" value="{{today}}" id="date" required>
+                    <label for="date">Date: MM/DD/YYYY or choose from date picker</label>
+                </div>
 
-    <div>
-        <label for="age">Age group</label>
-        <select name="age_group" id="age">
-            <option value="">--Select an age group--</option>
-            {% for age in age_groups %}
-            <option value="{{age}}">{{age}}</option> 
-            {% endfor %}
-        </select>
-    </div>
+                <div class="form-floating mb-3">
+                    <input class="form-control" type="time" id="start" name="start" required >
+                    <label class="form-label" for="start">Start time: HH:MM AM or HH:MM PM or choose from time picker</label>
+                </div>
 
-    <div>
-        <label for="add_activities"></label>
-        Do you want to add some activities to your playdate? 
-        <input type="checkbox" id="add_activities" name="add_activities" value="add_activities"><br>
-        <div id="suggested_activities">
-            Suggested activities 
-            {% for activity in activities %}
-                <input type="checkbox" name="activity" value="{{activity}}" id="{{activity}}">
-                <label for="{{activity}}">{{activity}}</label>
-            {% endfor %}
-            <br>
-            <label for="other">Other activities</label>
-            <input type="checkbox" id="other" name="activity" value="other">
-            <input type="text" id="otherActivity" name="otherActivity">
+                <div class="form-floating mb-3">
+                    <input class="form-control" type="time" id="end" name="end" required>
+                    <label for="end">End time: HH:MM AM or HH:MM PM or choose from time picker</label>
+                </div>
+
+                <div class="form-floating mb-3">
+                    <select class="form-select" name="age_group" id="age" required>
+                        <option value="">--Select an age group--</option>
+                        {% for age in age_groups %}
+                        <option value="{{age}}">{{age}}</option> 
+                        {% endfor %}
+                    </select>
+                    <label class="form-label" for="age">Age group</label>
+                </div>
+
+                <br>
+                <div class="form-floating mb-3">
+                    <label class="form-label" for="add_activities"></label>
+                    Do you want to add some activities to your playdate? 
+                    <input type="checkbox" id="add_activities" name="add_activities" value="add_activities"><br>
+                    <div id="suggested_activities">
+                        Suggested activities
+                        {% for activity in activities %}
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" name="activity" value="{{activity}}" id="{{activity}}">
+                            <label class="form-check-label" for="{{activity}}">{{activity}}</label>
+                        </div>
+                        {% endfor %}
+                        <div class="form-check">
+                            <input type="checkbox" id="other" name="activity" value="other">
+                            <label class="form-label" for="other">Other activities</label>
+                            <input type="text" id="otherActivity" name="otherActivity">
+                        </div>    
+                    </div>
+                </div>
+                
+                <br>
+                Do you want to receive email reminder for your playdate? <br>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" id="one_day" name="reminder" value="1">
+                    <label class="form-check-label" for="one_day">Yes, one day before</label><br>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" id="two_day" name="reminder" value="2" checked>
+                    <label class="form-check-label" for="two_day">Yes, two days before</label><br>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" id="no" name="reminder" value="no">
+                    <label class="form-check-label" for="no">No, I don't want a reminder</label>
+                </div>
+
+                <div class="mt-3 text-center">
+                    <button class="btn btn-primary btn-md" type="submit" form="host_form" value="Submit">Submit</button>
+                </div>
         </div>
     </div>
-    
-    <div>
-        Do you want to receive email reminder for your playdate? 
-        <input type="radio" id="one_day" name="reminder" value="1">
-        <label for="one_day">Yes, one day before</label>
-        <input type="radio" id="two_day" name="reminder" value="2">
-        <label for="two_day">Yes, two days before</label>
-        <input type="radio" id="no" name="reminder" value="no">
-        <label for="no">No, I don't want a reminder</label>
-    </div>
+</div>
 
-    <div>
-        <button type="submit" form="host_form" value="Submit">Submit</button>
-    </div>
-    
     <div id="map" style="display: None"></div>
 
 </form>

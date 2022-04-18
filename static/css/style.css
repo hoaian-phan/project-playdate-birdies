@@ -3,30 +3,50 @@ body {
 }
 
 #hp_search_bg_image {
-    margin-left: 25%;
     border-radius: 10px;
-    height: 520px;  
-    min-height: 520px;
-    width: 740px;
+    height: 550px;  
+    min-height: 550px;
+    width: auto;
     min-width: 740px;
     z-index: 1;
 }
 
 #search_box {
+    left: 49px;
     width: 375px;
     border-radius: 10px;
     box-shadow: 0 6px 20px rgb(0 0 0 / 20%);
     z-index: 2;
 }
 
-#sign_up {
+.account {
     width: 350px;
     border-radius: 10px;
     box-shadow: 0 6px 20px rgb(0 0 0 / 20%);
 }
 
-#log_in {
-    width: 350px;
+
+#host_image {
+    margin-left: 19.5%;
     border-radius: 10px;
-    box-shadow: 0 6px 20px rgb(0 0 0 / 20%);
+    height: 520px;  
+    min-height: 520px;
+    width: auto;
+    min-width: 740px;
+    z-index: 1;
+    
+}
+
+#search_feature{
+    min-height: 552px;
+}
+#host_feature {
+    margin-left: 25%;
+    margin-right: 25%;
+    border-radius: 10px;
+    min-height: 520px;
+}
+
+#host {
+    z-index: 2;
 }

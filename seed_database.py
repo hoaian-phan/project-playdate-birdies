@@ -99,7 +99,6 @@ for n in range(10):
     for i in range (10):
         host_id = user.user_id
         title = choice(TITLE)
-        description = 'Have fun and make friends'
         location_id = choice(locations_in_db).location_id
         date = choice(date_objs)
         start_time = choice(['10:00:00 AM', '11:00:00 AM', '12:00:00 PM', '1:00:00 PM', '2:00:00 PM'])

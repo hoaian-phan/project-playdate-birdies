@@ -10,34 +10,37 @@
 
 {% block body %}
 
-<div id="event_details">
-    <p>Title: {{ event.title }}</p>
-    <p>Description: {{ event.description }}</p>
-    {% if event.location.photo %}
-        <img src={{ event.location.photo }} alt="parkPhoto" />
-    {% else %}
-    <img src="/static/image/general_park.jpeg" alt="parkPhoto" />
-    {% endif %}
-    <p>Location: {{ event.location.name }}</p>
-    <p>Address: {{ event.location.address }}, {{ event.location.city }}, 
-        {{ event.location.state }} {{ event.location.zipcode }} </p>
-    <p>On {{ event.date }} from {{ event.start_time }} to {{ event.end_time }}</p>
-    {% if event.activities|length >= 1 %}
-        <p>Activities: 
-            {% for activity in event.activities %}
-                {% if loop.last %}
-                    {{ activity.name }}
-                {% else %}
-                    {{ activity.name }},
-                {% endif %}
-            {% endfor %}
-        </p>
-    {% endif %}
-    
-
+<div class="container">
+    <div class="row">
+        <div class="col-6" id="root"></div>
+        <div class="col-6 border border-primary rounded-3" id="event_details"><br>
+            <h2 class="text-center fw-bold">{{ event.title }}</h2><br>
+            {% if event.location.photo %}
+                <img class="img-fluid rounded-1" src={{ event.location.photo }} alt="parkPhoto" />
+            {% else %}
+                <img class="img-fluid rounded-1" src="/static/image/general_park.jpeg" alt="parkPhoto" />
+            {% endif %}
+            <br><br>
+            <p>Description: {{ event.description }}</p>
+            
+            <p>Location: {{ event.location.name }}</p>
+            <p>Address: {{ event.location.address }}, {{ event.location.city }}, 
+                {{ event.location.state }} {{ event.location.zipcode }} </p>
+            <p>On {{ event.date }} from {{ event.start_time }} to {{ event.end_time }}</p>
+            {% if event.activities|length >= 1 %}
+                <p>Activities: 
+                    {% for activity in event.activities %}
+                        {% if loop.last %}
+                            {{ activity.name }}
+                        {% else %}
+                            {{ activity.name }},
+                        {% endif %}
+                    {% endfor %}
+                </p>
+            {% endif %}
+        </div>   
+    </div>
 </div>
-
-<div id="root"></div>
 
 
 

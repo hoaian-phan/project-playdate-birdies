@@ -7,49 +7,54 @@
 {% endblock %}
 
 {% block body %}
+<main class="ms-5 me-5">
+    
+        <div class="container">
+            <div class="row">
 
-<div id="show_details">
-    <h2>Search Results</h2>
+                <div class="col-12 col-md-6 order-md-2 col-lg-3 order-lg-2" id="show_details">
+                    <h2 class="fw-bold">Search Results</h2>
 
-    {% if events|length == 0 or events|length == 1 %}
-        <p>There is {{events|length}} result for your search.</p>
-    {% else %}
-        <p>There are {{events|length}} results for your search.</p>
-    {% endif %}
+                    {% if events|length == 0 or events|length == 1 %}
+                        <p>There is {{events|length}} result for your search.</p>
+                    {% else %}
+                        <p>There are {{events|length}} results for your search.</p>
+                    {% endif %}
 
-    <h3> Upcoming events </h3>
-    <ul>
-        {% for event in events | sort(attribute="date", reverse=true) %}
-            {% if event.date.today() <= event.date %}
-            <li> 
-                {{ event.title }} <button class="event-details" id="{{ event.event_id }}" value="upcoming_event">Show details</button>
-                <p id="display-detail{{event.event_id}}"></p>
-            </li>
-            {% endif %}
-        {% endfor %}
-    </ul>
+                    <h4> Upcoming events </h4>
+                    <ul>
+                        {% for event in events | sort(attribute="date", reverse=true) %}
+                            {% if event.date.today() <= event.date %}
+                            <li> 
+                                {{ event.title }} <button class="event-details btn btn-outline-primary btn-sm" id="{{ event.event_id }}" value="upcoming_event">Show details</button>
+                                <p id="display-detail{{event.event_id}}"></p>
+                            </li>
+                            {% endif %}
+                        {% endfor %}
+                    </ul>
 
-    <h3> Past events </h3>
-    <ul>
-        {% for event in events | sort(attribute="date", reverse=true) %}
-            {% if event.date.today() > event.date %}
-            <li> 
-                {{ event.title }} <button class="event-details" id="{{ event.event_id }}" value="past_event">Show details</button>
-                <p id="display-detail{{event.event_id}}"></p>
-            </li>
-            {% endif %}
-        {% endfor %}
-    </ul>
-</div>
+                    <h4> Past events </h4>
+                    <ul>
+                        {% for event in events | sort(attribute="date", reverse=true) %}
+                            {% if event.date.today() > event.date %}
+                            <li> 
+                                {{ event.title }} <button class="event-details btn btn-outline-warning btn-sm" id="{{ event.event_id }}" value="past_event">Show details</button>
+                                <p id="display-detail{{event.event_id}}"></p>
+                            </li>
+                            {% endif %}
+                        {% endfor %}
+                    </ul>
+                </div>
 
-<div id="show_map">
-    <section class="map">
-        <div id="map"></div>
-    </section>
-</div>
+                <div class="col-12 col-md-6 order-md-1 col-lg-9 order-lg-1" id="show_map">
+                    <section class="map">
+                        <div id="map"></div>
+                    </section>
+                </div>
 
-  
-
+            </div>
+        </div>
+</main>
 
 <!-- Script for DOM and event handling -->
 <script src="static/js/playdate.js"></script>
