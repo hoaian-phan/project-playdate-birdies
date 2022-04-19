@@ -6,6 +6,19 @@
 <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 <script src="https://unpkg.com/react@16/umd/react.development.js"></script>
 <script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js"></script>
+
+<!-- Script for using Bootstrap with React -->
+<script src="https://unpkg.com/react/umd/react.production.min.js" crossorigin></script>
+
+<script
+  src="https://unpkg.com/react-dom/umd/react-dom.production.min.js"
+  crossorigin></script>
+
+<script
+  src="https://unpkg.com/react-bootstrap@next/dist/react-bootstrap.min.js"
+  crossorigin></script>
+
+<script>var Alert = ReactBootstrap.Alert;</script>
 {% endblock %}
 
 {% block body %}
@@ -13,12 +26,12 @@
 <div class="container">
     <div class="row">
         <div class="col-6" id="root"></div>
-        <div class="col-6 border border-primary rounded-3" id="event_details"><br>
+        <div class="col-6 border border-primary rounded-3 text-center" id="event_details"><br>
             <h2 class="text-center fw-bold">{{ event.title }}</h2><br>
             {% if event.location.photo %}
-                <img class="img-fluid rounded-1" src={{ event.location.photo }} alt="parkPhoto" />
+                <img class="img-fluid rounded-1" src={{ event.location.photo }} alt="parkPhoto" id="park_photo" />
             {% else %}
-                <img class="img-fluid rounded-1" src="/static/image/general_park.jpeg" alt="parkPhoto" />
+                <img class="img-fluid rounded-1" src="/static/image/general_park.jpeg" alt="parkPhoto" id="park_photo"/>
             {% endif %}
             <br><br>
             <p>Description: {{ event.description }}</p>

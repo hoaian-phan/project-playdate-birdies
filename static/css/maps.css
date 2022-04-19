@@ -13,7 +13,7 @@ header {
 
 #show_details {
   /* float: left; */
-  width: 75%;
+  /* width: 75%; */
   height: 100%;
   /* position: absolute; */
   /* left: 0; */
@@ -61,8 +61,8 @@ nav button:hover {
 .map,
 #map {
   width: 70%;
-  height: 500px;
-  float: right;
+  height: 90%;
+  /* float: right; */
   position: absolute;
   right: 50px;
 }

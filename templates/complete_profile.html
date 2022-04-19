@@ -5,34 +5,51 @@
 
 {% block body %}
 
-<h2>Tell us more about you and your interests</h2>
+<h2 class="text-center fw-bold">Tell us more about you and your interests</h2>
 
-<form id="profile" action="/complete_profile" method="POST">
-    <div>
-        <label for="address">Please input your address by choosing one of the suggestions in the suggestion box.</label><br>
-        <input type="text" name="address" placeholder="Full address" id="address" size="50" required>
-        <input type="hidden" name="lat" id="lat">
-        <input type="hidden" name="lng" id="lng">
-    </div>
-
-    <br><br>
-    <div>
-        Your children's favorite activities: Select all that apply<br>
+<div class="container">
+    <div class="row">
         
-        {% for activity in activities %}
-                <input class="choices" type="checkbox" name="activity" value="{{activity}}" id="activity{{loop.index}}">
-                <label for="activity{{loop.index}}">{{activity}}</label>
-        {% endfor %}
-        
+        <div class="col-12 col-md-6 col-lg-5"><br>
+            <img class="img-fluid rounded-25 m-100 img-thumbnail" id="host_form_image2" src="/static/image/Background_images/bike.jpeg" alt="biking image"><br>
+            <img class="img-fluid rounded-25 m-100 img-thumbnail" id="host_form_image2" src="/static/image/Background_images/play.jpeg" alt="jumping image"><br>
+        </div>
+
+        <div class="col-12 col-md-6 col-lg-7">
+            <form class="w-80" id="profile" action="/complete_profile" method="POST">
+                <br>
+                <div class="mb-3">
+                    <label class="form-label" for="address">Home address: </label><br>
+                    <input class="form-control" type="text" name="address" placeholder="Start typing and choose one from the address suggestion box" id="address" size="50" required>
+                    <input type="hidden" name="lat" id="lat">
+                    
+                    <input type="hidden" name="lng" id="lng">
+                </div>
+
+                <div class="mb-3">
+                    Your children's favorite activities: Select all that apply<br>
+                    
+                    {% for activity in activities %}
+                    <div class="row">
+                        <div class="form-check">
+                            <input class="form-check-input choices" type="checkbox" name="activity" value="{{activity}}" id="activity{{loop.index}}">
+                            <label class="form-label" for="activity{{loop.index}}">{{activity}}</label>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <div class="mt-3 text-center">
+                    <button class="btn btn-primary btn-md" type="submit" form="profile" value="Submit">Submit</button>
+                </div>
+            </form>
+
+
+            <div id="map" style="display: None"></div>
+
+        </div>
     </div>
-
-    <div>
-        <button type="submit" form="profile" value="Submit">Submit</button>
-    </div>
-</form>
-
-
-<div id="map" style="display: None"></div>
+</div>
 
 <!-- Script for DOM and event handling -->
 <script src="static/js/completeProfile.js"></script>

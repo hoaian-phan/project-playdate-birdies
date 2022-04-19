@@ -12,7 +12,7 @@ body {
 }
 
 #search_box {
-    left: 49px;
+    left: 100px;
     width: 375px;
     border-radius: 10px;
     box-shadow: 0 6px 20px rgb(0 0 0 / 20%);
@@ -29,7 +29,7 @@ body {
 #host_image {
     margin-left: 19.5%;
     border-radius: 10px;
-    height: 520px;  
+    height: 545px;  
     min-height: 520px;
     width: auto;
     min-width: 740px;
@@ -49,4 +49,35 @@ body {
 
 #host {
     z-index: 2;
+    margin-top: 115px;
+}
+
+#park_photo {
+    height: 250px;
+    width: auto;
+}
+
+#event_details {
+    border-radius: 10px;
+}
+
+.panel-default {
+    border-color: #ddd;
+}
+
+/* main {
+    background-color: #DBF5F0;
+} */
+
+.nav-bg-color {
+    background-color: #D4F1F4;
+}
+
+.inline {
+    display: inline-block;
+}
+
+img.small {
+    
+    height: 250px;
 }

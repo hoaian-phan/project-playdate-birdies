@@ -27,7 +27,7 @@ function otherMap() {
         fields: ["address_components", "geometry", "formatted_address"],
         types: ["address"],
     });
-    addressField.focus();
+    // addressField.focus();
     // When the user selects an address from the drop-down: .
     autocomplete.addListener("place_changed", () => {
         // 1. Populate the address fields to fill in the rest of the address form

@@ -40,33 +40,19 @@
     
 {% endblock %}
 
-{% block navbar %}
-<div class="nav_bar">
-    <form action="/">
-        <input type="submit" value="Home">
-    </form>
-    <form action="/host">
-        <input type="submit" value="Hosting">
-    </form>
-    <form action="/profile">
-        <input type="submit" value="Profile">
-    </form>
-    <form action="/logout">
-        <input type="submit" value="Log out">
-    </form>
-</div>
-{% endblock %}
+
 
 {% block body %}
-<div><br>
-    <a href="/profile">View your playdates as a list</a> | <a href="/calendar">View your playdates in a calendar</a>
-</div>
+<main class="ms-5 me-5">
+    <div class="mb-3"><br>
+        <a href="/profile">View your playdates as a list</a> | <a href="/calendar">View your playdates in a calendar</a>
+    </div>
 
-<div style="color:green; display: inline-block">Green color for hosting</div>
+<div style="color:green; display: inline-block">Green color for hosting |</div>
 <div style="color:purple; display: inline-block">Purple color for attending</div>
 <br>
 
-<div class="container">
+<div class="container mt-5">
     <div id="calendar"></div>
 </div>
 

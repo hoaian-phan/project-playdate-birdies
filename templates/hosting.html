@@ -11,18 +11,18 @@
 <div class="container">
     <div class="row">
         <div class="col-12 col-md-6 col-lg-4"><br>
-            <img class="img-fluid rounded-25 m-100" id="host_form_image2" src="/static/image/Background_images/host_3.jpeg" alt="tree image"><br>
-            <img class="img-fluid rounded-25 m-100" id="host_form_image" src="/static/image/Background_images/host.jpeg" alt="host image">
+            <img class="img-fluid rounded-25 m-100 img-thumbnail mb-3 " id="host_form_image2" src="/static/image/Background_images/host_3.jpeg" alt="two friend image"><br>
+            <img class="img-fluid rounded-25 m-100 img-thumbnail" id="host_form_image" src="/static/image/Background_images/host.jpeg" alt="three friend image">
             
         </div>
 
         <div class="col-12 col-md-6 col-lg-8">
 
-            <form action="/host" method="POST" id="host_form">
+            <form class="w-80" action="/host" method="POST" id="host_form">
                 <br>
                 <div class="form-floating mb-3">
                     <input class="form-control" type="text" name="title" id="title" required>
-                    <label for="title">Title: e.g. e.g. Easter Egg Hunt</label>
+                    <label class="form-label" for="title">Title: e.g. Easter Egg Hunt</label>
                 </div>
                 
                 <div class="form-floating mb-3">
@@ -86,7 +86,7 @@
                     <label class="form-label" for="age">Age group</label>
                 </div>
 
-                <br>
+                
                 <div class="form-floating mb-3">
                     <label class="form-label" for="add_activities"></label>
                     Do you want to add some activities to your playdate? 
@@ -107,7 +107,7 @@
                     </div>
                 </div>
                 
-                <br>
+    
                 Do you want to receive email reminder for your playdate? <br>
                 <div class="form-check">
                     <input class="form-check-input" type="radio" id="one_day" name="reminder" value="1">

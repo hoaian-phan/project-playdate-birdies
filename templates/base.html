@@ -17,15 +17,10 @@
     {% block head %}{% endblock %}
   </head>
   <body>
-    {% for msg in get_flashed_messages() %}
-    <p class="flash-msg">
-      {{ msg }}
-    </p>
-    {% endfor %}
-
+    
     {% block navbar %} 
-    <nav class="ms-5 me-5 navbar navbar-expand-md bg-light">
-      
+    <nav class="ms-5 me-5 navbar navbar-expand-md navbar-light nav-bg-color">
+      <div class="container-fluid">
           <a class="navbar-brand" href="#">
               <img src="/static/image/Playdate_Birdies-logos/logo.png" alt="logo" height="50">
           </a>
@@ -37,16 +32,16 @@
           <div class="collapse navbar-collapse text-right flex-grow-1" id="navbarSupportedContent">
               <ul class="navbar-nav ms-auto mb-2 mb-lg-0 flex-nowrap">
                 <li class="nav-item active">
-                  <a class="nav-link" aria-current="page" href="/">Home</a>
+                  <a class="nav-link text-primary" aria-current="page" href="/">Home</a>
                 </li>
                 <li class="nav-item active">
-                  <a class="nav-link" aria-current="page" href="/host">Hosting</a>
+                  <a class="nav-link text-primary" aria-current="page" href="/host">Hosting</a>
                 </li>
                 <li class="nav-item active">
-                  <a class="nav-link" href="/profile">Profile</a>
+                  <a class="nav-link text-primary" href="/profile">Profile</a>
                 </li>
                 <li class="nav-item active">
-                    <a class="nav-link" href="/logout">Log out</a>
+                    <a class="nav-link text-primary" href="/logout">Log out</a>
                 </li>
               </ul>
           </div>
@@ -54,23 +49,29 @@
           <div class="collapse navbar-collapse text-right flex-grow-1" id="navbarSupportedContent">
               <ul class="navbar-nav ms-auto mb-2 mb-lg-0 flex-nowrap">
                 <li class="nav-item">
-                  <a class="nav-link active" aria-current="page" href="/">Home</a>
+                  <a class="nav-link active text-primary" aria-current="page" href="/">Home</a>
                 </li>
                 <li class="nav-item">
-                  <a class="nav-link active" aria-current="page" href="/signup">Sign up</a>
+                  <a class="nav-link active text-primary" aria-current="page" href="/signup">Sign up</a>
                 </li>
                 <li class="nav-item">
-                  <a class="nav-link active" href="/login">Log in</a>
+                  <a class="nav-link active text-primary" href="/login">Log in</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link active" href="/host">Hosting</a>
+                    <a class="nav-link active text-primary" href="/host">Hosting</a>
                 </li>
               </ul>
           </div>
           {% endif %}
-      
+      </div>
     </nav>
   {% endblock %}
+
+  {% for msg in get_flashed_messages() %}
+    <div class="ms-5 me-5 flash-msg alert alert-warning text-center" role="alert">
+      {{ msg }}
+    </div>
+  {% endfor %}
 
     {% block body %}
     

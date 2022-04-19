@@ -26,14 +26,14 @@ for (const button of buttons) {
                     <span class="inline">
                         <form class="follow" id="follow-${responseJson.event_id}">
                             <input type="hidden" name="user2_id" id="follow${responseJson.event_id}" value="${responseJson.host_id}">
-                            <input type="submit" value="Follow host">
+                            <input class="btn btn-outline-info btn-sm" type="submit" value="Follow host">
                         </form>
                     </span>
 
                     <span class="inline">
                         <form class="like_park" id="like_park-${responseJson.event_id}">
                             <input type="hidden" name="location_id" id="like_park${responseJson.event_id}" value="${responseJson.location_id}">
-                            <input type="submit" value="Add park to favorites">
+                            <input class="btn btn-outline-success btn-sm" type="submit" value="Add park to favorites">
                         </form>
                     </span>
                     `
@@ -82,13 +82,13 @@ for (const button of buttons) {
                     
                     
                     // if upcoming events and this user hasn't registered, show Attend 
-                    if ((button.value === "upcoming_event") & (!responseJson.is_registered )) {
+                    if (button.value === "upcoming_event") {
                         console.log(button.id);
                         document.getElementById(`display-detail${button.id}`).insertAdjacentHTML("beforeend", 
                         `<span class="inline">
                             <form action="/attend"> 
                                 <input type="hidden" name="event_id" value="${button.id}">
-                                <input type="submit" value="Attend">
+                                <input class="btn btn-outline-warning btn-sm" type="submit" value="Attend">
                             </form>
                         </span>
                         `)
@@ -97,37 +97,38 @@ for (const button of buttons) {
                     if (button.value === "host_event") {
                         document.getElementById(`display-detail${button.id}`).insertAdjacentHTML("beforeend", 
                         `
-                        <div id="cancel_host">
+                        <span class="inline" id="cancel_host">
                             <form action="/cancel_event" method="POST" onsubmit="return confirm('Do you really want to cancel this playdate?');">
                                 <input type="hidden" name="event_id" value="${button.id}">
-                                <input type="submit" value="Cancel playdate">
+                                <input class="btn btn-outline-danger btn-sm" type="submit" value="Cancel playdate">
                             </form>
-                        </div>
+                        </span>
                         `)
                     }
                     // if attending event, show Cancel registration form
                     if (button.value === "attending_event") {
                         document.getElementById(`display-detail${button.id}`).insertAdjacentHTML("beforeend", 
                         `
-                        <div id="cancel_registration">
+                        <span class="inline" id="cancel_registration">
                             <form action="/cancel_registration" method="POST" onsubmit="return confirm('Do you really want to cancel this registration?');">
                                 <input type="hidden" name="event_id" value="${button.id}">
-                                <input type="submit" value="Cancel registration">
+                                <input class="btn btn-outline-danger btn-sm" type="submit" value="Cancel registration">
                             </form>
-                        </div>
+                        </span>
                         `)
                     }
                     // if hosting or attending future events, show Invite friends form
                     if (button.classList.contains("invite_friends")) {
-                        document.getElementById(`invite${button.id}`).innerHTML =
+                        // document.getElementById(`invite${button.id}`).innerHTML =
+                        document.getElementById(`display-detail${button.id}`).insertAdjacentHTML("beforeend", 
                         `
-                        <div id="invitation">
+                        <span class="inline" id="invitation">
                             <form action="/invite">
                                 <input type="hidden" name="event_id" value="${button.id}">
-                                <input type="submit" value="Invite friends">
+                                <input class="btn btn-outline-warning btn-sm" type="submit" value="Invite friends">
                             </form>
-                        </div>
-                        `
+                        </span>
+                        `)
                     }
                     
                 } else { // Hide event details

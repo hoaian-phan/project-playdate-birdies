@@ -289,7 +289,10 @@ def show_profile():
 @app.route("/complete_profile", methods = ["GET", "POST"])
 def complete_profile():
     """ GET request renders the complete profile form, POST request updates user info in database"""
-
+    if "user_id" not in session:
+        flash("Please log in to complete profile")
+        return redirect("/login")
+        
     user = crud.get_user_by_id(session["user_id"])
     # Post request, get info from the form and update database
     if request.method == "POST":

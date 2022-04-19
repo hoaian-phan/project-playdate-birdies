@@ -62,7 +62,7 @@
 
 <div class="row m-0 bg-black rounded-25 border border-2" id="host_feature">
     <div class="col-3">
-        <div class="container-fluid rounded-25 position-absolute mt-5 p-3" id="host">
+        <div class="container-fluid rounded-25 position-absolute p-3" id="host">
             <h3 class="text-light">Host a Playdate</h2>
             <p class="text-light">Can't find a playdate that fits your schedule? </p>
             <p class="text-light">Love to organize fun games for your kids and others?</p>
@@ -77,20 +77,18 @@
     </div>
 </div>
 
-
+<div class="mt-5">
 <div class="recommended">
-    <h3>Recommended playdates for you</h2>
+    <h3 class="fw-bold">Recommended playdates for you</h2><br>
     {% if 'user_id' in session and recommendations|length > 0 %}    
         {% for event in recommendations %}
-            <div>
-                <p> <a href="/attend?event_id={{event.event_id}}"> Title: {{ event.title }} </a></p>
-                <p>On {{ event.date }} from {{ event.start_time }} to {{ event.end_time }}</p>
-            
+            <div class="col-3 inline ms-5 me-5 mb-3 text-center">
                 {% if event.location.photo %}
-                    <img src={{ event.location.photo }} alt="parkPhoto" />
+                    <img class="text-center img-fluid rounded float-left img-thumbnail small" src={{ event.location.photo }} alt="parkPhoto" />
                 {% else %}
-                    <img src="/static/image/general_park.jpeg" alt="parkPhoto" />
+                    <img class="text-center img-fluid rounded float-left img-thumbnail small" src="/static/image/general_park.jpeg" alt="parkPhoto" />
                 {% endif %}
+                <p class="text-center"> <a href="/attend?event_id={{event.event_id}}"> {{ event.title }} {{event.location.name}}</a></p>
             </div>
         {% endfor %}
     {% else %}
@@ -98,6 +96,7 @@
         Want to see playdates that fit your interests? Tell us more about you by <a href="/complete_profile">completing your profile.</a>
         </div>
     {% endif %}
+</div>
 </div>
 
 <div id="map" style="display: None"></div>
