@@ -93,6 +93,21 @@ for (const button of buttons) {
                         </span>
                         `)
                     }
+
+                    // if hosting or attending future events, show Invite friends form
+                    if (button.classList.contains("invite_friends")) {
+                        // document.getElementById(`invite${button.id}`).innerHTML =
+                        document.getElementById(`display-detail${button.id}`).insertAdjacentHTML("beforeend", 
+                        `
+                        <span class="inline" id="invitation">
+                            <form action="/invite">
+                                <input type="hidden" name="event_id" value="${button.id}">
+                                <input class="btn btn-outline-warning btn-sm" type="submit" value="Invite friends">
+                            </form>
+                        </span>
+                        `)
+                    }
+                    
                     // if host event, show Cancel form
                     if (button.value === "host_event") {
                         document.getElementById(`display-detail${button.id}`).insertAdjacentHTML("beforeend", 
@@ -117,19 +132,7 @@ for (const button of buttons) {
                         </span>
                         `)
                     }
-                    // if hosting or attending future events, show Invite friends form
-                    if (button.classList.contains("invite_friends")) {
-                        // document.getElementById(`invite${button.id}`).innerHTML =
-                        document.getElementById(`display-detail${button.id}`).insertAdjacentHTML("beforeend", 
-                        `
-                        <span class="inline" id="invitation">
-                            <form action="/invite">
-                                <input type="hidden" name="event_id" value="${button.id}">
-                                <input class="btn btn-outline-warning btn-sm" type="submit" value="Invite friends">
-                            </form>
-                        </span>
-                        `)
-                    }
+                    
                     
                 } else { // Hide event details
                     button.innerText = "Show details";

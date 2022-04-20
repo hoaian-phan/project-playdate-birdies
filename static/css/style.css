@@ -52,6 +52,11 @@ body {
     margin-top: 115px;
 }
 
+#address-label {
+    opacity: .65;
+    transform: scale(.85) translateY(-0.5rem) translateX(0.15rem);
+}
+
 #park_photo {
     height: 250px;
     width: auto;
@@ -78,6 +83,13 @@ body {
 }
 
 img.small {
-    
     height: 250px;
+}
+
+.text-size {
+    font-size: 18px;
+}
+
+.font-type {
+    font-family: 'Source Sans Pro', sans-serif;
 }

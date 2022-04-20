@@ -107,7 +107,7 @@ def homepage():
     """ Display homepage """
 
     # Recommend maximum 15 upcoming events of user's interests by the order of relevance
-    MAX_EVENTS = 15
+    MAX_EVENTS = 6
     recommendation_events = []
     if "user_id" in session:
         user = crud.get_user_by_id(session["user_id"])
@@ -115,14 +115,14 @@ def homepage():
         recommended = crud.recommend_events(user)
         # Sort recommended dictionary by (score, date) 
         sorted_recommendation = dict(sorted(recommended.items(), key=lambda item: (-item[1][0], item[1][1])))
-        # From the dictionary, make a list of maximum 15 first event objects
+        # From the dictionary, make a list of maximum 6 first event objects
         if len(sorted_recommendation) <= MAX_EVENTS:
             for key in sorted_recommendation.keys():
                 event = crud.get_event_by_id(key)
                 recommendation_events.append(event)
         else:
-            # Create new dict with 15 first key-value pairs
-            limit_sorted_recommendation = dict(list(sorted_recommendation.items())[:15])
+            # Create new dict with 6 first key-value pairs
+            limit_sorted_recommendation = dict(list(sorted_recommendation.items())[:MAX_EVENTS])
             for key in limit_sorted_recommendation.keys():
                 event = crud.get_event_by_id(key)
                 recommendation_events.append(event)

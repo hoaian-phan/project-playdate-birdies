@@ -7,8 +7,8 @@ function initMap() {
     // Put a basic map on the search result page
     const basicMap = new google.maps.Map(document.querySelector('#map'), {
         center: {
-            lat: 37.601773,
-            lng: -122.20287,
+            lat: 37.6688,
+            lng: -122.0810,
         },
         zoom: 11,
     });
@@ -51,8 +51,8 @@ function initMap() {
                         icon: "https://img.icons8.com/external-nawicon-flat-nawicon/40/000000/external-park-location-nawicon-flat-nawicon.png",
                     });
                     // Zoom in on the geolocated location
-                        basicMap.setCenter(locationCoordinates);
-                        basicMap.setZoom(11);
+                        // basicMap.setCenter(locationCoordinates);
+                        // basicMap.setZoom(11);
                     // Create marker info
                     const locationInfo = `
                         <h1>${marker.title}</h1>
@@ -122,8 +122,8 @@ function initMap() {
                         });
                         
                         // Zoom in on the geolocated location
-                            basicMap.setCenter(locationCoordinates);
-                            basicMap.setZoom(11);
+                            // basicMap.setCenter(locationCoordinates);
+                            // basicMap.setZoom(11);
                         // Create marker info
                         const locationInfo = `
                             <h1>${marker.title}</h1>

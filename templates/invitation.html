@@ -4,50 +4,67 @@
 
 {% block body %}
 
-<div id="event_details">
-    <p>Title: {{ event.title }}</p>
-    <p>Description: {{ event.description }}</p>
-    {% if event.location.photo %}
-        <img src={{ event.location.photo }} alt="parkPhoto" />
-    {% else %}
-        <img src=/static/image/park.jpeg alt="parkPhoto" />
-    {% endif %}
-    <p>Location: {{ event.location.name }}</p>
-    <p>Address: {{ event.location.address }}, {{ event.location.city }}, 
-        {{ event.location.state }} {{ event.location.zipcode }} </p>
-    <p>On {{ event.date }} from {{ event.start_time }} to {{ event.end_time }}</p>
-    <p>Activities: 
-        {% for activity in event.activities %}
-            {% if loop.last %}
-                {{ activity.name }}.
-            {% else %}
-                {{ activity.name }},
-            {% endif %}
-        {% endfor %}
-    </p>
+<div class="container">
+    <div class="row">
+        <div class="col-6 mt-5" id="invite">
+            <form action="/send_invitation">
+                <h3> Who would you like to invite to this playdate? </h3>
+                <div class="form-floating mb-3">
+                {% for friend in friend_list %}
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="friend" value="{{friend.email}} " id="{{friend.user_id}} ">
+                    <label class="form-check-label" for="{{friend.user_id}} ">{{friend.fname}} {{friend.lname}}</label>
+                </div>
+                {% endfor %}
+                </div>
+            
+                <div>
+                    <input type="hidden" id="invite{{event.event_id}}" name="event_info" value="attend?event_id={{event.event_id}}">
+                    <label for="invite_msg" class="form-label">Your message</label>
+                    <textarea class="form-control" id="invite_msg" name="message">Check out this playdate!</textarea>
+            
+                </div>
+                
+                <div><br>
+                    We will send an email invitation to your friends with information of this playdate.
+                </div>
+                <div class="text-center"><br>
+                    <button class="btn btn-primary btn-md" type="submit" value="Submit">Send my invitation</button>
+                </div>
+            
+            </form>
+        </div>
 
+        <div class="col-6 border border-primary rounded-3 text-center mt-5" id="event_details">
+            <h2 class="text-center fw-bold">{{ event.title }}</h2><br>
+            {% if event.location.photo %}
+                <img class="img-fluid rounded-1" src={{ event.location.photo }} alt="parkPhoto" id="park_photo" />
+            {% else %}
+                <img class="img-fluid rounded-1" src="/static/image/general_park.jpeg" alt="parkPhoto" id="park_photo"/>
+            {% endif %}
+            <br><br>
+            <p>Description: {{ event.description }}</p>
+            <p>Location: {{ event.location.name }}</p>
+            <p>Address: {{ event.location.address }}, {{ event.location.city }}, 
+                {{ event.location.state }} {{ event.location.zipcode }} </p>
+            <p>On {{ event.date }} from {{ event.start_time }} to {{ event.end_time }}</p>
+            {% if event.activities|length >= 1 %}
+                <p>Activities: 
+                    {% for activity in event.activities %}
+                        {% if loop.last %}
+                            {{ activity.name }}
+                        {% else %}
+                            {{ activity.name }},
+                        {% endif %}
+                    {% endfor %}
+                </p>
+            {% endif %}
+
+        </div>
+    </div>
 </div>
 
-<form action="/send_invitation">
-    <h3> Who would you like to invite to this playdate? </h3>
-    <div>
-    {% for friend in friend_list %}
-        <input type="checkbox" name="friend" value="{{friend.email}} " id="{{friend.user_id}} ">
-        <label for="{{friend.user_id}} ">{{friend.fname}} {{friend.lname}}</label>
-    {% endfor %}
-    </div>
 
-    <div>
-        <input type="hidden" id="invite{{event.event_id}}" name="event_info" value="attend?event_id={{event.event_id}}">
-        <textarea id="invite" name="message">Check out this playdate!</textarea>
-
-    </div>
-
-    <div>
-        <button type="submit" value="Submit">Submit</button>
-    </div>
-
-</form>
   
 
 

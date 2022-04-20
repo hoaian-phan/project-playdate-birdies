@@ -6,7 +6,7 @@
 
 {% block body %}
 
-<main class="ms-5 me-5">
+<main class="ms-5 me-5 mt-4 mb-3">
 <h1 class="text-center fw-bold"> Welcome to Playdate Birdies
     <br> Where Kids Play, Grow and Make Friends</h1>
 
@@ -82,13 +82,13 @@
     <h3 class="fw-bold">Recommended playdates for you</h2><br>
     {% if 'user_id' in session and recommendations|length > 0 %}    
         {% for event in recommendations %}
-            <div class="col-3 inline ms-5 me-5 mb-3 text-center">
+            <div class="col-3 inline ms-5 me-5 mb-5 text-center">
                 {% if event.location.photo %}
                     <img class="text-center img-fluid rounded float-left img-thumbnail small" src={{ event.location.photo }} alt="parkPhoto" />
                 {% else %}
                     <img class="text-center img-fluid rounded float-left img-thumbnail small" src="/static/image/general_park.jpeg" alt="parkPhoto" />
                 {% endif %}
-                <p class="text-center"> <a href="/attend?event_id={{event.event_id}}"> {{ event.title }} {{event.location.name}}</a></p>
+                <div class="text-center mt-3 text-size"> <a href="/attend?event_id={{event.event_id}}"> {{ event.title }} at {{event.location.name}}</a></div>
             </div>
         {% endfor %}
     {% else %}
