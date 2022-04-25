@@ -113,4 +113,11 @@ $ python3 server.py
 
 
 ## Project Status: 
-Project is in progress. Features are now completed. Starting on tests and styling.
+Project is completed. Future updates inlcude setting up mail server (instead of test mail server) and deploy.
+
+## Credits:
+- I learned how to use Celery from miguelgrinberg: https://github.com/miguelgrinberg/flask-celery-example and Robley Gori https://stackabuse.com/asynchronous-tasks-using-flask-redis-and-celery/
+- I learned how to use FullCalendar from Gordon Chan https://www.youtube.com/watch?v=VXW2A4Q81Ok
+- Many thanks my to instructors, Jocelyn Tang and Steve Chait, my cohort TA Drue Gilbert, my mentor Joyaan Bhesania for helping me with my project.
+- Special thanks to my baby Andy Gia Hoa Phan for being the inspiration for my project.
+
