@@ -2,6 +2,8 @@
 
 A web app where parents and grandparents can find playdates for their children.
 
+For a demo of my app, please visit this link <a href="https://www.youtube.com/watch?v=u-X1LhxQtec">Playdate Birdies Demo</a>
+
 ## About
 
 - Playdate Birdies is a community of parents and grandparents who love to bring their kids to outdoor activities to learn, play and make friends.
