@@ -82,16 +82,34 @@ A web app where parents and grandparents can find playdates for their children.
 To run this project, install it locally:
 
 - Clone this repository
+```
 $ git clone https://github.com/hoaian-phan/project-playdate-birdies.git
+```
 
 - Go into the repository
+```
 $ cd project-playdate-birdies
+```
+
+- Create a virtual environment
+```
+$ virtualenv env
+```
+
+- Activate virtual env
+``` 
+$ source env/bin/activate
+```
 
 - Install dependencies
+```
 $ pip3 install -r requirements.txt
+```
 
 - Run the app
+```
 $ python3 server.py
+```
 
 
 ## Project Status: 
