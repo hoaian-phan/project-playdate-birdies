@@ -19,9 +19,9 @@ function initMap() {
     // Display the locations on the map
     // Select all buttons and iterate through the list to get address and name of the event
     const buttons = document.querySelectorAll(".event-details");
-    for (const button of buttons) {
+    for (const button of buttons) { 
         let locationAddress, locationName, eventLocation;
-        const url = `/events?event_id=${button.id}`;
+        const url = `/events?event_id=${button.id}`; 
         
         // fetch with sending data by get request
         fetch(url)
@@ -53,6 +53,7 @@ function initMap() {
                     // Zoom in on the geolocated location
                         // basicMap.setCenter(locationCoordinates);
                         // basicMap.setZoom(11);
+
                     // Create marker info
                     const locationInfo = `
                         <h1>${marker.title}</h1>

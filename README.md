@@ -20,7 +20,7 @@ A web app where parents and grandparents can find playdates for their children.
 
 ## Features
 
-- Create user account, login and logout
+- Users can create an account, login, reset password and logout
 - User profile page with event calendar and receive email reminders of upcoming events
 - Hosting feature, with the help of address autocompletion, and includes activity recommendations based on age group (to be implemented)
 - Searching by city or zipcode, date, age group, and activities
