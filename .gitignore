@@ -1,3 +1,7 @@
 secrets.sh
 .pyc
 __pycache__/
+.DS_Store
+.coverage
+node_modules/
+package-lock.json
