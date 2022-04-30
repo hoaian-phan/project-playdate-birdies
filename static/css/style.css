@@ -93,3 +93,16 @@ img.small {
 .font-type {
     font-family: 'Source Sans Pro', sans-serif;
 }
+
+footer {
+    /* display: flex; */
+    font-size: small;
+    justify-content: center;
+    padding: 5px;
+    background-color: #A4E5E0;
+    color: black;
+}
+
+address {
+    margin-bottom: 0;
+}
