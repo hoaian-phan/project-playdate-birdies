@@ -94,9 +94,13 @@ $ cd project-playdate-birdies
 ```
 
 - Create a virtual environment
+On MacOS
 ```
 $ virtualenv env
 ```
+On Windows OS
+``` 
+$ virtualenv env --always-copy
 
 - Activate virtual env
 ``` 
@@ -108,10 +112,26 @@ $ source env/bin/activate
 $ pip3 install -r requirements.txt
 ```
 
+- Create a secrets.sh file to assign a value to APP_SECRET_KEY and run it
+```
+source secrets.sh
+```
+
+- (Optionally) Seed the database: 
+``` python3 seed_database.py ```
+Note: if you do not run ```seed_database.py```, make sure you create a database named ```playdates``` as well as the tables by running the following commands:
+```
+createdb playdates 
+python3 -i model.py
+>>> db.create_all()
+```
+
 - Run the app
 ```
 $ python3 server.py
 ```
+
+You can now navigate to 'localhost:5000/' to access Playdate Birdies.
 
 
 ## Project Status: 
