@@ -31,7 +31,7 @@ TITLE = ["Easter egg hunt", "Spring break playdate", "Wonderful outdoor games", 
 
 # Create 10 random dates
 # initializing dates ranges 
-test_date1, test_date2 = date(2022, 4, 1), date(2022, 4, 30)
+test_date1, test_date2 = date(2022, 4, 1), date(2022, 5, 30)
   
 # printing dates 
 print("The original range : " + str(test_date1) + " " + str(test_date2))
@@ -99,6 +99,7 @@ for n in range(10):
     for i in range (10):
         host_id = user.user_id
         title = choice(TITLE)
+        description = None
         location_id = choice(locations_in_db).location_id
         date = choice(date_objs)
         start_time = choice(['10:00:00 AM', '11:00:00 AM', '12:00:00 PM', '1:00:00 PM', '2:00:00 PM'])

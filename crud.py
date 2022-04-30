@@ -6,7 +6,7 @@ from datetime import date, timedelta
 from geopy import distance
 
 
-
+today = date.today()
 # Sign up
 def sign_up(first, last, email, password):
     """ Create and return a new user """
@@ -108,6 +108,8 @@ def get_events_by_inputs(city_zipcode, date, age_group, activity):
 
     if date:
         events = events.filter(Event.date==date)
+    else:
+        events = events.filter(Event.date > today)
     if age_group and age_group != 'any age':
         events = events.filter(Event.age_group==age_group)
     if city_zipcode:
@@ -156,8 +158,7 @@ def get_tomorrow_events(day):
 # Categorize pass and future events:
 def is_future(event):
     """ Return true if the input event date is in the future """
-    # Get today's date
-    today = date.today()
+
     # Compare event date to today
     if event.date > today:
         return True
@@ -171,7 +172,6 @@ def recommend_events(user):
     recommended = {}
     
     # Get all upcoming events within the next 15 days in user's home state
-    today = date.today()
     events = db.session.query(Event).join(Location)
     events = events.filter(Event.date - today < 15, Event.date - today > 0)
     events = events.filter(Location.state == user.home_state)
