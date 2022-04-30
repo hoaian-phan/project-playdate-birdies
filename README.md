@@ -59,7 +59,7 @@ For a demo of my app, please visit this link <a href="https://www.youtube.com/wa
   <img src="static/image/Readme/profile.png" width=800>
 </p>
 
-- Users can view their playdates in calender. I implemented this calendar by using FullCalendar in JavaScript.
+- Users can view their playdates in calendar. I implemented this calendar by using FullCalendar in JavaScript.
 <p align="center">          
   <img src="static/image/Readme/calendar.png" width=800>
 </p>
@@ -93,14 +93,14 @@ $ git clone https://github.com/hoaian-phan/project-playdate-birdies.git
 $ cd project-playdate-birdies
 ```
 
-- Create a virtual environment
-On MacOS
+- Create a virtual environment on MacOS
 ```
 $ virtualenv env
 ```
 On Windows OS
 ``` 
 $ virtualenv env --always-copy
+```
 
 - Activate virtual env
 ``` 
