@@ -112,7 +112,7 @@ $ source env/bin/activate
 $ pip3 install -r requirements.txt
 ```
 
-- Create a secrets.sh file to assign a value to APP_SECRET_KEY and run it
+- Create a secrets.sh file to assign a value to SECRET_KEY and run it
 ```
 source secrets.sh
 ```
