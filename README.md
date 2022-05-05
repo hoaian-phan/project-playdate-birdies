@@ -4,6 +4,8 @@ A web app where parents and grandparents can find playdates for their children.
 
 For a demo of my app, please visit this link <a href="https://www.youtube.com/watch?v=u-X1LhxQtec">Playdate Birdies Demo</a>.
 
+To experience the app, please visit this link <a href="http://100.22.1.223/">Playdate Birdies Website</a>
+
 ## About
 
 - Playdate Birdies is a community of parents and grandparents who love to bring their kids to outdoor activities to learn, play and make friends.
@@ -142,4 +144,7 @@ Project is completed. Future updates inlcude setting up mail server (instead of 
 - I learned how to use FullCalendar from Gordon Chan https://www.youtube.com/watch?v=VXW2A4Q81Ok
 - Many thanks my to instructors, Jocelyn Tang and Steve Chait, my cohort TA Drue Gilbert, my mentor Joyaan Bhesania for helping me with my project.
 - Special thanks to my baby Andy Gia Hoa Phan for being the inspiration for my project.
+
+## Comments or Questions:
+Please contact me via <a href="www.linkedin.com/in/hoai-an-phan"> LinkedIn</a> or <<a href="mailto:hoaian.phan.sde2022@gmail.com">Email</a>.
 
