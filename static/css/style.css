@@ -96,6 +96,7 @@ img.small {
 
 footer {
     /* display: flex; */
+    margin-top: 50px;
     font-size: small;
     justify-content: center;
     padding: 5px;

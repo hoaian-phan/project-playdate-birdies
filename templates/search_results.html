@@ -44,18 +44,18 @@
         </div>
 </main>
 
-<!-- Script for DOM and event handling -->
-<script src="static/js/playdate.js"></script>
+{% endblock %}
 
-<!-- Script for Google Map API -->
-<script src="static/js/search_maps.js"></script>
+{% block after_body %}
+   <!-- Script for DOM and event handling -->
+    <script src="static/js/playdate.js"></script>
 
-<!-- Google Map APIs -->
-<script
-    async
-    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAD0oTJmmfCcudTYnSthIF1Z9QW3H5GC5s&callback=initMap">
-</script>
+    <!-- Script for Google Map API -->
+    <script src="static/js/search_maps.js"></script>
 
-
-
+    <!-- Google Map APIs -->
+    <script
+        async
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAD0oTJmmfCcudTYnSthIF1Z9QW3H5GC5s&callback=initMap">
+    </script>
 {% endblock %}
