@@ -2,7 +2,7 @@
 
 A web app where parents and grandparents can find playdates for their children.
 
-For a demo of my app, please visit this link <a href="https://www.youtube.com/watch?v=u-X1LhxQtec">Playdate Birdies Demo</a>
+For a demo of my app, please visit this link <a href="https://www.youtube.com/watch?v=u-X1LhxQtec">Playdate Birdies Demo</a>.
 
 ## About
 
@@ -34,17 +34,17 @@ For a demo of my app, please visit this link <a href="https://www.youtube.com/wa
   <img src="static/image/Readme/signup-login-resetpw.png" width=800>
 </p>
 
-- Users can perform a search for a playdate by one or multiple parameters such as city or zipcode, date, age group, and/or activities. This searching feature is implemented by query chains in SQLAlchemy to the PostgreSQL database.
+- Users can perform a search for a playdate by one or multiple parameters such as city or zipcode, date, age group, and/or activities. This searching feature is implemented by query chains in SQLAlchemy to the PostgreSQL database. Check out <a href="https://github.com/hoaian-phan/project-playdate-birdies/blob/main/crud.py">my query chains (line 103 - 121) </a>.
 <p align="center">          
   <img src="static/image/Readme/homepage - small_screen.png" width=400>
 </p>
 
-- Search results show playdate details with location markers on the map as well as user's location (if granted permission). I implemented this page using Google Maps APIs to display map, location markers and user's location. Result details are shown by DOM manipulation in JavaScript.
+- Search results show playdate details with location markers on the map as well as user's location (if granted permission). I implemented this page using Google Maps APIs to display map, location markers and user's location. Result details are shown by DOM manipulation in JavaScript. Check out how I <a href="https://github.com/hoaian-phan/project-playdate-birdies/blob/main/static/js/search_maps.js">displayed map and location markers</a>.
 <p align="center">          
   <img src="static/image/Readme/search_results.png" width=800>
 </p>
 
-- Register feature: REACT page with updates of who's coming to the playdate and option to receive email reminder. Email feature was implemented by Flask-Mail and reminders are scheduled using Celery.
+- Register feature: REACT page with updates of who's coming to the playdate and option to receive email reminder. Email feature was implemented by Flask-Mail and reminders are scheduled using Celery. Check out <a href="https://github.com/hoaian-phan/project-playdate-birdies/blob/main/static/js/register_react.jsx">my React register feature</a>.
 <p align="center">          
   <img src="static/image/Readme/register.png" width=800>
 </p>                                                    
@@ -59,7 +59,7 @@ For a demo of my app, please visit this link <a href="https://www.youtube.com/wa
   <img src="static/image/Readme/profile.png" width=800>
 </p>
 
-- Users can view their playdates in calendar. I implemented this calendar by using FullCalendar in JavaScript.
+- Users can view their playdates in calendar. I implemented this calendar by using FullCalendar in JavaScript. See <a href="https://github.com/hoaian-phan/project-playdate-birdies/blob/main/static/js/calendar.js">my JS calendar code </a> and <a href="https://github.com/hoaian-phan/project-playdate-birdies/blob/main/server.py">my show calendar route (line 767-797)</a>.
 <p align="center">          
   <img src="static/image/Readme/calendar.png" width=800>
 </p>
@@ -74,7 +74,7 @@ For a demo of my app, please visit this link <a href="https://www.youtube.com/wa
   <img src="static/image/Readme/invite.png" width=800>
 </p>
 
-- Personalize playdate suggestions based on users' interests. A list of recommended playdates sorted by score and date is displayed on the homepage for logged in users to browse.
+- Personalize playdate suggestions based on users' interests. A list of recommended playdates sorted by score and date is displayed on the homepage for logged in users to browse. Check out <a href="https://github.com/hoaian-phan/project-playdate-birdies/blob/main/crud.py">my scoring algorithm (line 167-213)</a> and <a href="https://github.com/hoaian-phan/project-playdate-birdies/blob/main/server.py">my sorting algorithm (line 104-130)</a>.
 <p align="center">          
   <img src="static/image/Readme/recommend.png" width=800>
 </p>
@@ -112,7 +112,7 @@ $ source env/bin/activate
 $ pip3 install -r requirements.txt
 ```
 
-- Create a secrets.sh file to assign a value to APP_SECRET_KEY and run it
+- Create a secrets.sh file to assign a value to SECRET_KEY and run it
 ```
 source secrets.sh
 ```
