@@ -17,6 +17,7 @@ for (const button of buttons) {
                     button.innerText = "Hide details";
                     document.getElementById(`display-detail${button.id}`).innerHTML = 
                     `
+                    Description: "Demo event only"
                     Recommended age group: ${responseJson.age_group}<br>
                     At ${responseJson.location}<br>
                     On ${responseJson.date} from ${responseJson.start_time} to ${responseJson.end_time}<br>
